@@ -6,7 +6,7 @@ module.exports = {
   entry: './src/index.ts',
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'CG UC Davis',
+      title: 'WebGL study',
     }),
   ],
   devtool: 'eval-source-map',

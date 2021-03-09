@@ -1,7 +1,7 @@
 {
-  "name": "cg-uc-davis",
+  "name": "webgl-study",
   "version": "1.0.0",
-  "repository": "git@github.com:tsumo/cg-uc-davis.git",
+  "repository": "git@github.com:tsumo/webgl-study.git",
   "author": "tsumo",
   "license": "MIT",
   "private": true,
