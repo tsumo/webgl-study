@@ -1,7 +1,13 @@
 import "./style.css";
 
-type Test = { a: string; b: boolean };
+const init = () => {
+  const canvas = document.createElement("canvas");
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+  if (ctx === null) {
+    console.error("Cannot get canvas context");
+    return;
+  }
+};
 
-const test: Test = { a: "", b: false };
-
-console.log(test);
+init();
