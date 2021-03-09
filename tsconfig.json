@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "target": "es5",
+    "module": "esnext",
+    "strict": true,
+    "allowJs": false
+  },
+  "exclude": ["node_modules"]
+}

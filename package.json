@@ -1,7 +1,7 @@
 {
   "name": "cg-uc-davis",
   "version": "1.0.0",
-  "repository": "git@github.com:tsumo/cg-us-davis.git",
+  "repository": "git@github.com:tsumo/cg-uc-davis.git",
   "author": "tsumo",
   "license": "MIT",
   "private": true,
@@ -13,6 +13,8 @@
     "css-loader": "^5.1.1",
     "html-webpack-plugin": "^5.3.0",
     "style-loader": "^2.0.0",
+    "ts-loader": "^8.0.17",
+    "typescript": "^4.2.3",
     "webpack": "^5.24.4",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
