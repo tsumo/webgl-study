@@ -1,0 +1,15 @@
+{
+  "name": "cg-uc-davis",
+  "version": "1.0.0",
+  "repository": "git@github.com:tsumo/cg-us-davis.git",
+  "author": "tsumo",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "webpack"
+  },
+  "devDependencies": {
+    "webpack": "^5.24.4",
+    "webpack-cli": "^4.5.0"
+  }
+}
