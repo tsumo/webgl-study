@@ -1,3 +1,20 @@
+* {
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
 body {
   background-color: cornsilk;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  width: 70%;
+  height: 70%;
 }
