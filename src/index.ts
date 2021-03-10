@@ -57,6 +57,7 @@ const setRectangle = (
   const x2 = x + width;
   const y1 = y;
   const y2 = y + height;
+  // Copy data into buffer
   gl.bufferData(
     gl.ARRAY_BUFFER,
     new Float32Array([x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2]),
@@ -74,18 +75,26 @@ const init = (): void => {
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
   const program = createProgram(gl, vertexShader, fragmentShader);
+  // Attribute is a data from the buffer
   const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+  // Uniforms stay the same for all vertices/pixels during single draw call
   const resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
   const colorUniformLocation = gl.getUniformLocation(program, 'u_color');
+  // Buffer is a per-vertex GPU data
   const positionBuffer = gl.createBuffer();
   const draw = (): void => {
     resizeCanvas(gl, canvas);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
+    // Set current program. App can have many programs at the same time
     gl.useProgram(program);
+    // Set uniform value for the current program
     gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+    // Enable buffer data supplying for this attribute
     gl.enableVertexAttribArray(positionAttributeLocation);
+    // Bind sets the default buffer
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    // Get data from ARRAY_BUFFER bind point
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
     for (let i = 0; i < 50; i++) {
       setRectangle(gl, randInt(300), randInt(300), randInt(300), randInt(300));
