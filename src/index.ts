@@ -87,7 +87,6 @@ const init = (): void => {
     gl.enableVertexAttribArray(positionAttributeLocation);
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     for (let i = 0; i < 50; i++) {
       setRectangle(gl, randInt(300), randInt(300), randInt(300), randInt(300));
       gl.uniform4f(colorUniformLocation, rand(), rand(), rand(), 1);
