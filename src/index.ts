@@ -3,6 +3,28 @@ import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 import { rand, randInt } from './utils';
 
+/*
+# WebGL program structure
+
+## init
+- create shaders
+- create programs
+- look up locations
+
+## render
+- clear viewport and other global state
+- for each thing
+  - call useProgram
+  - for each attrubute
+    - call bindBuffer
+    - call vertexAttribPointer
+    - call enableVertexAttribArray
+  - for each uniform
+    - call uniformXXX
+    - call activeTexture and bindTexture to assign texture units
+  - call drawArrays or drawElements
+*/
+
 const createShader = (gl: WebGLRenderingContext, type: GLenum, source: string): WebGLShader => {
   const shader = gl.createShader(type);
   if (shader === null) {
@@ -11,12 +33,12 @@ const createShader = (gl: WebGLRenderingContext, type: GLenum, source: string): 
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-  if (success) {
-    return shader;
+  if (!success) {
+    console.warn(gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    throw new Error('Cannot compile shader');
   }
-  console.log(gl.getShaderInfoLog(shader));
-  gl.deleteShader(shader);
-  throw new Error('Cannot compile shader');
+  return shader;
 };
 
 const createProgram = (
@@ -32,15 +54,28 @@ const createProgram = (
   gl.attachShader(program, fragmentShader);
   gl.linkProgram(program);
   const success = gl.getProgramParameter(program, gl.LINK_STATUS);
-  if (success) {
-    return program;
+  if (!success) {
+    console.warn(gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+    throw new Error('Cannot link program');
   }
-  console.log(gl.getProgramInfoLog(program));
-  gl.deleteProgram(program);
-  throw new Error('Cannot link program');
+  return program;
+};
+
+const createShadersAndProgram = (
+  gl: WebGLRenderingContext,
+  vertexShaderSource: string,
+  fragmentShaderSource: string,
+): WebGLProgram => {
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+  return createProgram(gl, vertexShader, fragmentShader);
 };
 
 const resizeCanvas = (gl: WebGLRenderingContext, canvas: HTMLCanvasElement): void => {
+  if (canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight) {
+    return;
+  }
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
   gl.viewport(0, 0, canvas.width, canvas.height);
@@ -72,9 +107,7 @@ const init = (): void => {
   if (gl === null) {
     throw new Error('Cannot get webgl context');
   }
-  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-  const program = createProgram(gl, vertexShader, fragmentShader);
+  const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
   // Attribute is a data from the buffer
   const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
   // Uniforms stay the same for all vertices/pixels during single draw call
