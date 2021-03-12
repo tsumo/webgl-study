@@ -1,6 +1,7 @@
 import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
+import { m3 } from './m3';
 import { rand, randDeviate, randInt } from './utils';
 
 /*
@@ -128,9 +129,7 @@ const init = (): void => {
   // Uniforms stay the same for all vertices/pixels during single draw call
   const colorUniLoc = gl.getUniformLocation(program, 'u_color');
   const resolutionUniLoc = gl.getUniformLocation(program, 'u_resolution');
-  const translationUniLoc = gl.getUniformLocation(program, 'u_translation');
-  const rotationUniLoc = gl.getUniformLocation(program, 'u_rotation');
-  const scaleUniLoc = gl.getUniformLocation(program, 'u_scale');
+  const matrixUniLoc = gl.getUniformLocation(program, 'u_matrix');
 
   // Attribute is a data from the buffer
   const positionAttrLoc = gl.getAttribLocation(program, 'a_position');
@@ -160,10 +159,14 @@ const init = (): void => {
 
     gl.uniform4fv(colorUniLoc, [rand(), rand(), rand(), 1]);
     gl.uniform2f(resolutionUniLoc, canvas.width, canvas.height);
-    gl.uniform2fv(translationUniLoc, [randInt(100) + 150, randInt(100) + 150]);
+
+    const translationMatrix = m3.translation(randInt(100) + 150, randInt(100) + 150);
     const rad = (rand(360) * Math.PI) / 180;
-    gl.uniform2fv(rotationUniLoc, [Math.sin(rad), Math.cos(rad)]);
-    gl.uniform2f(scaleUniLoc, randDeviate(2), randDeviate(2));
+    const rotationMatrix = m3.rotation(rad);
+    const scaleMatrix = m3.scaling(randDeviate(2), randDeviate(2));
+    const matrix = m3.multiply(m3.multiply(translationMatrix, rotationMatrix), scaleMatrix);
+
+    gl.uniformMatrix3fv(matrixUniLoc, false, matrix);
 
     gl.drawArrays(gl.TRIANGLES, 0, 18);
   };
