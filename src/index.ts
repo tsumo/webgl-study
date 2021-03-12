@@ -2,7 +2,7 @@ import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 import { m3 } from './m3';
-import { rand, randDeviate, randInt, randRange, randSign } from './utils';
+import { rand, randDeviate, randRange } from './utils';
 
 /*
 # WebGL program structure
@@ -128,7 +128,6 @@ const init = (): void => {
 
   // Uniforms stay the same for all vertices/pixels during single draw call
   const colorUniLoc = gl.getUniformLocation(program, 'u_color');
-  const resolutionUniLoc = gl.getUniformLocation(program, 'u_resolution');
   const matrixUniLoc = gl.getUniformLocation(program, 'u_matrix');
 
   // Attribute is a data from the buffer
@@ -158,26 +157,15 @@ const init = (): void => {
     gl.vertexAttribPointer(positionAttrLoc, 2, gl.FLOAT, false, 0, 0);
 
     gl.uniform4fv(colorUniLoc, [rand(), rand(), rand(), 1]);
-    gl.uniform2f(resolutionUniLoc, canvas.width, canvas.height);
 
-    const translationMatrix = m3.translation(rand(30) + 80, rand(30) + 80);
-    const rad = randDeviate(0.7);
-    const rotationMatrix = m3.rotation(rad);
-    const sx = randRange(0.6, 1.1);
-    const sy = randRange(0.6, 1.1);
-    const scaleMatrix = m3.scaling(sx, sy);
-    // start at the center of geometry
-    let matrix = m3.translation(-50, -75);
+    let matrix = m3.projection(canvas.width, canvas.height);
+    matrix = m3.translate(matrix, rand(30) + 80, rand(30) + 80);
+    matrix = m3.rotate(matrix, randDeviate(0.7));
+    matrix = m3.scale(matrix, randRange(0.6, 1.1), randRange(0.6, 1.1));
 
-    for (let i = 0; i < 5; ++i) {
-      matrix = m3.multiply(matrix, translationMatrix);
-      matrix = m3.multiply(matrix, scaleMatrix);
-      matrix = m3.multiply(matrix, rotationMatrix);
+    gl.uniformMatrix3fv(matrixUniLoc, false, matrix);
 
-      gl.uniformMatrix3fv(matrixUniLoc, false, matrix);
-
-      gl.drawArrays(gl.TRIANGLES, 0, 18);
-    }
+    gl.drawArrays(gl.TRIANGLES, 0, 18);
   };
 
   draw();

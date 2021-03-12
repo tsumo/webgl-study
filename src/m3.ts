@@ -39,7 +39,7 @@ export const m3 = {
       1, 0, 0,
       0, 1, 0,
       0, 0, 1,
-  ];
+    ];
   },
 
   translation: (tx: number, ty: number): M3 => {
@@ -48,8 +48,10 @@ export const m3 = {
       1,  0, 0,
       0,  1, 0,
       tx, ty, 1,
-  ];
+    ];
   },
+
+  translate: (m: M3, tx: number, ty: number): M3 => m3.multiply(m, m3.translation(tx, ty)),
 
   rotation: (rad: number): M3 => {
     const c = Math.cos(rad);
@@ -59,8 +61,10 @@ export const m3 = {
       c, -s, 0,
       s,  c, 0,
       0,  0, 1,
-  ];
+    ];
   },
+
+  rotate: (m: M3, rad: number): M3 => m3.multiply(m, m3.rotation(rad)),
 
   scaling: (sx: number, sy: number): M3 => {
     // prettier-ignore
@@ -68,6 +72,18 @@ export const m3 = {
       sx,  0, 0,
       0, sy, 0,
       0,  0, 1,
-  ]
+    ]
+  },
+
+  scale: (m: M3, sx: number, sy: number): M3 => m3.multiply(m, m3.scaling(sx, sy)),
+
+  /** This matrix flips the Y axis so that 0 is at the top. */
+  projection: (width: number, height: number): M3 => {
+    // prettier-ignore
+    return [
+      2 / width, 0, 0,
+      0, -2 / height, 0,
+      -1, 1, 1
+    ];
   },
 };
