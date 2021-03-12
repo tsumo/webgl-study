@@ -2,7 +2,7 @@ import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 import { m3 } from './m3';
-import { rand, randDeviate, randInt } from './utils';
+import { rand, randDeviate, randInt, randRange, randSign } from './utils';
 
 /*
 # WebGL program structure
@@ -160,18 +160,29 @@ const init = (): void => {
     gl.uniform4fv(colorUniLoc, [rand(), rand(), rand(), 1]);
     gl.uniform2f(resolutionUniLoc, canvas.width, canvas.height);
 
-    const translationMatrix = m3.translation(randInt(100) + 150, randInt(100) + 150);
-    const rad = (rand(360) * Math.PI) / 180;
+    const translationMatrix = m3.translation(rand(30) + 80, rand(30) + 80);
+    const rad = randDeviate(0.7);
     const rotationMatrix = m3.rotation(rad);
-    const scaleMatrix = m3.scaling(randDeviate(2), randDeviate(2));
-    const matrix = m3.multiply(m3.multiply(translationMatrix, rotationMatrix), scaleMatrix);
+    const sx = randRange(0.6, 1.1);
+    const sy = randRange(0.6, 1.1);
+    const scaleMatrix = m3.scaling(sx, sy);
+    // start at the center of geometry
+    let matrix = m3.translation(-50, -75);
 
-    gl.uniformMatrix3fv(matrixUniLoc, false, matrix);
+    for (let i = 0; i < 5; ++i) {
+      matrix = m3.multiply(matrix, translationMatrix);
+      matrix = m3.multiply(matrix, scaleMatrix);
+      matrix = m3.multiply(matrix, rotationMatrix);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 18);
+      gl.uniformMatrix3fv(matrixUniLoc, false, matrix);
+
+      gl.drawArrays(gl.TRIANGLES, 0, 18);
+    }
   };
 
   draw();
+
+  window.addEventListener('click', draw);
 };
 
 init();
