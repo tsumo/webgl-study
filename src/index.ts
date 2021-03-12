@@ -1,7 +1,7 @@
 import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
-import pupImage from './pup.jpg';
+import { rand, randInt } from './utils';
 
 /*
 # WebGL program structure
@@ -82,87 +82,39 @@ const resizeCanvas = (gl: WebGLRenderingContext, canvas: HTMLCanvasElement): voi
   gl.viewport(0, 0, canvas.width, canvas.height);
 };
 
-const setRectangle = (
-  gl: WebGLRenderingContext,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-): void => {
-  const x1 = x;
-  const x2 = x + width;
-  const y1 = y;
-  const y2 = y + height;
+const setGeometry = (gl: WebGLRenderingContext): void => {
   // Copy data into buffer
   gl.bufferData(
     gl.ARRAY_BUFFER,
-    new Float32Array([x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2]),
+    // prettier-ignore
+    new Float32Array([
+      // left column
+      0, 0,
+      30, 0,
+      0, 150,
+      0, 150,
+      30, 0,
+      30, 150,
+      // top rung
+      30, 0,
+      100, 0,
+      30, 30,
+      30, 30,
+      100, 0,
+      100, 30,
+      // middle rung
+      30, 60,
+      67, 60,
+      30, 90,
+      30, 90,
+      67, 60,
+      67, 90,
+    ]),
     gl.STATIC_DRAW,
   );
 };
 
-const createAndSetupTexture = (gl: WebGLRenderingContext): WebGLTexture => {
-  const texture = gl.createTexture();
-  if (texture === null) {
-    throw new Error('Cannot create texture');
-  }
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  // Set parameters to render any size image
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  return texture;
-};
-
-// prettier-ignore
-const kernels = {
-  normal: [
-    0, 0, 0,
-    0, 1, 0,
-    0, 0, 0,
-  ],
-  gaussianBlur: [
-    0.045, 0.122, 0.045,
-    0.122, 0.332, 0.122,
-    0.045, 0.122, 0.045,
-  ],
-  unsharpen: [
-    -1, -1, -1,
-    -1,  9, -1,
-    -1, -1, -1,
-  ],
-  emboss: [
-    -2, -1,  0,
-    -1,  1,  1,
-     0,  1,  2,
-  ],
-  edgeDetect: [
-    -1, -1, -1,
-    -1,  8, -1,
-    -1, -1, -1,
-  ],
-}
-
-const effectsToApply: (keyof typeof kernels)[] = [
-  'gaussianBlur',
-  'emboss',
-  'gaussianBlur',
-  'unsharpen',
-];
-
-const computeKernelWeight = (kernel: number[]): number => {
-  const weight = kernel.reduce((prev, curr) => prev + curr);
-  return weight <= 0 ? 1 : weight;
-};
-
-const loadImage = (): void => {
-  const image = new Image();
-  image.src = pupImage;
-  image.onload = (): void => init(image);
-};
-
-const init = (image: HTMLImageElement): void => {
+const init = (): void => {
   const canvas = document.createElement('canvas');
   document.body.appendChild(canvas);
 
@@ -174,133 +126,44 @@ const init = (image: HTMLImageElement): void => {
   const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
 
   // Uniforms stay the same for all vertices/pixels during single draw call
+  const colorUniLoc = gl.getUniformLocation(program, 'u_color');
   const resolutionUniLoc = gl.getUniformLocation(program, 'u_resolution');
-  const textureSizeUniLoc = gl.getUniformLocation(program, 'u_textureSize');
-  const kernelUniLoc = gl.getUniformLocation(program, 'u_kernel[0]');
-  const kernelWeightUniLoc = gl.getUniformLocation(program, 'u_kernelWeight');
-  const flipYUniLoc = gl.getUniformLocation(program, 'u_flipY');
+  const translationUniLoc = gl.getUniformLocation(program, 'u_translation');
 
   // Attribute is a data from the buffer
   const positionAttrLoc = gl.getAttribLocation(program, 'a_position');
-  // Look up where texture coordinates need to go
-  const texCoordAttrLoc = gl.getAttribLocation(program, 'a_texCoord');
 
   // Buffer for 2d clip space points
   const positionBuffer = gl.createBuffer();
-
-  // Bind sets the current buffer
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  // Rectangle with the same size as the image
-  setRectangle(gl, 0, 0, image.width, image.height);
+  setGeometry(gl);
 
-  // Provide texture coordinates for rectangle
-  const texCoordBuffer = gl.createBuffer();
-  // Buffer is a per-vertex GPU data
-  gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-  gl.bufferData(
-    gl.ARRAY_BUFFER,
-    new Float32Array([0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0]),
-    gl.STATIC_DRAW,
-  );
+  const draw = (): void => {
+    resizeCanvas(gl, canvas);
 
-  // Create a texture and put image in it
-  const originalImageTexture = createAndSetupTexture(gl);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    // Tell webgl how to convert from clip space to pixels
+    gl.viewport(0, 0, canvas.width, canvas.height);
 
-  // Create 2 textures and attach them to framebuffers
-  const textures: WebGLTexture[] = [];
-  const framebuffers: WebGLFramebuffer[] = [];
-  for (let i = 0; i < 2; ++i) {
-    const texture = createAndSetupTexture(gl);
-    textures.push(texture);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
-    // make texture the same size as the image
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.RGBA,
-      image.width,
-      image.height,
-      0,
-      gl.RGBA,
-      gl.UNSIGNED_BYTE,
-      null,
-    );
+    // Set current program. App can have many programs at the same time
+    gl.useProgram(program);
 
-    // create framebuffer
-    const fbo = gl.createFramebuffer();
-    if (fbo === null) {
-      throw new Error('Cannot create framebuffer');
-    }
-    framebuffers.push(fbo);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    // Enable buffer data supplying for this attribute
+    gl.enableVertexAttribArray(positionAttrLoc);
 
-    // attach texture to it
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-  }
+    // Get data from ARRAY_BUFFER bind point
+    gl.vertexAttribPointer(positionAttrLoc, 2, gl.FLOAT, false, 0, 0);
 
-  resizeCanvas(gl, canvas);
+    gl.uniform4fv(colorUniLoc, [rand(), rand(), rand(), 1]);
+    gl.uniform2f(resolutionUniLoc, canvas.width, canvas.height);
+    gl.uniform2fv(translationUniLoc, [randInt(50), randInt(50)]);
 
-  gl.clearColor(0, 0, 0, 0);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  // Set current program. App can have many programs at the same time
-  gl.useProgram(program);
-
-  // Enable buffer data supplying for this attribute
-  gl.enableVertexAttribArray(positionAttrLoc);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  // Get data from ARRAY_BUFFER bind point
-  gl.vertexAttribPointer(positionAttrLoc, 2, gl.FLOAT, false, 0, 0);
-
-  // Turn on texCoord atribute
-  gl.enableVertexAttribArray(texCoordAttrLoc);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-  // Tell the texCoord attribute how to get data out of texCoordBuffer
-  gl.vertexAttribPointer(texCoordAttrLoc, 2, gl.FLOAT, false, 0, 0);
-
-  // Set uniform value for the current program
-  gl.uniform2f(textureSizeUniLoc, image.width, image.height);
-
-  // start with original texture
-  gl.bindTexture(gl.TEXTURE_2D, originalImageTexture);
-
-  // don't flip images while drawing to textures
-  gl.uniform1f(flipYUniLoc, 1);
-
-  const setFramebuffer = (fbo: WebGLFramebuffer | null, width: number, height: number): void => {
-    // set as render target
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-    // tell the shader the resolution of the framebuffer
-    gl.uniform2f(resolutionUniLoc, width, height);
-    // tell webgl the viewport setting needed for framebuffer
-    gl.viewport(0, 0, width, height);
+    gl.drawArrays(gl.TRIANGLES, 0, 18);
   };
 
-  const drawWithKernel = (name: keyof typeof kernels): void => {
-    // set kernel and weight
-    gl.uniform1fv(kernelUniLoc, kernels[name]);
-    gl.uniform1f(kernelWeightUniLoc, computeKernelWeight(kernels[name]));
-    // draw the rectangle
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-  };
-
-  // loop through effects
-  for (let i = 0; i < effectsToApply.length; ++i) {
-    setFramebuffer(framebuffers[i % 2], image.width, image.height);
-    drawWithKernel(effectsToApply[i]);
-
-    // for the next draw use the texture we just rendered to
-    gl.bindTexture(gl.TEXTURE_2D, textures[i % 2]);
-  }
-
-  // draw result to the canvas
-  gl.uniform1f(flipYUniLoc, -1);
-  // null framebuffer means draw to canvas
-  setFramebuffer(null, canvas.width, canvas.height);
-  drawWithKernel('normal');
+  draw();
 };
 
-loadImage();
+init();
