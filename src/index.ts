@@ -101,6 +101,11 @@ const setRectangle = (
   );
 };
 
+const computeKernelWeight = (kernel: number[]): number => {
+  const weight = kernel.reduce((prev, curr) => prev + curr);
+  return weight <= 0 ? 1 : weight;
+};
+
 const loadImage = (): void => {
   const image = new Image();
   image.src = pupImage;
@@ -121,6 +126,16 @@ const init = (image: HTMLImageElement): void => {
   // Uniforms stay the same for all vertices/pixels during single draw call
   const resolutionUniLoc = gl.getUniformLocation(program, 'u_resolution');
   const textureSizeUniLoc = gl.getUniformLocation(program, 'u_textureSize');
+  const kernelUniLoc = gl.getUniformLocation(program, 'u_kernel[0]');
+  const kernelWeightUniLoc = gl.getUniformLocation(program, 'u_kernelWeight');
+
+  // prettier-ignore
+  const edgeDetectKernel = [
+    -1, -1, -1,
+    -1,  8, -1,
+    -1, -1, -1,
+  ];
+  const kernelWeight = computeKernelWeight(edgeDetectKernel);
 
   // Attribute is a data from the buffer
   const positionAttrLoc = gl.getAttribLocation(program, 'a_position');
@@ -184,6 +199,8 @@ const init = (image: HTMLImageElement): void => {
     // Set uniform value for the current program
     gl.uniform2f(resolutionUniLoc, canvas.width, canvas.height);
     gl.uniform2f(textureSizeUniLoc, image.width, image.height);
+    gl.uniform1fv(kernelUniLoc, edgeDetectKernel);
+    gl.uniform1f(kernelWeightUniLoc, kernelWeight);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   };
