@@ -73,7 +73,7 @@ const createShadersAndProgram = (
 };
 
 const resizeCanvas = (gl: WebGLRenderingContext, canvas: HTMLCanvasElement): void => {
-  if (canvas.width !== canvas.clientWidth || canvas.height !== canvas.clientHeight) {
+  if (canvas.width === canvas.clientWidth && canvas.height === canvas.clientHeight) {
     return;
   }
   canvas.width = canvas.clientWidth;
