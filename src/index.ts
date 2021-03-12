@@ -1,7 +1,7 @@
 import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
-import { rand, randInt } from './utils';
+import { rand, randDeviate, randInt } from './utils';
 
 /*
 # WebGL program structure
@@ -130,6 +130,7 @@ const init = (): void => {
   const resolutionUniLoc = gl.getUniformLocation(program, 'u_resolution');
   const translationUniLoc = gl.getUniformLocation(program, 'u_translation');
   const rotationUniLoc = gl.getUniformLocation(program, 'u_rotation');
+  const scaleUniLoc = gl.getUniformLocation(program, 'u_scale');
 
   // Attribute is a data from the buffer
   const positionAttrLoc = gl.getAttribLocation(program, 'a_position');
@@ -162,6 +163,7 @@ const init = (): void => {
     gl.uniform2fv(translationUniLoc, [randInt(100) + 150, randInt(100) + 150]);
     const rad = (rand(360) * Math.PI) / 180;
     gl.uniform2fv(rotationUniLoc, [Math.sin(rad), Math.cos(rad)]);
+    gl.uniform2f(scaleUniLoc, randDeviate(2), randDeviate(2));
 
     gl.drawArrays(gl.TRIANGLES, 0, 18);
   };
