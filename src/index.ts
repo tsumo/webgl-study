@@ -1,7 +1,7 @@
 import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
-import { rand, randInt } from './utils';
+import pupImage from './pup.jpg';
 
 /*
 # WebGL program structure
@@ -78,6 +78,7 @@ const resizeCanvas = (gl: WebGLRenderingContext, canvas: HTMLCanvasElement): voi
   }
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
+  // Tell WebGL how to convert from clip space to pixels
   gl.viewport(0, 0, canvas.width, canvas.height);
 };
 
@@ -100,43 +101,94 @@ const setRectangle = (
   );
 };
 
-const init = (): void => {
+const loadImage = (): void => {
+  const image = new Image();
+  image.src = pupImage;
+  image.onload = (): void => init(image);
+};
+
+const init = (image: HTMLImageElement): void => {
   const canvas = document.createElement('canvas');
   document.body.appendChild(canvas);
+
   const gl = canvas.getContext('webgl');
   if (gl === null) {
     throw new Error('Cannot get webgl context');
   }
+
   const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
-  // Attribute is a data from the buffer
-  const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+
   // Uniforms stay the same for all vertices/pixels during single draw call
   const resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
-  const colorUniformLocation = gl.getUniformLocation(program, 'u_color');
-  // Buffer is a per-vertex GPU data
+
+  // Attribute is a data from the buffer
+  const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+  // Look up where texture coordinates need to go
+  const texCoordAttributeLocation = gl.getAttribLocation(program, 'a_texCoord');
+
+  // Buffer for 2d clip space points
   const positionBuffer = gl.createBuffer();
+
+  // Bind sets the current buffer
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  // Rectangle with the same size as the image
+  setRectangle(gl, 0, 0, image.width, image.height);
+
+  // Provide texture coordinates for rectangle
+  const texCoordBuffer = gl.createBuffer();
+  // Buffer is a per-vertex GPU data
+  gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0]),
+    gl.STATIC_DRAW,
+  );
+
+  // Create a texture
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set parameters to render any size image
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+  // Upload image into the texture
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
   const draw = (): void => {
     resizeCanvas(gl, canvas);
+
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
+
     // Set current program. App can have many programs at the same time
     gl.useProgram(program);
-    // Set uniform value for the current program
-    gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+
     // Enable buffer data supplying for this attribute
     gl.enableVertexAttribArray(positionAttributeLocation);
-    // Bind sets the default buffer
+
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     // Get data from ARRAY_BUFFER bind point
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-    for (let i = 0; i < 50; i++) {
-      setRectangle(gl, randInt(300), randInt(300), randInt(300), randInt(300));
-      gl.uniform4f(colorUniformLocation, rand(), rand(), rand(), 1);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-    }
+
+    // Turn on texCoord atribute
+    gl.enableVertexAttribArray(texCoordAttributeLocation);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+    // Tell the texCoord attribute how to get data out of texCoordBuffer
+    gl.vertexAttribPointer(texCoordAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+    // Set uniform value for the current program
+    gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
   };
+
   draw();
+
   window.addEventListener('resize', draw);
 };
 
-init();
+loadImage();
