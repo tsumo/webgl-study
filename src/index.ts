@@ -101,6 +101,56 @@ const setRectangle = (
   );
 };
 
+const createAndSetupTexture = (gl: WebGLRenderingContext): WebGLTexture => {
+  const texture = gl.createTexture();
+  if (texture === null) {
+    throw new Error('Cannot create texture');
+  }
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  // Set parameters to render any size image
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  return texture;
+};
+
+// prettier-ignore
+const kernels = {
+  normal: [
+    0, 0, 0,
+    0, 1, 0,
+    0, 0, 0,
+  ],
+  gaussianBlur: [
+    0.045, 0.122, 0.045,
+    0.122, 0.332, 0.122,
+    0.045, 0.122, 0.045,
+  ],
+  unsharpen: [
+    -1, -1, -1,
+    -1,  9, -1,
+    -1, -1, -1,
+  ],
+  emboss: [
+    -2, -1,  0,
+    -1,  1,  1,
+     0,  1,  2,
+  ],
+  edgeDetect: [
+    -1, -1, -1,
+    -1,  8, -1,
+    -1, -1, -1,
+  ],
+}
+
+const effectsToApply: (keyof typeof kernels)[] = [
+  'gaussianBlur',
+  'emboss',
+  'gaussianBlur',
+  'unsharpen',
+];
+
 const computeKernelWeight = (kernel: number[]): number => {
   const weight = kernel.reduce((prev, curr) => prev + curr);
   return weight <= 0 ? 1 : weight;
@@ -128,14 +178,7 @@ const init = (image: HTMLImageElement): void => {
   const textureSizeUniLoc = gl.getUniformLocation(program, 'u_textureSize');
   const kernelUniLoc = gl.getUniformLocation(program, 'u_kernel[0]');
   const kernelWeightUniLoc = gl.getUniformLocation(program, 'u_kernelWeight');
-
-  // prettier-ignore
-  const edgeDetectKernel = [
-    -1, -1, -1,
-    -1,  8, -1,
-    -1, -1, -1,
-  ];
-  const kernelWeight = computeKernelWeight(edgeDetectKernel);
+  const flipYUniLoc = gl.getUniformLocation(program, 'u_flipY');
 
   // Attribute is a data from the buffer
   const positionAttrLoc = gl.getAttribLocation(program, 'a_position');
@@ -160,54 +203,104 @@ const init = (image: HTMLImageElement): void => {
     gl.STATIC_DRAW,
   );
 
-  // Create a texture
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-
-  // Set parameters to render any size image
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-  // Upload image into the texture
+  // Create a texture and put image in it
+  const originalImageTexture = createAndSetupTexture(gl);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
-  const draw = (): void => {
-    resizeCanvas(gl, canvas);
+  // Create 2 textures and attach them to framebuffers
+  const textures: WebGLTexture[] = [];
+  const framebuffers: WebGLFramebuffer[] = [];
+  for (let i = 0; i < 2; ++i) {
+    const texture = createAndSetupTexture(gl);
+    textures.push(texture);
 
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    // make texture the same size as the image
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      image.width,
+      image.height,
+      0,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      null,
+    );
 
-    // Set current program. App can have many programs at the same time
-    gl.useProgram(program);
+    // create framebuffer
+    const fbo = gl.createFramebuffer();
+    if (fbo === null) {
+      throw new Error('Cannot create framebuffer');
+    }
+    framebuffers.push(fbo);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
 
-    // Enable buffer data supplying for this attribute
-    gl.enableVertexAttribArray(positionAttrLoc);
+    // attach texture to it
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+  }
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    // Get data from ARRAY_BUFFER bind point
-    gl.vertexAttribPointer(positionAttrLoc, 2, gl.FLOAT, false, 0, 0);
+  resizeCanvas(gl, canvas);
 
-    // Turn on texCoord atribute
-    gl.enableVertexAttribArray(texCoordAttrLoc);
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-    // Tell the texCoord attribute how to get data out of texCoordBuffer
-    gl.vertexAttribPointer(texCoordAttrLoc, 2, gl.FLOAT, false, 0, 0);
+  // Set current program. App can have many programs at the same time
+  gl.useProgram(program);
 
-    // Set uniform value for the current program
-    gl.uniform2f(resolutionUniLoc, canvas.width, canvas.height);
-    gl.uniform2f(textureSizeUniLoc, image.width, image.height);
-    gl.uniform1fv(kernelUniLoc, edgeDetectKernel);
-    gl.uniform1f(kernelWeightUniLoc, kernelWeight);
+  // Enable buffer data supplying for this attribute
+  gl.enableVertexAttribArray(positionAttrLoc);
 
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  // Get data from ARRAY_BUFFER bind point
+  gl.vertexAttribPointer(positionAttrLoc, 2, gl.FLOAT, false, 0, 0);
+
+  // Turn on texCoord atribute
+  gl.enableVertexAttribArray(texCoordAttrLoc);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+  // Tell the texCoord attribute how to get data out of texCoordBuffer
+  gl.vertexAttribPointer(texCoordAttrLoc, 2, gl.FLOAT, false, 0, 0);
+
+  // Set uniform value for the current program
+  gl.uniform2f(textureSizeUniLoc, image.width, image.height);
+
+  // start with original texture
+  gl.bindTexture(gl.TEXTURE_2D, originalImageTexture);
+
+  // don't flip images while drawing to textures
+  gl.uniform1f(flipYUniLoc, 1);
+
+  const setFramebuffer = (fbo: WebGLFramebuffer | null, width: number, height: number): void => {
+    // set as render target
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    // tell the shader the resolution of the framebuffer
+    gl.uniform2f(resolutionUniLoc, width, height);
+    // tell webgl the viewport setting needed for framebuffer
+    gl.viewport(0, 0, width, height);
+  };
+
+  const drawWithKernel = (name: keyof typeof kernels): void => {
+    // set kernel and weight
+    gl.uniform1fv(kernelUniLoc, kernels[name]);
+    gl.uniform1f(kernelWeightUniLoc, computeKernelWeight(kernels[name]));
+    // draw the rectangle
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   };
 
-  draw();
+  // loop through effects
+  for (let i = 0; i < effectsToApply.length; ++i) {
+    setFramebuffer(framebuffers[i % 2], image.width, image.height);
+    drawWithKernel(effectsToApply[i]);
 
-  window.addEventListener('resize', draw);
+    // for the next draw use the texture we just rendered to
+    gl.bindTexture(gl.TEXTURE_2D, textures[i % 2]);
+  }
+
+  // draw result to the canvas
+  gl.uniform1f(flipYUniLoc, -1);
+  // null framebuffer means draw to canvas
+  setFramebuffer(null, canvas.width, canvas.height);
+  drawWithKernel('normal');
 };
 
 loadImage();
