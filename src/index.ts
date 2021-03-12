@@ -129,6 +129,7 @@ const init = (): void => {
   const colorUniLoc = gl.getUniformLocation(program, 'u_color');
   const resolutionUniLoc = gl.getUniformLocation(program, 'u_resolution');
   const translationUniLoc = gl.getUniformLocation(program, 'u_translation');
+  const rotationUniLoc = gl.getUniformLocation(program, 'u_rotation');
 
   // Attribute is a data from the buffer
   const positionAttrLoc = gl.getAttribLocation(program, 'a_position');
@@ -158,7 +159,9 @@ const init = (): void => {
 
     gl.uniform4fv(colorUniLoc, [rand(), rand(), rand(), 1]);
     gl.uniform2f(resolutionUniLoc, canvas.width, canvas.height);
-    gl.uniform2fv(translationUniLoc, [randInt(50), randInt(50)]);
+    gl.uniform2fv(translationUniLoc, [randInt(100) + 150, randInt(100) + 150]);
+    const rad = (rand(360) * Math.PI) / 180;
+    gl.uniform2fv(rotationUniLoc, [Math.sin(rad), Math.cos(rad)]);
 
     gl.drawArrays(gl.TRIANGLES, 0, 18);
   };
