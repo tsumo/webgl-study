@@ -120,6 +120,7 @@ const init = (image: HTMLImageElement): void => {
 
   // Uniforms stay the same for all vertices/pixels during single draw call
   const resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
+  const textureSizeUniformLocation = gl.getUniformLocation(program, 'u_textureSize');
 
   // Attribute is a data from the buffer
   const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
@@ -182,6 +183,7 @@ const init = (image: HTMLImageElement): void => {
 
     // Set uniform value for the current program
     gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
+    gl.uniform2f(textureSizeUniformLocation, image.width, image.height);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   };
