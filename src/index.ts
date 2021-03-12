@@ -119,13 +119,13 @@ const init = (image: HTMLImageElement): void => {
   const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
 
   // Uniforms stay the same for all vertices/pixels during single draw call
-  const resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
-  const textureSizeUniformLocation = gl.getUniformLocation(program, 'u_textureSize');
+  const resolutionUniLoc = gl.getUniformLocation(program, 'u_resolution');
+  const textureSizeUniLoc = gl.getUniformLocation(program, 'u_textureSize');
 
   // Attribute is a data from the buffer
-  const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+  const positionAttrLoc = gl.getAttribLocation(program, 'a_position');
   // Look up where texture coordinates need to go
-  const texCoordAttributeLocation = gl.getAttribLocation(program, 'a_texCoord');
+  const texCoordAttrLoc = gl.getAttribLocation(program, 'a_texCoord');
 
   // Buffer for 2d clip space points
   const positionBuffer = gl.createBuffer();
@@ -168,22 +168,22 @@ const init = (image: HTMLImageElement): void => {
     gl.useProgram(program);
 
     // Enable buffer data supplying for this attribute
-    gl.enableVertexAttribArray(positionAttributeLocation);
+    gl.enableVertexAttribArray(positionAttrLoc);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     // Get data from ARRAY_BUFFER bind point
-    gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(positionAttrLoc, 2, gl.FLOAT, false, 0, 0);
 
     // Turn on texCoord atribute
-    gl.enableVertexAttribArray(texCoordAttributeLocation);
+    gl.enableVertexAttribArray(texCoordAttrLoc);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
     // Tell the texCoord attribute how to get data out of texCoordBuffer
-    gl.vertexAttribPointer(texCoordAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(texCoordAttrLoc, 2, gl.FLOAT, false, 0, 0);
 
     // Set uniform value for the current program
-    gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
-    gl.uniform2f(textureSizeUniformLocation, image.width, image.height);
+    gl.uniform2f(resolutionUniLoc, canvas.width, canvas.height);
+    gl.uniform2f(textureSizeUniLoc, image.width, image.height);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   };
