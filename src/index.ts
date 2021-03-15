@@ -3,7 +3,7 @@ import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 import { m4 } from './m4';
-import { deg2Rad, randDeviate } from './utils';
+import { deg2Rad } from './utils';
 
 /*
 # WebGL program structure
@@ -335,34 +335,20 @@ const init = (): void => {
   }
 
   const guiValues = {
-    tx: 0,
-    ty: 0,
-    tz: -360,
-    rx: randDeviate(0.3) + Math.PI,
-    ry: randDeviate(0.3),
-    rz: randDeviate(0.3),
-    sx: 1,
-    sy: 1,
-    sz: 1,
     fov: 80,
     near: 1,
     far: 2000,
+    cameraAngle: 0,
+    numFs: 5,
   };
   const guiControllers: dat.GUIController[] = [];
   const gui = new dat.GUI();
   const fullRotation = Math.PI * 2;
-  guiControllers.push(gui.add(guiValues, 'tx', -400, 400));
-  guiControllers.push(gui.add(guiValues, 'ty', -400, 400));
-  guiControllers.push(gui.add(guiValues, 'tz', -400, 400));
-  guiControllers.push(gui.add(guiValues, 'rx', -fullRotation, fullRotation, 0.01));
-  guiControllers.push(gui.add(guiValues, 'ry', -fullRotation, fullRotation, 0.01));
-  guiControllers.push(gui.add(guiValues, 'rz', -fullRotation, fullRotation, 0.01));
-  guiControllers.push(gui.add(guiValues, 'sx', 0.1, 1.9, 0.01));
-  guiControllers.push(gui.add(guiValues, 'sy', 0.1, 1.9, 0.01));
-  guiControllers.push(gui.add(guiValues, 'sz', 0.1, 1.9, 0.01));
   guiControllers.push(gui.add(guiValues, 'fov', 0, 180, 0.01));
   guiControllers.push(gui.add(guiValues, 'near', 1, 500, 0.01));
   guiControllers.push(gui.add(guiValues, 'far', 1, 500, 0.01));
+  guiControllers.push(gui.add(guiValues, 'cameraAngle', 0, fullRotation, 0.01));
+  guiControllers.push(gui.add(guiValues, 'numFs', 1, 16));
 
   const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
 
@@ -408,21 +394,32 @@ const init = (): void => {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.vertexAttribPointer(colorAttrLoc, 3, gl.UNSIGNED_BYTE, true, 0, 0);
 
-    let matrix = m4.perspective(
+    const projectionMatrix = m4.perspective(
       deg2Rad(guiValues.fov),
       canvas.width / canvas.height,
       guiValues.near,
       guiValues.far,
     );
-    matrix = m4.translate(matrix, guiValues.tx, guiValues.ty, guiValues.tz);
-    matrix = m4.xRotate(matrix, guiValues.rx);
-    matrix = m4.yRotate(matrix, guiValues.ry);
-    matrix = m4.zRotate(matrix, guiValues.rz);
-    matrix = m4.scale(matrix, guiValues.sx, guiValues.sy, guiValues.sz);
 
-    gl.uniformMatrix4fv(matrixUniLoc, false, matrix);
+    const radius = 200;
+    let cameraMatrix = m4.yRotation(guiValues.cameraAngle);
+    cameraMatrix = m4.translate(cameraMatrix, 0, 60, radius * 2);
+    cameraMatrix = m4.zRotate(cameraMatrix, Math.PI);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 16 * 6);
+    const viewMatrix = m4.inverse(cameraMatrix);
+
+    const viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
+
+    for (let i = 0; i < guiValues.numFs; ++i) {
+      const angle = (i * Math.PI * 2) / guiValues.numFs;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      const matrix = m4.translate(viewProjectionMatrix, x, 0, y);
+
+      gl.uniformMatrix4fv(matrixUniLoc, false, matrix);
+
+      gl.drawArrays(gl.TRIANGLES, 0, 16 * 6);
+    }
   };
 
   draw();
