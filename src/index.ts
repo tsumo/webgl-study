@@ -402,7 +402,7 @@ const init = (): void => {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.vertexAttribPointer(colorAttrLoc, 3, gl.UNSIGNED_BYTE, true, 0, 0);
 
-    let matrix = m4.projection(canvas.width, canvas.height, 400);
+    let matrix = m4.orthographic(0, canvas.width, canvas.height, 0, 400, -400);
     matrix = m4.translate(matrix, guiValues.tx, guiValues.ty, guiValues.tz);
     matrix = m4.xRotate(matrix, guiValues.rx);
     matrix = m4.yRotate(matrix, guiValues.ry);

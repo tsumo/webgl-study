@@ -128,13 +128,24 @@ export const m4 = {
 
   scale: (m: M4, sx: number, sy: number, sz: number): M4 => m4.multiply(m, m4.scaling(sx, sy, sz)),
 
-  projection: (width: number, height: number, depth: number): M4 => {
+  orthographic: (
+    left: number,
+    right: number,
+    bottom: number,
+    top: number,
+    near: number,
+    far: number,
+  ): M4 => {
     // prettier-ignore
     return [
-      2 / width, 0, 0, 0,
-      0, -2 / height, 0, 0,
-      0, 0, 2 / depth, 0,
-      -1, 1, 0, 1,
+      2 / (right - left), 0, 0, 0,
+      0, 2 / (top - bottom), 0, 0,
+      0, 0, 2 / (near - far), 0,
+ 
+      (left + right) / (left - right),
+      (bottom + top) / (bottom - top),
+      (near + far) / (near - far),
+      1,
     ];
   },
 };
