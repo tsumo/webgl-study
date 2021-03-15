@@ -67,7 +67,7 @@ export const m4 = {
        1,  0,  0, 0,
        0,  1,  0, 0,
        0,  0,  1, 0,
-      tx, ty, tx, 1,
+      tx, ty, tz, 1,
     ];
   },
 
@@ -126,7 +126,7 @@ export const m4 = {
     ];
   },
 
-  scale: (m: M4, sx: number, sy: number, sz: number): M4 => m4.multiply(m, m4.scaling(sz, sy, sz)),
+  scale: (m: M4, sx: number, sy: number, sz: number): M4 => m4.multiply(m, m4.scaling(sx, sy, sz)),
 
   projection: (width: number, height: number, depth: number): M4 => {
     // prettier-ignore
