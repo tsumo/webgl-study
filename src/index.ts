@@ -3,7 +3,7 @@ import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 import { m4 } from './m4';
-import { randDeviate } from './utils';
+import { deg2Rad, randDeviate } from './utils';
 
 /*
 # WebGL program structure
@@ -335,21 +335,24 @@ const init = (): void => {
   }
 
   const guiValues = {
-    tx: 200,
-    ty: 200,
-    tz: 0,
-    rx: randDeviate(0.3),
+    tx: 0,
+    ty: 0,
+    tz: -360,
+    rx: randDeviate(0.3) + Math.PI,
     ry: randDeviate(0.3),
     rz: randDeviate(0.3),
     sx: 1,
     sy: 1,
     sz: 1,
+    fov: 80,
+    near: 1,
+    far: 2000,
   };
   const guiControllers: dat.GUIController[] = [];
   const gui = new dat.GUI();
   const fullRotation = Math.PI * 2;
-  guiControllers.push(gui.add(guiValues, 'tx', 0, 400));
-  guiControllers.push(gui.add(guiValues, 'ty', 0, 400));
+  guiControllers.push(gui.add(guiValues, 'tx', -400, 400));
+  guiControllers.push(gui.add(guiValues, 'ty', -400, 400));
   guiControllers.push(gui.add(guiValues, 'tz', -400, 400));
   guiControllers.push(gui.add(guiValues, 'rx', -fullRotation, fullRotation, 0.01));
   guiControllers.push(gui.add(guiValues, 'ry', -fullRotation, fullRotation, 0.01));
@@ -357,6 +360,9 @@ const init = (): void => {
   guiControllers.push(gui.add(guiValues, 'sx', 0.1, 1.9, 0.01));
   guiControllers.push(gui.add(guiValues, 'sy', 0.1, 1.9, 0.01));
   guiControllers.push(gui.add(guiValues, 'sz', 0.1, 1.9, 0.01));
+  guiControllers.push(gui.add(guiValues, 'fov', 0, 180, 0.01));
+  guiControllers.push(gui.add(guiValues, 'near', 1, 500, 0.01));
+  guiControllers.push(gui.add(guiValues, 'far', 1, 500, 0.01));
 
   const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
 
@@ -402,7 +408,12 @@ const init = (): void => {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.vertexAttribPointer(colorAttrLoc, 3, gl.UNSIGNED_BYTE, true, 0, 0);
 
-    let matrix = m4.orthographic(0, canvas.width, canvas.height, 0, 400, -400);
+    let matrix = m4.perspective(
+      deg2Rad(guiValues.fov),
+      canvas.width / canvas.height,
+      guiValues.near,
+      guiValues.far,
+    );
     matrix = m4.translate(matrix, guiValues.tx, guiValues.ty, guiValues.tz);
     matrix = m4.xRotate(matrix, guiValues.rx);
     matrix = m4.yRotate(matrix, guiValues.ry);
