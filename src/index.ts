@@ -3,6 +3,7 @@ import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 import { m4 } from './m4';
+import { randDeviate } from './utils';
 
 /*
 # WebGL program structure
@@ -91,25 +92,25 @@ const setGeometry = (gl: WebGLRenderingContext): void => {
     new Float32Array([
       // left column front
         0,   0,  0,
-       30,   0,  0,
-        0, 150,  0,
         0, 150,  0,
        30,   0,  0,
+        0, 150,  0,
        30, 150,  0,
+       30,   0,  0,
       // top rung front
        30,   0,  0,
-      100,   0,  0,
-       30,  30,  0,
        30,  30,  0,
       100,   0,  0,
+       30,  30,  0,
       100,  30,  0,
+      100,   0,  0,
       // middle rung front
        30,  60,  0,
-       67,  60,  0,
-       30,  90,  0,
        30,  90,  0,
        67,  60,  0,
+       30,  90,  0,
        67,  90,  0,
+       67,  60,  0,
       // left column back
         0,   0,  30,
        30,   0,  30,
@@ -154,25 +155,25 @@ const setGeometry = (gl: WebGLRenderingContext): void => {
       100,  30,   0,
       // between top rung and middle
       30,   30,   0,
+      30,   60,  30,
       30,   30,  30,
-      30,   60,  30,
       30,   30,   0,
-      30,   60,  30,
       30,   60,   0,
+      30,   60,  30,
       // top of middle rung
       30,   60,   0,
+      67,   60,  30,
       30,   60,  30,
-      67,   60,  30,
       30,   60,   0,
-      67,   60,  30,
       67,   60,   0,
+      67,   60,  30,
       // right of middle rung
       67,   60,   0,
+      67,   90,  30,
       67,   60,  30,
-      67,   90,  30,
       67,   60,   0,
-      67,   90,  30,
       67,   90,   0,
+      67,   90,  30,
       // bottom of middle rung.
       30,   90,   0,
       30,   90,  30,
@@ -182,11 +183,11 @@ const setGeometry = (gl: WebGLRenderingContext): void => {
       67,   90,   0,
       // right of bottom
       30,   90,   0,
+      30,  150,  30,
       30,   90,  30,
-      30,  150,  30,
       30,   90,   0,
-      30,  150,  30,
       30,  150,   0,
+      30,  150,  30,
       // bottom
       0,   150,   0,
       0,   150,  30,
@@ -200,7 +201,8 @@ const setGeometry = (gl: WebGLRenderingContext): void => {
       0, 150,  30,
       0,   0,   0,
       0, 150,  30,
-      0, 150,   0]),
+      0, 150,   0,
+    ]),
     gl.STATIC_DRAW,
   );
 };
@@ -319,7 +321,7 @@ const setColors = (gl: WebGLRenderingContext): void => {
     160, 160, 220,
     160, 160, 220,
     160, 160, 220,
-    160, 160, 220
+    160, 160, 220,
   ]), gl.STATIC_DRAW);
 };
 
@@ -336,21 +338,22 @@ const init = (): void => {
     tx: 200,
     ty: 200,
     tz: 0,
-    rx: 0,
-    ry: 0,
-    rz: 0,
+    rx: randDeviate(0.3),
+    ry: randDeviate(0.3),
+    rz: randDeviate(0.3),
     sx: 1,
     sy: 1,
     sz: 1,
   };
   const guiControllers: dat.GUIController[] = [];
   const gui = new dat.GUI();
+  const fullRotation = Math.PI * 2;
   guiControllers.push(gui.add(guiValues, 'tx', 0, 400));
   guiControllers.push(gui.add(guiValues, 'ty', 0, 400));
   guiControllers.push(gui.add(guiValues, 'tz', -400, 400));
-  guiControllers.push(gui.add(guiValues, 'rx', 0, Math.PI * 2, 0.01));
-  guiControllers.push(gui.add(guiValues, 'ry', 0, Math.PI * 2, 0.01));
-  guiControllers.push(gui.add(guiValues, 'rz', 0, Math.PI * 2, 0.01));
+  guiControllers.push(gui.add(guiValues, 'rx', -fullRotation, fullRotation, 0.01));
+  guiControllers.push(gui.add(guiValues, 'ry', -fullRotation, fullRotation, 0.01));
+  guiControllers.push(gui.add(guiValues, 'rz', -fullRotation, fullRotation, 0.01));
   guiControllers.push(gui.add(guiValues, 'sx', 0.1, 1.9, 0.01));
   guiControllers.push(gui.add(guiValues, 'sy', 0.1, 1.9, 0.01));
   guiControllers.push(gui.add(guiValues, 'sz', 0.1, 1.9, 0.01));
@@ -374,6 +377,9 @@ const init = (): void => {
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
   setColors(gl);
 
+  gl.enable(gl.CULL_FACE);
+  gl.enable(gl.DEPTH_TEST);
+
   const draw = (): void => {
     resizeCanvas(gl, canvas);
 
@@ -381,7 +387,7 @@ const init = (): void => {
     gl.viewport(0, 0, canvas.width, canvas.height);
 
     gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Set current program. App can have many programs at the same time
     gl.useProgram(program);
