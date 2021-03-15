@@ -1,4 +1,9 @@
-export type M3 = [number, number, number, number, number, number, number, number, number];
+// prettier-ignore
+export type M3 = [
+  number, number, number,
+  number, number, number,
+  number, number, number,
+];
 
 export const m3 = {
   multiply: (a: M3, b: M3): M3 => {

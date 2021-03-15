@@ -1,8 +1,9 @@
+import * as dat from 'dat.gui';
 import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
-import { m3 } from './m3';
-import { rand, randDeviate, randRange } from './utils';
+import { m4 } from './m4';
+import { rand } from './utils';
 
 /*
 # WebGL program structure
@@ -90,26 +91,26 @@ const setGeometry = (gl: WebGLRenderingContext): void => {
     // prettier-ignore
     new Float32Array([
       // left column
-      0, 0,
-      30, 0,
-      0, 150,
-      0, 150,
-      30, 0,
-      30, 150,
+       0,   0, 0,
+      30,   0, 0,
+       0, 150, 0,
+       0, 150, 0,
+      30,   0, 0,
+      30, 150, 0,
       // top rung
-      30, 0,
-      100, 0,
-      30, 30,
-      30, 30,
-      100, 0,
-      100, 30,
+       30,  0, 0,
+      100,  0, 0,
+       30, 30, 0,
+       30, 30, 0,
+      100,  0, 0,
+      100, 30, 0,
       // middle rung
-      30, 60,
-      67, 60,
-      30, 90,
-      30, 90,
-      67, 60,
-      67, 90,
+      30, 60, 0,
+      67, 60, 0,
+      30, 90, 0,
+      30, 90, 0,
+      67, 60, 0,
+      67, 90, 0,
     ]),
     gl.STATIC_DRAW,
   );
@@ -123,6 +124,29 @@ const init = (): void => {
   if (gl === null) {
     throw new Error('Cannot get webgl context');
   }
+
+  const guiValues = {
+    tx: 0,
+    ty: 0,
+    tz: 0,
+    rx: 0,
+    ry: 0,
+    rz: 0,
+    sx: 1,
+    sy: 1,
+    sz: 1,
+  };
+  const guiControllers: dat.GUIController[] = [];
+  const gui = new dat.GUI();
+  guiControllers.push(gui.add(guiValues, 'tx', 0, 400));
+  guiControllers.push(gui.add(guiValues, 'ty', 0, 400));
+  guiControllers.push(gui.add(guiValues, 'tz', 0, 400));
+  guiControllers.push(gui.add(guiValues, 'rx', 0, Math.PI * 2, 0.01));
+  guiControllers.push(gui.add(guiValues, 'ry', 0, Math.PI * 2, 0.01));
+  guiControllers.push(gui.add(guiValues, 'rz', 0, Math.PI * 2, 0.01));
+  guiControllers.push(gui.add(guiValues, 'sx', 0.5, 1.5, 0.01));
+  guiControllers.push(gui.add(guiValues, 'sy', 0.5, 1.5, 0.01));
+  guiControllers.push(gui.add(guiValues, 'sz', 0.5, 1.5, 0.01));
 
   const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
 
@@ -154,23 +178,25 @@ const init = (): void => {
     gl.enableVertexAttribArray(positionAttrLoc);
 
     // Get data from ARRAY_BUFFER bind point
-    gl.vertexAttribPointer(positionAttrLoc, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(positionAttrLoc, 3, gl.FLOAT, false, 0, 0);
 
     gl.uniform4fv(colorUniLoc, [rand(), rand(), rand(), 1]);
 
-    let matrix = m3.projection(canvas.width, canvas.height);
-    matrix = m3.translate(matrix, rand(30) + 80, rand(30) + 80);
-    matrix = m3.rotate(matrix, randDeviate(0.7));
-    matrix = m3.scale(matrix, randRange(0.6, 1.1), randRange(0.6, 1.1));
+    let matrix = m4.projection(canvas.width, canvas.height, 400);
+    matrix = m4.translate(matrix, guiValues.tx, guiValues.ty, guiValues.tz);
+    matrix = m4.xRotate(matrix, guiValues.rx);
+    matrix = m4.yRotate(matrix, guiValues.ry);
+    matrix = m4.zRotate(matrix, guiValues.rz);
+    matrix = m4.scale(matrix, guiValues.sx, guiValues.sy, guiValues.sz);
 
-    gl.uniformMatrix3fv(matrixUniLoc, false, matrix);
+    gl.uniformMatrix4fv(matrixUniLoc, false, matrix);
 
     gl.drawArrays(gl.TRIANGLES, 0, 18);
   };
 
   draw();
 
-  window.addEventListener('click', draw);
+  guiControllers.forEach((c) => c.onChange(draw));
 };
 
 init();
