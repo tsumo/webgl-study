@@ -205,6 +205,124 @@ const setGeometry = (gl: WebGLRenderingContext): void => {
   );
 };
 
+const setColors = (gl: WebGLRenderingContext): void => {
+  // prettier-ignore
+  gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array([
+    // left column front
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    // top rung front
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    // middle rung front
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    200,  70, 120,
+    // left column back
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    // top rung back
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    // middle rung back
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    80, 70, 200,
+    // top
+    70, 200, 210,
+    70, 200, 210,
+    70, 200, 210,
+    70, 200, 210,
+    70, 200, 210,
+    70, 200, 210,
+    // top rung right
+    200, 200, 70,
+    200, 200, 70,
+    200, 200, 70,
+    200, 200, 70,
+    200, 200, 70,
+    200, 200, 70,
+    // under top rung
+    210, 100, 70,
+    210, 100, 70,
+    210, 100, 70,
+    210, 100, 70,
+    210, 100, 70,
+    210, 100, 70,
+    // between top rung and middle
+    210, 160, 70,
+    210, 160, 70,
+    210, 160, 70,
+    210, 160, 70,
+    210, 160, 70,
+    210, 160, 70,
+    // top of middle rung
+    70, 180, 210,
+    70, 180, 210,
+    70, 180, 210,
+    70, 180, 210,
+    70, 180, 210,
+    70, 180, 210,
+    // right of middle rung
+    100, 70, 210,
+    100, 70, 210,
+    100, 70, 210,
+    100, 70, 210,
+    100, 70, 210,
+    100, 70, 210,
+    // bottom of middle rung.
+    76, 210, 100,
+    76, 210, 100,
+    76, 210, 100,
+    76, 210, 100,
+    76, 210, 100,
+    76, 210, 100,
+    // right of bottom
+    140, 210, 80,
+    140, 210, 80,
+    140, 210, 80,
+    140, 210, 80,
+    140, 210, 80,
+    140, 210, 80,
+    // bottom
+    90, 130, 110,
+    90, 130, 110,
+    90, 130, 110,
+    90, 130, 110,
+    90, 130, 110,
+    90, 130, 110,
+    // left side
+    160, 160, 220,
+    160, 160, 220,
+    160, 160, 220,
+    160, 160, 220,
+    160, 160, 220,
+    160, 160, 220
+  ]), gl.STATIC_DRAW);
+};
+
 const init = (): void => {
   const canvas = document.createElement('canvas');
   document.body.appendChild(canvas);
@@ -233,23 +351,28 @@ const init = (): void => {
   guiControllers.push(gui.add(guiValues, 'rx', 0, Math.PI * 2, 0.01));
   guiControllers.push(gui.add(guiValues, 'ry', 0, Math.PI * 2, 0.01));
   guiControllers.push(gui.add(guiValues, 'rz', 0, Math.PI * 2, 0.01));
-  guiControllers.push(gui.add(guiValues, 'sx', 0.5, 1.5, 0.01));
-  guiControllers.push(gui.add(guiValues, 'sy', 0.5, 1.5, 0.01));
-  guiControllers.push(gui.add(guiValues, 'sz', 0.5, 1.5, 0.01));
+  guiControllers.push(gui.add(guiValues, 'sx', 0.1, 1.9, 0.01));
+  guiControllers.push(gui.add(guiValues, 'sy', 0.1, 1.9, 0.01));
+  guiControllers.push(gui.add(guiValues, 'sz', 0.1, 1.9, 0.01));
 
   const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
 
   // Uniforms stay the same for all vertices/pixels during single draw call
-  const colorUniLoc = gl.getUniformLocation(program, 'u_color');
   const matrixUniLoc = gl.getUniformLocation(program, 'u_matrix');
 
   // Attribute is a data from the buffer
   const positionAttrLoc = gl.getAttribLocation(program, 'a_position');
+  const colorAttrLoc = gl.getAttribLocation(program, 'a_color');
 
   // Buffer for 2d clip space points
   const positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   setGeometry(gl);
+
+  // Colors buffer
+  const colorBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  setColors(gl);
 
   const draw = (): void => {
     resizeCanvas(gl, canvas);
@@ -265,11 +388,13 @@ const init = (): void => {
 
     // Enable buffer data supplying for this attribute
     gl.enableVertexAttribArray(positionAttrLoc);
-
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     // Get data from ARRAY_BUFFER bind point
     gl.vertexAttribPointer(positionAttrLoc, 3, gl.FLOAT, false, 0, 0);
 
-    gl.uniform4fv(colorUniLoc, [1, 1, 1, 1]);
+    gl.enableVertexAttribArray(colorAttrLoc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    gl.vertexAttribPointer(colorAttrLoc, 3, gl.UNSIGNED_BYTE, true, 0, 0);
 
     let matrix = m4.projection(canvas.width, canvas.height, 400);
     matrix = m4.translate(matrix, guiValues.tx, guiValues.ty, guiValues.tz);
