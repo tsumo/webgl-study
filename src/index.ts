@@ -338,7 +338,7 @@ const init = (): void => {
   const guiValues = {
     fov: 80,
     near: 1,
-    far: 2000,
+    far: 1000,
     cameraAngle: 0,
     numFs: 5,
   };
@@ -347,7 +347,7 @@ const init = (): void => {
   const fullRotation = Math.PI * 2;
   guiControllers.push(gui.add(guiValues, 'fov', 0, 180, 0.01));
   guiControllers.push(gui.add(guiValues, 'near', 1, 500, 0.01));
-  guiControllers.push(gui.add(guiValues, 'far', 1, 500, 0.01));
+  guiControllers.push(gui.add(guiValues, 'far', 1, 1000, 0.01));
   guiControllers.push(gui.add(guiValues, 'cameraAngle', 0, fullRotation, 0.01));
   guiControllers.push(gui.add(guiValues, 'numFs', 1, 16));
 
