@@ -1,3 +1,5 @@
+import { v3, V3 } from './v3';
+
 // prettier-ignore
 export type M4 = [
   number, number, number, number,
@@ -237,6 +239,19 @@ export const m4 = {
         (tmp_18 * m12 + tmp_23 * m32 + tmp_15 * m02 - (tmp_22 * m32 + tmp_14 * m02 + tmp_19 * m12)),
       d *
         (tmp_22 * m22 + tmp_16 * m02 + tmp_21 * m12 - (tmp_20 * m12 + tmp_23 * m22 + tmp_17 * m02)),
+    ];
+  },
+
+  lookAt: (cameraPos: V3, target: V3, up: V3): M4 => {
+    const zAxis = v3.normalize(v3.subtract(cameraPos, target));
+    const xAxis = v3.normalize(v3.cross(up, zAxis));
+    const yAxis = v3.normalize(v3.cross(zAxis, xAxis));
+    // prettier-ignore
+    return [
+      xAxis[0], xAxis[1], xAxis[2], 0,
+      yAxis[0], yAxis[1], yAxis[2], 0,
+      zAxis[0], zAxis[1], zAxis[2], 0,
+      cameraPos[0], cameraPos[1], cameraPos[2], 1,
     ];
   },
 };

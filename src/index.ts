@@ -4,6 +4,7 @@ import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 import { m4 } from './m4';
 import { deg2Rad } from './utils';
+import { V3 } from './v3';
 
 /*
 # WebGL program structure
@@ -402,10 +403,23 @@ const init = (): void => {
     );
 
     const radius = 200;
-    let cameraMatrix = m4.yRotation(guiValues.cameraAngle);
-    cameraMatrix = m4.translate(cameraMatrix, 0, 60, radius * 2);
-    cameraMatrix = m4.zRotate(cameraMatrix, Math.PI);
+    // Position of first f
+    const fPosition: V3 = [radius, 0, 0];
 
+    // Find camera matrix for current angle
+    let cameraMatrix = m4.yRotation(guiValues.cameraAngle);
+    cameraMatrix = m4.translate(cameraMatrix, 0, 0, radius * 2);
+
+    // Extract camera position from matrix
+    const cameraPosition: V3 = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
+
+    // Camera orientation
+    const up: V3 = [0, 1, 0];
+
+    // Compute final camera matrix
+    cameraMatrix = m4.lookAt(cameraPosition, fPosition, up);
+
+    // Make view matrix from camera matrix
     const viewMatrix = m4.inverse(cameraMatrix);
 
     const viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
