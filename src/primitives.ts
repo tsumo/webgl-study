@@ -1,9 +1,9 @@
-type Object3D = {
+type Primitive = {
   vert: Float32Array;
   mat: Uint8Array;
 };
 
-export const obj: { [key: string]: Object3D } = {
+export const primitives: { [key: string]: Primitive } = {
   f: {
     // prettier-ignore
     vert: new Float32Array([

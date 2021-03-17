@@ -2,10 +2,7 @@ import * as dat from 'dat.gui';
 import './style.css';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
-import { m4 } from './m4';
-import { deg2Rad } from './utils';
-import { V3 } from './v3';
-import { obj } from './objects';
+import { Scene } from './scene';
 
 /*
 # WebGL program structure
@@ -29,72 +26,6 @@ import { obj } from './objects';
   - call drawArrays or drawElements
 */
 
-const createShader = (gl: WebGLRenderingContext, type: GLenum, source: string): WebGLShader => {
-  const shader = gl.createShader(type);
-  if (shader === null) {
-    throw new Error('Cannot create shader');
-  }
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-  if (!success) {
-    console.warn(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    throw new Error('Cannot compile shader');
-  }
-  return shader;
-};
-
-const createProgram = (
-  gl: WebGLRenderingContext,
-  vertexShader: WebGLShader,
-  fragmentShader: WebGLShader,
-): WebGLProgram => {
-  const program = gl.createProgram();
-  if (program === null) {
-    throw new Error('Cannot create program');
-  }
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  const success = gl.getProgramParameter(program, gl.LINK_STATUS);
-  if (!success) {
-    console.warn(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-    throw new Error('Cannot link program');
-  }
-  return program;
-};
-
-const createShadersAndProgram = (
-  gl: WebGLRenderingContext,
-  vertexShaderSource: string,
-  fragmentShaderSource: string,
-): WebGLProgram => {
-  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-  return createProgram(gl, vertexShader, fragmentShader);
-};
-
-const resizeCanvas = (gl: WebGLRenderingContext, canvas: HTMLCanvasElement): void => {
-  if (canvas.width === canvas.clientWidth && canvas.height === canvas.clientHeight) {
-    return;
-  }
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
-  // Tell WebGL how to convert from clip space to pixels
-  gl.viewport(0, 0, canvas.width, canvas.height);
-};
-
-const setGeometry = (gl: WebGLRenderingContext): void => {
-  // Copy data into buffer
-  gl.bufferData(gl.ARRAY_BUFFER, obj.f.vert, gl.STATIC_DRAW);
-};
-
-const setColors = (gl: WebGLRenderingContext): void => {
-  gl.bufferData(gl.ARRAY_BUFFER, obj.f.mat, gl.STATIC_DRAW);
-};
-
 const init = (): void => {
   const canvas = document.createElement('canvas');
   document.body.appendChild(canvas);
@@ -104,110 +35,33 @@ const init = (): void => {
     throw new Error('Cannot get webgl context');
   }
 
+  const scene = new Scene(gl, vertexShaderSource, fragmentShaderSource);
+
   const guiValues = {
+    cameraX: 0,
+    cameraY: 0,
+    cameraZ: 0,
     fov: 80,
-    near: 1,
-    far: 1000,
-    cameraAngle: 0,
-    numFs: 5,
   };
-  const guiControllers: dat.GUIController[] = [];
   const gui = new dat.GUI();
-  const fullRotation = Math.PI * 2;
-  guiControllers.push(gui.add(guiValues, 'fov', 0, 180, 0.01));
-  guiControllers.push(gui.add(guiValues, 'near', 1, 500, 0.01));
-  guiControllers.push(gui.add(guiValues, 'far', 1, 1000, 0.01));
-  guiControllers.push(gui.add(guiValues, 'cameraAngle', 0, fullRotation, 0.01));
-  guiControllers.push(gui.add(guiValues, 'numFs', 1, 16));
+  gui.add(guiValues, 'cameraX', -100, 100, 0.01).onChange((value) => {
+    scene.camera.position[0] = value;
+    scene.render();
+  });
+  gui.add(guiValues, 'cameraY', -100, 100, 0.01).onChange((value) => {
+    scene.camera.position[1] = value;
+    scene.render();
+  });
+  gui.add(guiValues, 'cameraZ', -100, 100, 0.01).onChange((value) => {
+    scene.camera.position[2] = value;
+    scene.render();
+  });
+  gui.add(guiValues, 'fov', 0, 180, 0.01).onChange((value) => {
+    scene.camera.fov = value;
+    scene.render();
+  });
 
-  const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
-
-  // Uniforms stay the same for all vertices/pixels during single draw call
-  const matrixUniLoc = gl.getUniformLocation(program, 'u_matrix');
-
-  // Attribute is a data from the buffer
-  const positionAttrLoc = gl.getAttribLocation(program, 'a_position');
-  const colorAttrLoc = gl.getAttribLocation(program, 'a_color');
-
-  // Buffer for 2d clip space points
-  const positionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  setGeometry(gl);
-
-  // Colors buffer
-  const colorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  setColors(gl);
-
-  gl.enable(gl.CULL_FACE);
-  gl.enable(gl.DEPTH_TEST);
-
-  const draw = (): void => {
-    resizeCanvas(gl, canvas);
-
-    // Tell webgl how to convert from clip space to pixels
-    gl.viewport(0, 0, canvas.width, canvas.height);
-
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    // Set current program. App can have many programs at the same time
-    gl.useProgram(program);
-
-    // Enable buffer data supplying for this attribute
-    gl.enableVertexAttribArray(positionAttrLoc);
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    // Get data from ARRAY_BUFFER bind point
-    gl.vertexAttribPointer(positionAttrLoc, 3, gl.FLOAT, false, 0, 0);
-
-    gl.enableVertexAttribArray(colorAttrLoc);
-    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-    gl.vertexAttribPointer(colorAttrLoc, 3, gl.UNSIGNED_BYTE, true, 0, 0);
-
-    const projectionMatrix = m4.perspective(
-      deg2Rad(guiValues.fov),
-      canvas.width / canvas.height,
-      guiValues.near,
-      guiValues.far,
-    );
-
-    const radius = 200;
-    // Position of first f
-    const fPosition: V3 = [radius, 0, 0];
-
-    // Find camera matrix for current angle
-    let cameraMatrix = m4.yRotation(guiValues.cameraAngle);
-    cameraMatrix = m4.translate(cameraMatrix, 0, 0, radius * 2);
-
-    // Extract camera position from matrix
-    const cameraPosition: V3 = [cameraMatrix[12], cameraMatrix[13], cameraMatrix[14]];
-
-    // Camera orientation
-    const up: V3 = [0, 1, 0];
-
-    // Compute final camera matrix
-    cameraMatrix = m4.lookAt(cameraPosition, fPosition, up);
-
-    // Make view matrix from camera matrix
-    const viewMatrix = m4.inverse(cameraMatrix);
-
-    const viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
-
-    for (let i = 0; i < guiValues.numFs; ++i) {
-      const angle = (i * Math.PI * 2) / guiValues.numFs;
-      const x = Math.cos(angle) * radius;
-      const y = Math.sin(angle) * radius;
-      const matrix = m4.translate(viewProjectionMatrix, x, 0, y);
-
-      gl.uniformMatrix4fv(matrixUniLoc, false, matrix);
-
-      gl.drawArrays(gl.TRIANGLES, 0, 16 * 6);
-    }
-  };
-
-  draw();
-
-  guiControllers.forEach((c) => c.onChange(draw));
+  scene.render();
 };
 
 init();

@@ -9,6 +9,16 @@ export type M4 = [
 ];
 
 export const m4 = {
+  identity: (): M4 => {
+    //prettier-ignore
+    return [
+      1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1,
+    ];
+  },
+
   multiply: (a: M4, b: M4): M4 => {
     const b00 = b[0 * 4 + 0];
     const b01 = b[0 * 4 + 1];
