@@ -6,7 +6,7 @@ export class Camera {
   gl: WebGLRenderingContext;
   position: V3 = [0, 0, 0];
   up: V3 = [0, 1, 0];
-  lookAt: V3 = [0, 0, 100];
+  lookAt: V3 = [0, 0, 0];
   fov = 80;
   near = 1;
   far = 800;

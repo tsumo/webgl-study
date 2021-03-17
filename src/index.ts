@@ -38,30 +38,24 @@ const init = (): void => {
   const scene = new Scene(gl, vertexShaderSource, fragmentShaderSource);
 
   const guiValues = {
-    cameraX: 0,
-    cameraY: 0,
-    cameraZ: 0,
+    cameraX: 200,
+    cameraY: 200,
+    cameraZ: 200,
     fov: 80,
   };
   const gui = new dat.GUI();
-  gui.add(guiValues, 'cameraX', -100, 100, 0.01).onChange((value) => {
-    scene.camera.position[0] = value;
+  const onChange = (): void => {
+    scene.camera.position[0] = guiValues.cameraX;
+    scene.camera.position[1] = guiValues.cameraY;
+    scene.camera.position[2] = guiValues.cameraZ;
+    scene.camera.fov = guiValues.fov;
     scene.render();
-  });
-  gui.add(guiValues, 'cameraY', -100, 100, 0.01).onChange((value) => {
-    scene.camera.position[1] = value;
-    scene.render();
-  });
-  gui.add(guiValues, 'cameraZ', -100, 100, 0.01).onChange((value) => {
-    scene.camera.position[2] = value;
-    scene.render();
-  });
-  gui.add(guiValues, 'fov', 0, 180, 0.01).onChange((value) => {
-    scene.camera.fov = value;
-    scene.render();
-  });
-
-  scene.render();
+  };
+  onChange();
+  gui.add(guiValues, 'cameraX', -300, 300, 0.01).onChange(onChange);
+  gui.add(guiValues, 'cameraY', -300, 300, 0.01).onChange(onChange);
+  gui.add(guiValues, 'cameraZ', -300, 300, 0.01).onChange(onChange);
+  gui.add(guiValues, 'fov', 0, 180, 0.01).onChange(onChange);
 };
 
 init();

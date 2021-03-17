@@ -89,7 +89,7 @@ export class Scene {
 
     this.attributes.forEach((attr) => attr.load());
 
-    const matrix = m4.translate(this.camera.matrix, 0, 0, 100);
+    const matrix = m4.translate(this.camera.matrix, 0, 0, 0);
 
     this.uniform.set(matrix);
 
