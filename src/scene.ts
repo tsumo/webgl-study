@@ -12,6 +12,7 @@ export class Scene {
   camera: Camera;
   uniform: Uniform;
   buffers: Buffer[] = [];
+  private raf = 0;
 
   constructor(gl: WebGLRenderingContext, vertexShaderSource: string, fragmentShaderSource: string) {
     this.gl = gl;
@@ -46,6 +47,18 @@ export class Scene {
     this.uniform.set(matrix);
 
     gl.drawArrays(gl.TRIANGLES, 0, 16 * 6);
+  }
+
+  startRenderLoop(): void {
+    const tick = (): void => {
+      this.render();
+      this.raf = requestAnimationFrame(tick);
+    };
+    tick();
+  }
+
+  stopRenderLoop(): void {
+    cancelAnimationFrame(this.raf);
   }
 
   updateCanvas(): void {

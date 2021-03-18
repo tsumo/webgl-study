@@ -49,13 +49,14 @@ const init = (): void => {
     scene.camera.position[1] = guiValues.cameraY;
     scene.camera.position[2] = guiValues.cameraZ;
     scene.camera.fov = guiValues.fov;
-    scene.render();
   };
   onChange();
   gui.add(guiValues, 'cameraX', -300, 300, 0.01).onChange(onChange);
   gui.add(guiValues, 'cameraY', -300, 300, 0.01).onChange(onChange);
   gui.add(guiValues, 'cameraZ', -300, 300, 0.01).onChange(onChange);
   gui.add(guiValues, 'fov', 0, 180, 0.01).onChange(onChange);
+
+  scene.startRenderLoop();
 };
 
 init();
