@@ -1,10 +1,10 @@
-export class Attribute {
+export class Buffer {
   private gl: WebGLRenderingContext;
   private size: number;
   private type: GLenum;
   private normalize: boolean;
   private location: number;
-  private buffer;
+  private buffer: WebGLBuffer | null;
 
   constructor(
     gl: WebGLRenderingContext,

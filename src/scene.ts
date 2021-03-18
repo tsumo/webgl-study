@@ -1,4 +1,4 @@
-import { Attribute } from './attribute';
+import { Buffer } from './buffer';
 import { Camera } from './camera';
 import { m4 } from './m4';
 import { primitives } from './primitives';
@@ -57,7 +57,7 @@ export class Scene {
   program: WebGLProgram;
   camera: Camera;
   uniform: Uniform;
-  attributes: Attribute[] = [];
+  buffers: Buffer[] = [];
 
   constructor(gl: WebGLRenderingContext, vertexShaderSource: string, fragmentShaderSource: string) {
     this.gl = gl;
@@ -66,11 +66,9 @@ export class Scene {
     this.program = program;
     this.camera = new Camera(gl);
     this.uniform = new Uniform(gl, program, 'u_matrix');
-    this.attributes.push(
-      new Attribute(gl, program, 'a_position', 3, gl.FLOAT, false, primitives.f.vert),
-    );
-    this.attributes.push(
-      new Attribute(gl, program, 'a_color', 3, this.gl.UNSIGNED_BYTE, true, primitives.f.mat),
+    this.buffers.push(new Buffer(gl, program, 'a_position', 3, gl.FLOAT, false, primitives.f.vert));
+    this.buffers.push(
+      new Buffer(gl, program, 'a_color', 3, this.gl.UNSIGNED_BYTE, true, primitives.f.mat),
     );
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
@@ -87,7 +85,7 @@ export class Scene {
 
     this.camera.updateMatrix();
 
-    this.attributes.forEach((attr) => attr.load());
+    this.buffers.forEach((buffer) => buffer.load());
 
     const matrix = m4.translate(this.camera.matrix, 0, 0, 0);
 
