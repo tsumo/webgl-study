@@ -2,54 +2,8 @@ import { Buffer } from './buffer';
 import { Camera } from './camera';
 import { m4 } from './m4';
 import { primitives } from './primitives';
+import { Program } from './program';
 import { Uniform } from './uniform';
-
-const createShader = (gl: WebGLRenderingContext, type: GLenum, source: string): WebGLShader => {
-  const shader = gl.createShader(type);
-  if (shader === null) {
-    throw new Error('Cannot create shader');
-  }
-  gl.shaderSource(shader, source);
-  gl.compileShader(shader);
-  const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-  if (!success) {
-    console.warn(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-    throw new Error('Cannot compile shader');
-  }
-  return shader;
-};
-
-const createProgram = (
-  gl: WebGLRenderingContext,
-  vertexShader: WebGLShader,
-  fragmentShader: WebGLShader,
-): WebGLProgram => {
-  const program = gl.createProgram();
-  if (program === null) {
-    throw new Error('Cannot create program');
-  }
-  gl.attachShader(program, vertexShader);
-  gl.attachShader(program, fragmentShader);
-  gl.linkProgram(program);
-  const success = gl.getProgramParameter(program, gl.LINK_STATUS);
-  if (!success) {
-    console.warn(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-    throw new Error('Cannot link program');
-  }
-  return program;
-};
-
-const createShadersAndProgram = (
-  gl: WebGLRenderingContext,
-  vertexShaderSource: string,
-  fragmentShaderSource: string,
-): WebGLProgram => {
-  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-  return createProgram(gl, vertexShader, fragmentShader);
-};
 
 export class Scene {
   gl: WebGLRenderingContext;
@@ -62,7 +16,7 @@ export class Scene {
   constructor(gl: WebGLRenderingContext, vertexShaderSource: string, fragmentShaderSource: string) {
     this.gl = gl;
     this.canvasObserver = new ResizeObserver(this.updateCanvas.bind(this));
-    const program = createShadersAndProgram(gl, vertexShaderSource, fragmentShaderSource);
+    const program = new Program(gl, vertexShaderSource, fragmentShaderSource);
     this.program = program;
     this.camera = new Camera(gl);
     this.uniform = new Uniform(gl, program, 'u_matrix');
