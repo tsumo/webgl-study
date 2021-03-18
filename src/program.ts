@@ -9,6 +9,10 @@ export class Program {
     this.program = this.createProgram(vertexShader, fragmentShader);
   }
 
+  use(): void {
+    this.gl.useProgram(this.program);
+  }
+
   private createShader(type: GLenum, source: string): WebGLShader {
     const gl = this.gl;
     const shader = gl.createShader(type);

@@ -1,3 +1,5 @@
+import { Program } from './program';
+
 export class Buffer {
   private gl: WebGLRenderingContext;
   private size: number;
@@ -8,7 +10,7 @@ export class Buffer {
 
   constructor(
     gl: WebGLRenderingContext,
-    program: WebGLProgram,
+    program: Program,
     name: string,
     size: number,
     type: GLenum,
@@ -19,7 +21,7 @@ export class Buffer {
     this.size = size;
     this.type = type;
     this.normalize = normalize;
-    this.location = gl.getAttribLocation(program, name);
+    this.location = gl.getAttribLocation(program.program, name);
     this.buffer = gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);

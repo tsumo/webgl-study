@@ -26,7 +26,7 @@ export class Scene {
     );
     gl.enable(gl.CULL_FACE);
     gl.enable(gl.DEPTH_TEST);
-    gl.useProgram(program);
+    program.use();
   }
 
   render(): void {
