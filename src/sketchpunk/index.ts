@@ -12,4 +12,4 @@ const init = (): void => {
   new Scene(gl);
 };
 
-init();
+window.addEventListener('load', init);
