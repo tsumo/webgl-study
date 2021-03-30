@@ -1,5 +1,5 @@
 import { m4, M4 } from './m4';
-import { deg2Rad } from './utils';
+import { deg2Rad } from './../utils';
 import { V3 } from './v3';
 
 export class Camera {
