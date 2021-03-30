@@ -1,3 +1,4 @@
+import * as dat from 'dat.gui';
 import { Scene } from './scene';
 
 const init = (): void => {
@@ -9,7 +10,16 @@ const init = (): void => {
     throw new Error('Cannot get webgl context');
   }
 
-  new Scene(gl);
+  const scene = new Scene(gl);
+
+  const guiValues = {
+    pointSize: 50,
+  };
+  const gui = new dat.GUI();
+  const onChange = (): void => {
+    scene.pointSize = guiValues.pointSize;
+  };
+  gui.add(guiValues, 'pointSize', 0, 300, 0.01).onChange(onChange);
 };
 
 window.addEventListener('load', init);
