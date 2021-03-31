@@ -2,8 +2,10 @@
 
 precision mediump float;
 
+uniform vec4 uPointColor;
+
 out vec4 finalColor;
 
 void main(void) {
-  finalColor = vec4(0.0, 0.0, 0.0, 1.0);
+  finalColor = uPointColor;
 }

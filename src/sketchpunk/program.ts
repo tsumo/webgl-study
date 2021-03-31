@@ -1,21 +1,21 @@
 import { assertUnreachable } from '../utils';
+import { Vec4 } from './vec4';
 
 type UniformFloat = {
   readonly type: 'float';
   value: number;
 };
 
-type UniformFloatArray = {
-  readonly type: 'float-array';
-  value: number[];
+type UniformVec4 = {
+  readonly type: 'vec4';
+  value: Vec4;
 };
 
-type Uniform = UniformFloat | UniformFloatArray;
+type Uniform = UniformFloat | UniformVec4;
 
 export class Program<
   U extends Record<string, Uniform>,
-  K extends keyof U & string,
-  L extends Record<K, WebGLUniformLocation | null>
+  L extends Record<keyof U, WebGLUniformLocation | null>
 > {
   private readonly gl: WebGL2RenderingContext;
   readonly program: WebGLProgram;
@@ -48,7 +48,7 @@ export class Program<
     this.gl.useProgram(this.program);
   }
 
-  setUniform(name: K, value: U[K]['value']): void {
+  setUniform<K extends keyof U>(name: K, value: U[K]['value']): void {
     const gl = this.gl;
     // TODO: validate new value
     const uniform: Uniform = this.uniforms[name];
@@ -56,7 +56,8 @@ export class Program<
       case 'float':
         gl.uniform1f(this.locations[name], value as number);
         break;
-      case 'float-array':
+      case 'vec4':
+        gl.uniform4fv(this.locations[name], value as Vec4);
         break;
       default:
         assertUnreachable(uniform);

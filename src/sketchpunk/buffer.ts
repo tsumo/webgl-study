@@ -1,6 +1,6 @@
 import { Program } from './program';
 
-type AnyProgram = Program<any, any, any>;
+type AnyProgram = Program<any, any>;
 
 export class Buffer {
   private readonly gl: WebGL2RenderingContext;
