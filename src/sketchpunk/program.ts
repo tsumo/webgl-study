@@ -1,21 +1,66 @@
-export class Program {
+import { assertUnreachable } from '../utils';
+
+type UniformFloat = {
+  readonly type: 'float';
+  value: number;
+};
+
+type UniformFloatArray = {
+  readonly type: 'float-array';
+  value: number[];
+};
+
+type Uniform = UniformFloat | UniformFloatArray;
+
+export class Program<
+  U extends Record<string, Uniform>,
+  K extends keyof U & string,
+  L extends Record<K, WebGLUniformLocation | null>
+> {
   private readonly gl: WebGL2RenderingContext;
   readonly program: WebGLProgram;
+  private readonly uniforms: U;
+  private readonly locations: L;
 
   constructor(
     gl: WebGL2RenderingContext,
     vertexShaderSource: string,
     fragmentShaderSource: string,
+    uniforms: U,
     validate?: boolean,
   ) {
     this.gl = gl;
     const vertexShader = this.createShader(gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
-    this.program = this.createProgram(vertexShader, fragmentShader, validate);
+    const program = this.createProgram(vertexShader, fragmentShader, validate);
+    this.program = program;
+    // TODO: validate default values
+    this.uniforms = uniforms;
+    const locations: L = {} as L;
+    for (const key in uniforms) {
+      // @ts-expect-error cannot derive correct key type
+      locations[key] = gl.getUniformLocation(program, key);
+    }
+    this.locations = locations;
   }
 
   use(): void {
     this.gl.useProgram(this.program);
+  }
+
+  setUniform(name: K, value: U[K]['value']): void {
+    const gl = this.gl;
+    // TODO: validate new value
+    const uniform: Uniform = this.uniforms[name];
+    switch (uniform.type) {
+      case 'float':
+        gl.uniform1f(this.locations[name], value as number);
+        break;
+      case 'float-array':
+        break;
+      default:
+        assertUnreachable(uniform);
+    }
   }
 
   private createShader(type: GLenum, source: string): WebGLShader {

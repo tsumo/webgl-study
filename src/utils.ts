@@ -1,5 +1,14 @@
 const { random, floor, PI } = Math;
 
+export const assertUnreachable = (value: never): never => {
+  console.warn(value);
+  throw new Error('This should be unreachable!');
+};
+
+export const objEntries = <T extends Record<string, any>, K extends keyof T>(
+  obj: T,
+): [keyof T, T[K]][] => Object.entries(obj);
+
 export const rand = (n = 1): number => random() * n;
 
 export const randInt = (range: number): number => floor(rand() * range);
