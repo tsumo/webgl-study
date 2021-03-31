@@ -3,10 +3,15 @@ import { Canvas } from './canvas';
 import { Buffer } from './buffer';
 import { Gui } from './gui';
 import { rand } from '../utils';
+import { RenderLoop, TickFunction } from './render-loop';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
 const init = (): void => {
+  const fpsElement = document.createElement('div');
+  fpsElement.classList.add('fps');
+  document.body.appendChild(fpsElement);
+
   const canvasElement = document.createElement('canvas');
   document.body.appendChild(canvasElement);
 
@@ -49,7 +54,8 @@ const init = (): void => {
     },
   );
 
-  const tick = (): void => {
+  const tick: TickFunction = (delta, fps): void => {
+    fpsElement.innerText = String(fps);
     canvas.clear();
     program.use();
     program.setUniform('uPointSize', gui.guiValues.uPointSize);
@@ -61,9 +67,8 @@ const init = (): void => {
     ]);
     buffer.prepare();
     buffer.draw();
-    window.requestAnimationFrame(tick);
   };
-  tick();
+  new RenderLoop(tick);
 };
 
 window.addEventListener('load', init);
