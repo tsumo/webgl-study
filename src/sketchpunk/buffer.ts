@@ -17,6 +17,7 @@ export class Buffer {
     data: number[],
     size: number,
     program: AnyProgram,
+    dynamic = false,
   ) {
     this.gl = gl;
     this.name = name;
@@ -26,7 +27,7 @@ export class Buffer {
     this.location = gl.getAttribLocation(program.program, name);
     this.buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.data, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, this.data, dynamic ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW);
   }
 
   prepare(): void {
