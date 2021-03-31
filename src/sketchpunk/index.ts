@@ -2,8 +2,8 @@ import { Program } from './program';
 import { Canvas } from './canvas';
 import { Buffer } from './buffer';
 import { Gui } from './gui';
-import { rand } from '../utils';
 import { RenderLoop, TickFunction } from './render-loop';
+import { rand } from '../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
