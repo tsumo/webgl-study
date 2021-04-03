@@ -1,4 +1,5 @@
 import { assertUnreachable } from '../../utils';
+import { globalAttributes } from './constants';
 import { Vec4 } from './vec4';
 
 type UniformFloat = {
@@ -93,6 +94,15 @@ export class Program<
     }
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
+
+    gl.bindAttribLocation(
+      program,
+      globalAttributes.position.location,
+      globalAttributes.position.name,
+    );
+    gl.bindAttribLocation(program, globalAttributes.normal.location, globalAttributes.normal.name);
+    gl.bindAttribLocation(program, globalAttributes.uv.location, globalAttributes.uv.name);
+
     gl.linkProgram(program);
     const linksSuccess = gl.getProgramParameter(program, gl.LINK_STATUS);
     if (!linksSuccess) {
