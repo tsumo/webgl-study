@@ -5,7 +5,6 @@ type AnyProgram = Program<any, any>;
 export class Buffer {
   private readonly gl: WebGL2RenderingContext;
   private readonly name: string;
-  private data: Float32Array;
   private readonly size: number;
   private readonly count: number;
   private location: number;
@@ -17,17 +16,15 @@ export class Buffer {
     data: number[],
     size: number,
     program: AnyProgram,
-    dynamic = false,
   ) {
     this.gl = gl;
     this.name = name;
-    this.data = new Float32Array(data);
     this.size = size;
     this.count = data.length / this.size;
     this.location = gl.getAttribLocation(program.program, name);
     this.buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.data, dynamic ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
   }
 
   prepare(): void {
