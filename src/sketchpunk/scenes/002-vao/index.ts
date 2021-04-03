@@ -31,7 +31,6 @@ export const init002Vao = (gl: WebGL2RenderingContext, fpsElement: HTMLDivElemen
     { data: [] },
     { data: [] },
     undefined,
-    gl.POINTS,
   );
 
   const vaoWithIndex = new Vao(
@@ -66,7 +65,7 @@ export const init002Vao = (gl: WebGL2RenderingContext, fpsElement: HTMLDivElemen
     canvas.clear();
     program.use();
     program.setUniform('uAngle', angle);
-    vaoWithIndex.draw();
-    vaoWithoutIndex.draw();
+    vaoWithIndex.drawTriangles();
+    vaoWithoutIndex.drawPoints();
   });
 };

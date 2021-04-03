@@ -20,19 +20,15 @@ export class Vao {
     count: number;
   };
 
-  private readonly mode: GLenum;
-
   constructor(
     gl: WebGL2RenderingContext,
     vert: { data: number[]; size?: number },
     norm: { data: number[]; size?: number },
     uv: { data: number[]; size?: number },
     index?: number[],
-    mode: GLenum = gl.TRIANGLES,
   ) {
     this.gl = gl;
     this.vao = gl.createVertexArray();
-    this.mode = mode;
 
     gl.bindVertexArray(this.vao);
 
@@ -77,15 +73,23 @@ export class Vao {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
   }
 
-  draw(): void {
+  private draw(mode: GLenum): void {
     const gl = this.gl;
     gl.bindVertexArray(this.vao);
     if (this.index) {
-      gl.drawElements(this.mode, this.index.count, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(mode, this.index.count, gl.UNSIGNED_SHORT, 0);
     } else {
-      gl.drawArrays(this.mode, 0, this.vertCount);
+      gl.drawArrays(mode, 0, this.vertCount);
     }
     gl.bindVertexArray(null);
+  }
+
+  drawPoints(): void {
+    this.draw(this.gl.POINTS);
+  }
+
+  drawTriangles(): void {
+    this.draw(this.gl.TRIANGLES);
   }
 
   destroy(): void {

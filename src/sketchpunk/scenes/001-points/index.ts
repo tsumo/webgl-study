@@ -59,6 +59,6 @@ export const init001Points = (gl: WebGL2RenderingContext, fpsElement: HTMLDivEle
       1,
     ]);
     buffer.prepare();
-    buffer.draw();
+    buffer.drawPoints();
   });
 };

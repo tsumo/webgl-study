@@ -34,8 +34,16 @@ export class Buffer {
     gl.vertexAttribPointer(this.location, this.size, gl.FLOAT, false, 0, 0);
   }
 
-  draw(): void {
-    this.gl.drawArrays(this.gl.POINTS, 0, this.count);
+  private draw(mode: GLenum): void {
+    this.gl.drawArrays(mode, 0, this.count);
+  }
+
+  drawPoints(): void {
+    this.draw(this.gl.POINTS);
+  }
+
+  drawTriangles(): void {
+    this.draw(this.gl.TRIANGLES);
   }
 
   swapProgram(program: AnyProgram): void {
