@@ -6,6 +6,7 @@ import { RenderLoop, TickFunction } from './render-loop';
 import { rand } from '../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
+import './style.css';
 
 const init = (): void => {
   const fpsElement = document.createElement('div');

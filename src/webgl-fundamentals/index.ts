@@ -2,6 +2,7 @@ import * as dat from 'dat.gui';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 import { Scene } from './scene';
+import './style.css';
 
 /*
 # WebGL program structure

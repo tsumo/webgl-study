@@ -1,0 +1,21 @@
+* {
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: #4e5052;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas {
+  width: 70%;
+  height: 70%;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
