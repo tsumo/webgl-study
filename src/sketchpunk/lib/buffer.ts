@@ -42,6 +42,10 @@ export class Buffer {
     this.draw(this.gl.POINTS);
   }
 
+  drawLines(): void {
+    this.draw(this.gl.LINES);
+  }
+
   drawTriangles(): void {
     this.draw(this.gl.TRIANGLES);
   }
