@@ -14,12 +14,12 @@ export class Gui<
 > {
   guiValues: GV;
 
-  constructor(values: V, onChange: (values: GV) => void) {
+  constructor(values: V, onChange?: (values: GV) => void) {
     const gui = new dat.GUI();
     this.guiValues = {} as GV;
 
     const onChangeWrapper = (): void => {
-      onChange(this.guiValues);
+      onChange && onChange(this.guiValues);
     };
 
     for (const name in values) {

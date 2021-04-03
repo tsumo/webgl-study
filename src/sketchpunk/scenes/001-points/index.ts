@@ -30,18 +30,12 @@ export const init001Points = (gl: WebGL2RenderingContext, fpsElement: HTMLDivEle
     program,
   );
 
-  const gui = new Gui(
-    {
-      basePointSize: { default: 50, min: 0, max: 300, step: 0.01 },
-      red: { default: rand(), min: 0, max: 1, step: 0.01 },
-      green: { default: rand(), min: 0, max: 1, step: 0.01 },
-      blue: { default: rand(), min: 0, max: 1, step: 0.01 },
-    },
-    (values) => {
-      program.setUniform('uPointSize', values.basePointSize);
-      program.setUniform('uPointColor', [values.red, values.green, values.blue, 1]);
-    },
-  );
+  const gui = new Gui({
+    basePointSize: { default: 50, min: 0, max: 300, step: 0.01 },
+    red: { default: rand(), min: 0, max: 1, step: 0.01 },
+    green: { default: rand(), min: 0, max: 1, step: 0.01 },
+    blue: { default: rand(), min: 0, max: 1, step: 0.01 },
+  });
 
   let animatedPointSize = 0;
   let angle = 0;
