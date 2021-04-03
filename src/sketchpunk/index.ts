@@ -1,6 +1,8 @@
 import './style.css';
 import { init001Points } from './scenes/001-points';
+import { init002Vao } from './scenes/002-vao/index';
 
+// TODO: scene switcher
 const initApp = (): void => {
   const fpsElement = document.createElement('div');
   fpsElement.classList.add('fps');
@@ -14,7 +16,8 @@ const initApp = (): void => {
     throw new Error('Cannot get webgl context');
   }
 
-  init001Points(gl, fpsElement);
+  // init001Points(gl, fpsElement);
+  init002Vao(gl, fpsElement);
 };
 
 window.addEventListener('load', initApp);
