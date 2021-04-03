@@ -1,4 +1,4 @@
-import { assertUnreachable } from '../utils';
+import { assertUnreachable } from '../../utils';
 import { Vec4 } from './vec4';
 
 type UniformFloat = {
