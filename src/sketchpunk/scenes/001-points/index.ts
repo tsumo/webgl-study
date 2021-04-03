@@ -2,7 +2,7 @@ import { Program } from '../../lib/program';
 import { Canvas } from '../../lib/canvas';
 import { Buffer } from '../../lib/buffer';
 import { Gui } from '../../lib/gui';
-import { RenderLoop, TickFunction } from '../../lib/render-loop';
+import { RenderLoop } from '../../lib/render-loop';
 import { rand } from '../../../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
@@ -46,7 +46,7 @@ export const init001Points = (gl: WebGL2RenderingContext, fpsElement: HTMLDivEle
   let animatedPointSize = 0;
   let angle = 0;
 
-  const tick: TickFunction = (delta, fps): void => {
+  new RenderLoop((delta, fps) => {
     animatedPointSize += delta * 3;
     const finalPointSize = Math.sin(animatedPointSize) * 10 + gui.guiValues.basePointSize;
 
@@ -66,7 +66,5 @@ export const init001Points = (gl: WebGL2RenderingContext, fpsElement: HTMLDivEle
     ]);
     buffer.prepare();
     buffer.draw();
-  };
-
-  new RenderLoop(tick);
+  });
 };
