@@ -115,4 +115,12 @@ export class Program<
     gl.deleteShader(fragmentShader);
     return program;
   }
+
+  destroy(): void {
+    const gl = this.gl;
+    if (gl.getParameter(gl.CURRENT_PROGRAM) === this.program) {
+      this.gl.useProgram(null);
+    }
+    gl.deleteProgram(this.program);
+  }
 }
