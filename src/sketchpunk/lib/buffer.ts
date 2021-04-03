@@ -44,4 +44,8 @@ export class Buffer {
   swapProgram(program: AnyProgram): void {
     this.location = this.gl.getAttribLocation(program.program, this.name);
   }
+
+  destroy(): void {
+    // TODO: unload
+  }
 }
