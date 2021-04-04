@@ -16,42 +16,30 @@ export const init003Vao = (gl: WebGL2RenderingContext): void => {
     true,
   );
 
-  const vaoWithoutIndex = new Vao(
-    gl,
-    {
-      // prettier-ignore
-      data: [
-        -0.1,  0.1,
-         0.1,  0.1,
-        -0.1, -0.1,
-         0.1, -0.1,
-      ],
-      size: 2,
-    },
-    { data: [] },
-    { data: [] },
-    undefined,
-  );
+  const points = [
+    [-0.1, 0.1],
+    [0.1, -0.1],
+    [-0.1, -0.1],
+    [0.1, 0.1],
+  ].flat();
+
+  const vaoWithoutIndex = new Vao(gl, [{ data: points, size: 2 }]);
+
+  const cross = [
+    [0, 0],
+    [-0.05, 0.1],
+    [-0.1, 0.05],
+    [0.05, 0.1],
+    [0.1, 0.05],
+    [-0.1, -0.05],
+    [-0.05, -0.1],
+    [0.1, -0.05],
+    [0.05, -0.1],
+  ].flat();
 
   const vaoWithIndex = new Vao(
     gl,
-    {
-      // prettier-ignore
-      data: [
-            0,     0, // 0
-        -0.05,   0.1, // 1
-         -0.1,  0.05, // 2
-         0.05,   0.1, // 3
-          0.1,  0.05, // 4
-         -0.1, -0.05, // 5
-        -0.05,  -0.1, // 6
-          0.1, -0.05, // 7
-         0.05,  -0.1, // 8
-      ],
-      size: 2,
-    },
-    { data: [] },
-    { data: [] },
+    [{ data: cross, size: 2 }],
     [0, 1, 2, 0, 3, 4, 0, 5, 6, 0, 7, 8],
   );
 
