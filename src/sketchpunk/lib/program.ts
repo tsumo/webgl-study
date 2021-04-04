@@ -1,18 +1,16 @@
 import { assertUnreachable } from '../../utils';
 import { globalAttributes } from './constants';
-import { Vec4 } from './vec4';
 
-type UniformFloat = {
-  readonly type: 'float';
-  value: number;
-};
+type Vec3 = [number, number, number];
+type Vec4 = [number, number, number, number];
 
-type UniformVec4 = {
-  readonly type: 'vec4';
-  value: Vec4;
-};
+type UniformF = { readonly type: 'f'; value: number };
+type Uniform3f = { readonly type: '3f'; value: Vec3 };
+type Uniform3fv = { readonly type: '3fv'; value: number[] };
+type Uniform4f = { readonly type: '4f'; value: Vec4 };
+type Uniform4fv = { readonly type: '4fv'; value: number[] };
 
-type Uniform = UniformFloat | UniformVec4;
+type Uniform = UniformF | Uniform3f | Uniform3fv | Uniform4f | Uniform4fv;
 
 export class Program<
   U extends Record<string, Uniform>,
@@ -28,12 +26,11 @@ export class Program<
     vertexShaderSource: string,
     fragmentShaderSource: string,
     uniforms: U,
-    validate?: boolean,
   ) {
     this.gl = gl;
     const vertexShader = this.createShader(gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
-    const program = this.createProgram(vertexShader, fragmentShader, validate);
+    const program = this.createProgram(vertexShader, fragmentShader);
     this.program = program;
     // TODO: validate default values
     this.uniforms = uniforms;
@@ -54,11 +51,16 @@ export class Program<
     // TODO: validate new value
     const uniform: Uniform = this.uniforms[name];
     switch (uniform.type) {
-      case 'float':
+      case 'f':
         gl.uniform1f(this.locations[name], value as number);
         break;
-      case 'vec4':
-        gl.uniform4fv(this.locations[name], value as Vec4);
+      case '3f':
+      case '3fv':
+        gl.uniform3fv(this.locations[name], value as number[]);
+        break;
+      case '4f':
+      case '4fv':
+        gl.uniform4fv(this.locations[name], value as number[]);
         break;
       default:
         assertUnreachable(uniform);
@@ -82,11 +84,7 @@ export class Program<
     return shader;
   }
 
-  private createProgram(
-    vertexShader: WebGLShader,
-    fragmentShader: WebGLShader,
-    validate?: boolean,
-  ): WebGLProgram {
+  private createProgram(vertexShader: WebGLShader, fragmentShader: WebGLShader): WebGLProgram {
     const gl = this.gl;
     const program = gl.createProgram();
     if (program === null) {
@@ -110,15 +108,15 @@ export class Program<
       gl.deleteProgram(program);
       throw new Error('Cannot link program');
     }
-    if (validate) {
-      gl.validateProgram(program);
-      const validationSuccess = gl.getProgramParameter(program, gl.VALIDATE_STATUS);
-      if (!validationSuccess) {
-        console.warn(gl.getProgramInfoLog(program));
-        gl.deleteProgram(program);
-        throw new Error('Program validation error');
-      }
+
+    gl.validateProgram(program);
+    const validationSuccess = gl.getProgramParameter(program, gl.VALIDATE_STATUS);
+    if (!validationSuccess) {
+      console.warn(gl.getProgramInfoLog(program));
+      gl.deleteProgram(program);
+      throw new Error('Program validation error');
     }
+
     gl.detachShader(program, vertexShader);
     gl.detachShader(program, fragmentShader);
     gl.deleteShader(vertexShader);

@@ -7,7 +7,7 @@ import fragmentShaderSource from './fragment.glsl';
 export const init001Point = (gl: WebGL2RenderingContext): void => {
   new Canvas(gl);
 
-  const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {}, true);
+  const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {});
 
   const buffer = new Buffer(gl, 'a_position', [0, 0], 2, program);
 
