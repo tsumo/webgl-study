@@ -1,10 +1,14 @@
-export type TickFunction = (delta: number, fps: number) => void;
+export type TickFunction = (delta: number) => void;
 
 export class RenderLoop {
+  private readonly fpsElement: HTMLElement | null;
+
   private lastTime = performance.now();
   private raf = 0;
 
   constructor(tick: TickFunction) {
+    this.fpsElement = document.getElementById('fps');
+
     const tickWrapper = (): void => {
       const currentTime = performance.now();
       const delta = (currentTime - this.lastTime) / 1000;
@@ -13,7 +17,11 @@ export class RenderLoop {
 
       this.lastTime = currentTime;
 
-      tick(delta, fps);
+      if (this.fpsElement) {
+        this.fpsElement.innerText = String(fps);
+      }
+
+      tick(delta);
       this.raf = window.requestAnimationFrame(tickWrapper);
     };
     tickWrapper();

@@ -4,7 +4,7 @@ import { Buffer } from '../../lib/buffer';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
-export const init001Point = (gl: WebGL2RenderingContext, fpsElement: HTMLDivElement): void => {
+export const init001Point = (gl: WebGL2RenderingContext): void => {
   new Canvas(gl);
 
   const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {}, true);

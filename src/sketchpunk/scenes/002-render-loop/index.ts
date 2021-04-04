@@ -7,7 +7,7 @@ import { rand } from '../../../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
-export const init002RenderLoop = (gl: WebGL2RenderingContext, fpsElement: HTMLDivElement): void => {
+export const init002RenderLoop = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
   const program = new Program(
@@ -40,13 +40,11 @@ export const init002RenderLoop = (gl: WebGL2RenderingContext, fpsElement: HTMLDi
   let animatedPointSize = 0;
   let angle = 0;
 
-  new RenderLoop((delta, fps) => {
+  new RenderLoop((delta) => {
     animatedPointSize += delta * 3;
     const finalPointSize = Math.sin(animatedPointSize) * 10 + gui.guiValues.basePointSize;
 
     angle = (angle + delta * 0.5) % (Math.PI * 2);
-
-    fpsElement.innerText = String(fps);
 
     canvas.clear();
     program.use();

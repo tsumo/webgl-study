@@ -6,7 +6,7 @@ import { init003Vao } from './scenes/003-vao/index';
 // TODO: scene switcher
 const initApp = (): void => {
   const fpsElement = document.createElement('div');
-  fpsElement.classList.add('fps');
+  fpsElement.id = 'fps';
   document.body.appendChild(fpsElement);
 
   const canvasElement = document.createElement('canvas');
@@ -17,9 +17,9 @@ const initApp = (): void => {
     throw new Error('Cannot get webgl context');
   }
 
-  // init001Point(gl, fpsElement);
-  // init002RenderLoop(gl, fpsElement);
-  init003Vao(gl, fpsElement);
+  // init001Point(gl);
+  // init002RenderLoop(gl);
+  init003Vao(gl);
 };
 
 window.addEventListener('load', initApp);
