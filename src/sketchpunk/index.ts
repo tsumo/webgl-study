@@ -1,6 +1,7 @@
 import './style.css';
-import { init001Points } from './scenes/001-points';
-import { init002Vao } from './scenes/002-vao/index';
+import { init001Point } from './scenes/001-point';
+import { init002RenderLoop } from './scenes/002-render-loop';
+import { init003Vao } from './scenes/003-vao/index';
 
 // TODO: scene switcher
 const initApp = (): void => {
@@ -16,8 +17,9 @@ const initApp = (): void => {
     throw new Error('Cannot get webgl context');
   }
 
-  // init001Points(gl, fpsElement);
-  init002Vao(gl, fpsElement);
+  // init001Point(gl, fpsElement);
+  // init002RenderLoop(gl, fpsElement);
+  init003Vao(gl, fpsElement);
 };
 
 window.addEventListener('load', initApp);

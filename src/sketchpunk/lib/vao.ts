@@ -20,6 +20,7 @@ export class Vao {
     count: number;
   };
 
+  // TODO: write init buffer func
   constructor(
     gl: WebGL2RenderingContext,
     vert: { data: number[]; size?: number },

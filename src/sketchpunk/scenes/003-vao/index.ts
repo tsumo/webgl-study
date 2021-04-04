@@ -5,7 +5,7 @@ import { RenderLoop } from '../../lib/render-loop';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
-export const init002Vao = (gl: WebGL2RenderingContext, fpsElement: HTMLDivElement): void => {
+export const init003Vao = (gl: WebGL2RenderingContext, fpsElement: HTMLDivElement): void => {
   const canvas = new Canvas(gl);
 
   const program = new Program(

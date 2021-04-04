@@ -7,7 +7,7 @@ import { rand } from '../../../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
-export const init001Points = (gl: WebGL2RenderingContext, fpsElement: HTMLDivElement): void => {
+export const init002RenderLoop = (gl: WebGL2RenderingContext, fpsElement: HTMLDivElement): void => {
   const canvas = new Canvas(gl);
 
   const program = new Program(
