@@ -12,6 +12,7 @@
     "lintfix": "eslint src --ext .ts,.tsx --fix"
   },
   "devDependencies": {
+    "@types/dat.gui": "^0.7.6",
     "@typescript-eslint/eslint-plugin": "^4.17.0",
     "@typescript-eslint/parser": "^4.17.0",
     "css-loader": "^5.1.1",
@@ -28,7 +29,6 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "@types/dat.gui": "^0.7.6",
     "dat.gui": "^0.7.7"
   }
 }
