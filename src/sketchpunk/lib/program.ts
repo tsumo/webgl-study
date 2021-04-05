@@ -1,8 +1,5 @@
 import { assertUnreachable } from '../../utils';
-import { globalAttributes } from './constants';
-
-type Vec3 = [number, number, number];
-type Vec4 = [number, number, number, number];
+import { standardAttributes } from './constants';
 
 type UniformF = { readonly type: 'f'; value: number };
 type Uniform3f = { readonly type: '3f'; value: Vec3 };
@@ -95,11 +92,15 @@ export class Program<
 
     gl.bindAttribLocation(
       program,
-      globalAttributes.position.location,
-      globalAttributes.position.name,
+      standardAttributes.position.location,
+      standardAttributes.position.name,
     );
-    gl.bindAttribLocation(program, globalAttributes.normal.location, globalAttributes.normal.name);
-    gl.bindAttribLocation(program, globalAttributes.uv.location, globalAttributes.uv.name);
+    gl.bindAttribLocation(
+      program,
+      standardAttributes.normal.location,
+      standardAttributes.normal.name,
+    );
+    gl.bindAttribLocation(program, standardAttributes.uv.location, standardAttributes.uv.name);
 
     gl.linkProgram(program);
     const linksSuccess = gl.getProgramParameter(program, gl.LINK_STATUS);
