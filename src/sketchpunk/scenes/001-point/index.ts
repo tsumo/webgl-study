@@ -4,6 +4,11 @@ import { Buffer } from '../../lib/buffer';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
+/**
+ * Draw single point of fixed size using buffer data.
+ * Does not have a render loop, image is static after the draw call.
+ * Drawn in setTimeout to give Canvas time to set gl viewport.
+ */
 export const init001Point = (gl: WebGL2RenderingContext): void => {
   new Canvas(gl);
 

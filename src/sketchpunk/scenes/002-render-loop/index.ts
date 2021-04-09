@@ -7,6 +7,10 @@ import { rand } from '../../../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
+/**
+ * Draws three points stored in a buffer.
+ * Vertex shader animates positions using simple trig functions.
+ */
 export const init002RenderLoop = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 

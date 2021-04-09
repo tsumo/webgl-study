@@ -5,6 +5,9 @@ import { RenderLoop } from '../../lib/render-loop';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
+/**
+ * Uses Vertex Array Object to draw triangles with shared central point.
+ */
 export const init003Vao = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 

@@ -24,6 +24,11 @@ const generateGrid = (): number[] => {
   return grid;
 };
 
+/**
+ * Draws a configurable grid.
+ * Stores position and color index in the same buffer.
+ * Colors grid lines with gradient through varyings.
+ */
 export const init004Lines = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
