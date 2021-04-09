@@ -1,4 +1,4 @@
-type BufferInitInfo = { data: number[]; size: number };
+type BufferInitInfo = { data: number[] | Float32Array; size: number };
 
 type BufferLiveInfo = {
   buffer: WebGLBuffer | null;
