@@ -1,13 +1,21 @@
+import { vec2, vec3, vec4 } from 'gl-matrix';
 import { assertUnreachable } from '../../utils';
-import { standardAttributes } from './constants';
+
+const standardAttributes = {
+  position: { name: 'a_position', location: 0 },
+  normal: { name: 'a_normal', location: 1 },
+  uv: { name: 'a_uv', location: 2 },
+};
 
 type UniformF = { readonly type: 'f'; value: number };
-type Uniform3f = { readonly type: '3f'; value: Vec3 };
+type Uniform2f = { readonly type: '2f'; value: vec2 };
+type Uniform2fv = { readonly type: '2fv'; value: number[] };
+type Uniform3f = { readonly type: '3f'; value: vec3 };
 type Uniform3fv = { readonly type: '3fv'; value: number[] };
-type Uniform4f = { readonly type: '4f'; value: Vec4 };
+type Uniform4f = { readonly type: '4f'; value: vec4 };
 type Uniform4fv = { readonly type: '4fv'; value: number[] };
 
-type Uniform = UniformF | Uniform3f | Uniform3fv | Uniform4f | Uniform4fv;
+type Uniform = UniformF | Uniform2f | Uniform2fv | Uniform3f | Uniform3fv | Uniform4f | Uniform4fv;
 
 export class Program<
   U extends Record<string, Uniform>,
@@ -16,6 +24,7 @@ export class Program<
   private readonly gl: WebGL2RenderingContext;
   readonly program: WebGLProgram;
   private readonly uniforms: U;
+  private readonly resolutionLocation: WebGLUniformLocation | null;
   private readonly locations: L;
 
   constructor(
@@ -29,8 +38,8 @@ export class Program<
     const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
     const program = this.createProgram(vertexShader, fragmentShader);
     this.program = program;
-    // TODO: validate default values
     this.uniforms = uniforms;
+    this.resolutionLocation = gl.getUniformLocation(program, 'uResolution');
     const locations: L = {} as L;
     for (const key in uniforms) {
       // @ts-expect-error cannot derive correct key type
@@ -51,6 +60,10 @@ export class Program<
       case 'f':
         gl.uniform1f(this.locations[name], value as number);
         break;
+      case '2f':
+      case '2fv':
+        gl.uniform2fv(this.locations[name], value as number[]);
+        break;
       case '3f':
       case '3fv':
         gl.uniform3fv(this.locations[name], value as number[]);
@@ -62,6 +75,10 @@ export class Program<
       default:
         assertUnreachable(uniform);
     }
+  }
+
+  setStandardUniforms(): void {
+    this.gl.uniform2f(this.resolutionLocation, this.gl.canvas.width, this.gl.canvas.height);
   }
 
   private createShader(type: GLenum, source: string): WebGLShader {
