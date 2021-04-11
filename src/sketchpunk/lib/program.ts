@@ -1,4 +1,4 @@
-import { vec2, vec3, vec4 } from 'gl-matrix';
+import { mat3, vec2, vec3, vec4 } from 'gl-matrix';
 import { assertUnreachable } from '../../utils';
 
 const standardAttributes = {
@@ -12,10 +12,19 @@ type Uniform2f = { readonly type: '2f'; value: vec2 };
 type Uniform2fv = { readonly type: '2fv'; value: number[] };
 type Uniform3f = { readonly type: '3f'; value: vec3 };
 type Uniform3fv = { readonly type: '3fv'; value: number[] };
+type UniformMatrix3fv = { readonly type: 'matrix3fv'; value: mat3 };
 type Uniform4f = { readonly type: '4f'; value: vec4 };
 type Uniform4fv = { readonly type: '4fv'; value: number[] };
 
-type Uniform = UniformF | Uniform2f | Uniform2fv | Uniform3f | Uniform3fv | Uniform4f | Uniform4fv;
+type Uniform =
+  | UniformF
+  | Uniform2f
+  | Uniform2fv
+  | Uniform3f
+  | Uniform3fv
+  | UniformMatrix3fv
+  | Uniform4f
+  | Uniform4fv;
 
 export class Program<
   U extends Record<string, Uniform>,
@@ -67,6 +76,9 @@ export class Program<
       case '3f':
       case '3fv':
         gl.uniform3fv(this.locations[name], value as number[]);
+        break;
+      case 'matrix3fv':
+        gl.uniformMatrix3fv(this.locations[name], false, value as number[]);
         break;
       case '4f':
       case '4fv':
