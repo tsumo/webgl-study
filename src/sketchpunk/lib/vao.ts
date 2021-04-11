@@ -1,4 +1,4 @@
-type BufferInitInfo = { data: number[] | Float32Array; size: number };
+import { BufferInitInfo } from './primitives';
 
 type BufferLiveInfo = {
   buffer: WebGLBuffer | null;
