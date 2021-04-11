@@ -12,21 +12,21 @@ export class Gui<
   K extends keyof V & string,
   GV extends Record<K, number>
 > {
-  guiValues: GV;
+  values: GV;
 
   constructor(values: V, onChange?: (values: GV) => void) {
     const gui = new dat.GUI();
-    this.guiValues = {} as GV;
+    this.values = {} as GV;
 
     const onChangeWrapper = (): void => {
-      onChange && onChange(this.guiValues);
+      onChange && onChange(this.values);
     };
 
     for (const name in values) {
       const value = values[name];
       // @ts-expect-error cannot derive correct type
-      this.guiValues[name] = value.default;
-      gui.add(this.guiValues, name, value.min, value.max, value.step).onChange(onChangeWrapper);
+      this.values[name] = value.default;
+      gui.add(this.values, name, value.min, value.max, value.step).onChange(onChangeWrapper);
     }
   }
 }

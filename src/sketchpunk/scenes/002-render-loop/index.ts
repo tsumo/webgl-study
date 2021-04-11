@@ -40,7 +40,7 @@ export const init002RenderLoop = (gl: WebGL2RenderingContext): void => {
 
   new RenderLoop((delta) => {
     animatedPointSize += delta * 3;
-    const finalPointSize = Math.sin(animatedPointSize) * 10 + gui.guiValues.basePointSize;
+    const finalPointSize = Math.sin(animatedPointSize) * 10 + gui.values.basePointSize;
 
     angle = (angle + delta * 0.5) % (Math.PI * 2);
 
@@ -48,12 +48,7 @@ export const init002RenderLoop = (gl: WebGL2RenderingContext): void => {
     program.use();
     program.setUniform('uPointSize', finalPointSize);
     program.setUniform('uAngle', angle);
-    program.setUniform('uPointColor', [
-      gui.guiValues.red,
-      gui.guiValues.green,
-      gui.guiValues.blue,
-      1,
-    ]);
+    program.setUniform('uPointColor', [gui.values.red, gui.values.green, gui.values.blue, 1]);
     buffer.prepare();
     buffer.drawPoints();
   });
