@@ -29,10 +29,10 @@ export const init002RenderLoop = (gl: WebGL2RenderingContext): void => {
   );
 
   const gui = new Gui({
-    basePointSize: { default: 50, min: 0, max: 300, step: 0.01 },
-    red: { default: rand(), min: 0, max: 1, step: 0.01 },
-    green: { default: rand(), min: 0, max: 1, step: 0.01 },
-    blue: { default: rand(), min: 0, max: 1, step: 0.01 },
+    basePointSize: { type: 'float', default: 50, min: 0, max: 300, step: 0.01 },
+    red: { type: 'float', default: rand(), min: 0, max: 1, step: 0.01 },
+    green: { type: 'float', default: rand(), min: 0, max: 1, step: 0.01 },
+    blue: { type: 'float', default: rand(), min: 0, max: 1, step: 0.01 },
   });
 
   let animatedPointSize = 0;
