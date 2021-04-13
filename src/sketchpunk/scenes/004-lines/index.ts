@@ -6,7 +6,7 @@ import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
 // Two floats for position, one float to choose color
-const generateGrid = (): number[] => {
+const generateGrid = (): Float32Array => {
   const grid: number[] = [];
   const size = 1.8;
   const div = 10;
@@ -20,8 +20,7 @@ const generateGrid = (): number[] => {
     grid.push(-half, vertical, 0);
     grid.push(half, vertical, 1);
   }
-
-  return grid;
+  return new Float32Array(grid);
 };
 
 /**
@@ -41,7 +40,7 @@ export const init004Lines = (gl: WebGL2RenderingContext): void => {
     uColor: { type: '3fv', value: colors },
   });
 
-  const vao = new Vao(gl, [{ data: generateGrid(), size: 3 }]);
+  const vao = new Vao(gl, [{ type: 'float', data: generateGrid(), size: 3 }]);
 
   new RenderLoop(() => {
     canvas.clear();

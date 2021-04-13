@@ -15,30 +15,34 @@ export const init003Vao = (gl: WebGL2RenderingContext): void => {
     uAngle: { type: 'f', value: 0 },
   });
 
-  const points = [
-    [-0.1, 0.1],
-    [0.1, -0.1],
-    [-0.1, -0.1],
-    [0.1, 0.1],
-  ].flat();
+  const points = new Float32Array(
+    [
+      [-0.1, 0.1],
+      [0.1, -0.1],
+      [-0.1, -0.1],
+      [0.1, 0.1],
+    ].flat(),
+  );
 
-  const vaoWithoutIndex = new Vao(gl, [{ data: points, size: 2 }]);
+  const vaoWithoutIndex = new Vao(gl, [{ type: 'float', data: points, size: 2 }]);
 
-  const cross = [
-    [0, 0],
-    [-0.05, 0.1],
-    [-0.1, 0.05],
-    [0.05, 0.1],
-    [0.1, 0.05],
-    [-0.1, -0.05],
-    [-0.05, -0.1],
-    [0.1, -0.05],
-    [0.05, -0.1],
-  ].flat();
+  const cross = new Float32Array(
+    [
+      [0, 0],
+      [-0.05, 0.1],
+      [-0.1, 0.05],
+      [0.05, 0.1],
+      [0.1, 0.05],
+      [-0.1, -0.05],
+      [-0.05, -0.1],
+      [0.1, -0.05],
+      [0.05, -0.1],
+    ].flat(),
+  );
 
   const vaoWithIndex = new Vao(
     gl,
-    [{ data: cross, size: 2 }],
+    [{ type: 'float', data: cross, size: 2 }],
     [0, 1, 2, 0, 3, 4, 0, 5, 6, 0, 7, 8],
   );
 

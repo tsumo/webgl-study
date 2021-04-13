@@ -1,17 +1,11 @@
-import { BufferInitInfo } from './primitives';
-
-type BufferLiveInfo = {
-  buffer: WebGLBuffer | null;
-  size: number;
-  count: number;
-};
+import { BufferInitInfo } from './types';
 
 export class Vao {
   private readonly gl: WebGL2RenderingContext;
 
   private readonly vao: WebGLVertexArrayObject | null;
 
-  private buffers: BufferLiveInfo[] = [];
+  private readonly count: number;
 
   private readonly index?: {
     buffer: WebGLBuffer | null;
@@ -25,6 +19,8 @@ export class Vao {
   ) {
     this.gl = gl;
     this.vao = gl.createVertexArray();
+    // TODO: is it ok to get count from first (position) buffer?
+    this.count = buffers[0].data.length / buffers[0].size;
 
     gl.bindVertexArray(this.vao);
 
@@ -48,12 +44,14 @@ export class Vao {
   private initBuffer(init: BufferInitInfo, location: number): void {
     const gl = this.gl;
     const buffer = gl.createBuffer();
-    const count = init.data.length / init.size;
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(init.data), gl.STATIC_DRAW);
+    // TODO: investigate whether it's ok to pass number[] to bufferData
+    gl.bufferData(gl.ARRAY_BUFFER, init.data as Float32Array, gl.STATIC_DRAW);
     gl.enableVertexAttribArray(location);
-    gl.vertexAttribPointer(location, init.size, gl.FLOAT, false, 0, 0);
-    this.buffers.push({ buffer, size: init.size, count });
+    const type: GLenum =
+      init.type === 'float' ? gl.FLOAT : init.type === 'unsigned-byte' ? gl.UNSIGNED_BYTE : 0;
+    const normalized = init.type === 'unsigned-byte' ? init.normalized : false;
+    gl.vertexAttribPointer(location, init.size, type, normalized, 0, 0);
   }
 
   private draw(mode: GLenum): void {
@@ -62,8 +60,7 @@ export class Vao {
     if (this.index) {
       gl.drawElements(mode, this.index.count, gl.UNSIGNED_SHORT, 0);
     } else {
-      // TODO: is it ok to get count from first (position) buffer?
-      gl.drawArrays(mode, 0, this.buffers[0].count);
+      gl.drawArrays(mode, 0, this.count);
     }
     gl.bindVertexArray(null);
   }

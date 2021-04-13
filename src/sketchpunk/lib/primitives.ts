@@ -1,6 +1,6 @@
-export type BufferInitInfo = { data: number[] | Float32Array; size: number };
+import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from './types';
 
-const f2d = ((): BufferInitInfo => {
+const f2d = ((): BufferInitInfoFloat => {
   const width = 0.1;
   const height = 0.15;
   const thickness = 0.03;
@@ -33,7 +33,7 @@ const f2d = ((): BufferInitInfo => {
       .map(([x, y]) => [x, -y])
       .flat(),
   );
-  return { data, size: 2 };
+  return { type: 'float', data, size: 2 };
 })();
 
 export const primitives = { f2d };
