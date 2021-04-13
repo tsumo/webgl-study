@@ -1,5 +1,5 @@
 import * as dat from 'dat.gui';
-import { vec2 } from 'gl-matrix';
+import { vec2, vec3 } from 'gl-matrix';
 import { assertUnreachable } from '../../utils';
 
 type ValueFloat = {
@@ -12,18 +12,28 @@ type ValueFloat = {
 
 type ValueVec2 = {
   type: 'vec2';
-  default: [number, number];
+  default: vec2;
   min: number;
   max: number;
   step?: number;
 };
 
-type Value = ValueFloat | ValueVec2;
+type ValueVec3 = {
+  type: 'vec3';
+  default: vec3;
+  min: number;
+  max: number;
+  step?: number;
+};
+
+type Value = ValueFloat | ValueVec2 | ValueVec3;
 
 type InToOut<T extends Value> = T['type'] extends 'float'
   ? number
   : T['type'] extends 'vec2'
   ? vec2
+  : T['type'] extends 'vec3'
+  ? vec3
   : never;
 
 type OutValues<T extends Record<string, Value>> = {
@@ -50,20 +60,35 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
           gui.add(this.values, name, value.min, value.max, value.step).onChange(onChangeWrapper);
           break;
         case 'vec2':
-          const vec = vec2.create();
           // @ts-expect-error cannot derive correct type
-          vec[0] = value.default[0];
+          const v2 = vec2.fromValues(value.default[0], value.default[1]);
           // @ts-expect-error cannot derive correct type
-          vec[1] = value.default[1];
-          // @ts-expect-error cannot derive correct type
-          this.values[name] = vec;
+          this.values[name] = v2;
           gui
-            .add(vec, (0 as unknown) as string, value.min, value.max, value.step)
+            .add(v2, (0 as unknown) as string, value.min, value.max, value.step)
             .name(`${name}-x`)
             .onChange(onChangeWrapper);
           gui
-            .add(vec, (1 as unknown) as string, value.min, value.max, value.step)
+            .add(v2, (1 as unknown) as string, value.min, value.max, value.step)
             .name(`${name}-y`)
+            .onChange(onChangeWrapper);
+          break;
+        case 'vec3':
+          // @ts-expect-error cannot derive correct type
+          const v3 = vec3.fromValues(value.default[0], value.default[1], value.default[2]);
+          // @ts-expect-error cannot derive correct type
+          this.values[name] = v3;
+          gui
+            .add(v3, (0 as unknown) as string, value.min, value.max, value.step)
+            .name(`${name}-x`)
+            .onChange(onChangeWrapper);
+          gui
+            .add(v3, (1 as unknown) as string, value.min, value.max, value.step)
+            .name(`${name}-y`)
+            .onChange(onChangeWrapper);
+          gui
+            .add(v3, (2 as unknown) as string, value.min, value.max, value.step)
+            .name(`${name}-z`)
             .onChange(onChangeWrapper);
           break;
         default:
