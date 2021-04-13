@@ -2,6 +2,7 @@ import { Program } from './program';
 
 type AnyProgram = Program<any, any>;
 
+// TODO: use BufferInitInfo type
 export class Buffer {
   private readonly gl: WebGL2RenderingContext;
   private readonly name: string;
