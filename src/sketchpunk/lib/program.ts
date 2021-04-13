@@ -1,4 +1,4 @@
-import { mat3, vec2, vec3, vec4 } from 'gl-matrix';
+import { mat3, mat4, vec2, vec3, vec4 } from 'gl-matrix';
 import { assertUnreachable } from '../../utils';
 
 const standardAttributes = {
@@ -15,6 +15,7 @@ type Uniform3fv = { readonly type: '3fv'; value: number[] };
 type UniformMatrix3fv = { readonly type: 'matrix3fv'; value: mat3 };
 type Uniform4f = { readonly type: '4f'; value: vec4 };
 type Uniform4fv = { readonly type: '4fv'; value: number[] };
+type UniformMatrix4fv = { readonly type: 'matrix4fv'; value: mat4 };
 
 type Uniform =
   | UniformF
@@ -24,7 +25,8 @@ type Uniform =
   | Uniform3fv
   | UniformMatrix3fv
   | Uniform4f
-  | Uniform4fv;
+  | Uniform4fv
+  | UniformMatrix4fv;
 
 export class Program<
   U extends Record<string, Uniform>,
@@ -83,6 +85,9 @@ export class Program<
       case '4f':
       case '4fv':
         gl.uniform4fv(this.locations[name], value as number[]);
+        break;
+      case 'matrix4fv':
+        gl.uniformMatrix4fv(this.locations[name], false, value as number[]);
         break;
       default:
         assertUnreachable(uniform);
