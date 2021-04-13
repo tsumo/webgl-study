@@ -1,12 +1,6 @@
 import { mat3, mat4, vec2, vec3, vec4 } from 'gl-matrix';
 import { assertUnreachable } from '../../utils';
 
-const standardAttributes = {
-  position: { name: 'a_position', location: 0 },
-  normal: { name: 'a_normal', location: 1 },
-  uv: { name: 'a_uv', location: 2 },
-};
-
 type UniformF = { readonly type: 'f'; value: number };
 type Uniform2f = { readonly type: '2f'; value: vec2 };
 type Uniform2fv = { readonly type: '2fv'; value: number[] };
@@ -35,6 +29,7 @@ export class Program<
   private readonly gl: WebGL2RenderingContext;
   readonly program: WebGLProgram;
   private readonly uniforms: U;
+  private readonly attributes: string[];
   private readonly resolutionLocation: WebGLUniformLocation | null;
   private readonly locations: L;
 
@@ -43,10 +38,16 @@ export class Program<
     vertexShaderSource: string,
     fragmentShaderSource: string,
     uniforms: U,
+    attributes?: string[],
   ) {
     this.gl = gl;
     const vertexShader = this.createShader(gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+    if (attributes) {
+      this.attributes = ['a_position', ...attributes];
+    } else {
+      this.attributes = ['a_position'];
+    }
     const program = this.createProgram(vertexShader, fragmentShader);
     this.program = program;
     this.uniforms = uniforms;
@@ -124,17 +125,9 @@ export class Program<
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
 
-    gl.bindAttribLocation(
-      program,
-      standardAttributes.position.location,
-      standardAttributes.position.name,
-    );
-    gl.bindAttribLocation(
-      program,
-      standardAttributes.normal.location,
-      standardAttributes.normal.name,
-    );
-    gl.bindAttribLocation(program, standardAttributes.uv.location, standardAttributes.uv.name);
+    this.attributes.forEach((attribute, i) => {
+      gl.bindAttribLocation(program, i, attribute);
+    });
 
     gl.linkProgram(program);
     const linksSuccess = gl.getProgramParameter(program, gl.LINK_STATUS);
