@@ -11,9 +11,13 @@ import fragmentShaderSource from './fragment.glsl';
 export const init003Vao = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
-  const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {
-    angle: { type: 'f', value: 0 },
-  });
+  const program = new Program(
+    gl,
+    vertexShaderSource,
+    fragmentShaderSource,
+    { angle: { type: 'f', value: 0 } },
+    ['a_position'],
+  );
 
   const points = new Float32Array(
     [

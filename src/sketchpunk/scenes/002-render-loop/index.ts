@@ -14,11 +14,17 @@ import fragmentShaderSource from './fragment.glsl';
 export const init002RenderLoop = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
-  const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {
-    pointSize: { type: 'f', value: 50 },
-    angle: { type: 'f', value: 0 },
-    pointColor: { type: '4f', value: [1, 1, 1, 1] },
-  });
+  const program = new Program(
+    gl,
+    vertexShaderSource,
+    fragmentShaderSource,
+    {
+      pointSize: { type: 'f', value: 50 },
+      angle: { type: 'f', value: 0 },
+      pointColor: { type: '4f', value: [1, 1, 1, 1] },
+    },
+    ['a_position'],
+  );
 
   const buffer = new Buffer(
     gl,

@@ -38,16 +38,12 @@ export class Program<
     vertexShaderSource: string,
     fragmentShaderSource: string,
     uniforms: U,
-    attributes?: string[],
+    attributes: string[],
   ) {
     this.gl = gl;
     const vertexShader = this.createShader(gl.VERTEX_SHADER, vertexShaderSource);
     const fragmentShader = this.createShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
-    if (attributes) {
-      this.attributes = ['a_position', ...attributes];
-    } else {
-      this.attributes = ['a_position'];
-    }
+    this.attributes = attributes;
     const program = this.createProgram(vertexShader, fragmentShader);
     this.program = program;
     this.uniforms = uniforms;

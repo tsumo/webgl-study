@@ -36,9 +36,15 @@ export const init004Lines = (gl: WebGL2RenderingContext): void => {
     [1, 0, 0],
   ].flat();
 
-  const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {
-    color: { type: '3fv', value: colors },
-  });
+  const program = new Program(
+    gl,
+    vertexShaderSource,
+    fragmentShaderSource,
+    {
+      color: { type: '3fv', value: colors },
+    },
+    ['a_position'],
+  );
 
   const vao = new Vao(gl, [{ type: 'float', data: generateGrid(), size: 3 }]);
 

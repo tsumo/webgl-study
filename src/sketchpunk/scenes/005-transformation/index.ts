@@ -17,9 +17,15 @@ import fragmentShaderSource from './fragment.glsl';
 export const init005Transformation = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
-  const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {
-    matrix: { type: 'matrix3fv', value: mat3.create() },
-  });
+  const program = new Program(
+    gl,
+    vertexShaderSource,
+    fragmentShaderSource,
+    {
+      matrix: { type: 'matrix3fv', value: mat3.create() },
+    },
+    ['a_position'],
+  );
 
   const gui = new Gui({
     translation: { type: 'vec2', default: [0.12, 0], min: -0.2, max: 0.2, step: 0.001 },
