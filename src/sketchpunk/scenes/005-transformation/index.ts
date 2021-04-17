@@ -18,7 +18,7 @@ export const init005Transformation = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
   const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {
-    uMatrix: { type: 'matrix3fv', value: mat3.create() },
+    matrix: { type: 'matrix3fv', value: mat3.create() },
   });
 
   const gui = new Gui({
@@ -43,7 +43,7 @@ export const init005Transformation = (gl: WebGL2RenderingContext): void => {
     transform.reset();
 
     for (let i = 0; i < 5; ++i) {
-      program.setUniform('uMatrix', transform.update());
+      program.setUniform('matrix', transform.update());
       vao.drawTriangles();
     }
   });

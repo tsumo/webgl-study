@@ -51,11 +51,11 @@ export class Program<
     const program = this.createProgram(vertexShader, fragmentShader);
     this.program = program;
     this.uniforms = uniforms;
-    this.resolutionLocation = gl.getUniformLocation(program, 'uResolution');
+    this.resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
     const locations: L = {} as L;
     for (const key in uniforms) {
       // @ts-expect-error cannot derive correct key type
-      locations[key] = gl.getUniformLocation(program, key);
+      locations[key] = gl.getUniformLocation(program, `u_${key}`);
     }
     this.locations = locations;
   }

@@ -15,9 +15,9 @@ export const init002RenderLoop = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
   const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {
-    uPointSize: { type: 'f', value: 50 },
-    uAngle: { type: 'f', value: 0 },
-    uPointColor: { type: '4f', value: [1, 1, 1, 1] },
+    pointSize: { type: 'f', value: 50 },
+    angle: { type: 'f', value: 0 },
+    pointColor: { type: '4f', value: [1, 1, 1, 1] },
   });
 
   const buffer = new Buffer(
@@ -46,9 +46,9 @@ export const init002RenderLoop = (gl: WebGL2RenderingContext): void => {
 
     canvas.clear();
     program.use();
-    program.setUniform('uPointSize', finalPointSize);
-    program.setUniform('uAngle', angle);
-    program.setUniform('uPointColor', [gui.values.red, gui.values.green, gui.values.blue, 1]);
+    program.setUniform('pointSize', finalPointSize);
+    program.setUniform('angle', angle);
+    program.setUniform('pointColor', [gui.values.red, gui.values.green, gui.values.blue, 1]);
     buffer.prepare();
     buffer.drawPoints();
   });

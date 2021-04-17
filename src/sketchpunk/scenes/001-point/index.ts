@@ -20,5 +20,5 @@ export const init001Point = (gl: WebGL2RenderingContext): void => {
     program.use();
     buffer.prepare();
     buffer.drawPoints();
-  });
+  }, 100);
 };

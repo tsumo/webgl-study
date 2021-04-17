@@ -12,7 +12,7 @@ export const init003Vao = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
   const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {
-    uAngle: { type: 'f', value: 0 },
+    angle: { type: 'f', value: 0 },
   });
 
   const points = new Float32Array(
@@ -53,7 +53,7 @@ export const init003Vao = (gl: WebGL2RenderingContext): void => {
 
     canvas.clear();
     program.use();
-    program.setUniform('uAngle', angle);
+    program.setUniform('angle', angle);
     vaoWithIndex.drawTriangles();
     vaoWithoutIndex.drawPoints();
   });

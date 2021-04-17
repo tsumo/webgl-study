@@ -37,7 +37,7 @@ export const init004Lines = (gl: WebGL2RenderingContext): void => {
   ].flat();
 
   const program = new Program(gl, vertexShaderSource, fragmentShaderSource, {
-    uColor: { type: '3fv', value: colors },
+    color: { type: '3fv', value: colors },
   });
 
   const vao = new Vao(gl, [{ type: 'float', data: generateGrid(), size: 3 }]);
@@ -45,7 +45,7 @@ export const init004Lines = (gl: WebGL2RenderingContext): void => {
   new RenderLoop(() => {
     canvas.clear();
     program.use();
-    program.setUniform('uColor', colors);
+    program.setUniform('color', colors);
     vao.drawLines();
   });
 };
