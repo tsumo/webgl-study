@@ -26,3 +26,9 @@ canvas {
   left: 1rem;
   color: #d8d2c5;
 }
+
+#switcher {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+}

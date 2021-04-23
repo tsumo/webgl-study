@@ -8,8 +8,45 @@ import { init005Transformation } from './scenes/005-transformation';
 
 glMatrix.setMatrixArrayType(Array);
 
-// TODO: scene switcher
+const num2Scene: Record<number, (gl: WebGL2RenderingContext) => void> = {
+  1: init001Point,
+  2: init002RenderLoop,
+  3: init003Vao,
+  4: init004Lines,
+  5: init005Transformation,
+};
+
 const initApp = (): void => {
+  const searchParams = new URLSearchParams(window.location.search);
+  const sceneNumber = Number(searchParams.get('scene'));
+  if (!(sceneNumber in num2Scene)) {
+    throw new Error('Unknown scene number');
+  }
+
+  const prevSceneElement = document.createElement('button');
+  prevSceneElement.innerText = '<';
+  prevSceneElement.onclick = (): void => {
+    searchParams.set('scene', String(sceneNumber - 1));
+    window.location.search = searchParams.toString();
+  };
+  const nextSceneElement = document.createElement('button');
+  nextSceneElement.onclick = (): void => {
+    searchParams.set('scene', String(sceneNumber + 1));
+    window.location.search = searchParams.toString();
+  };
+  nextSceneElement.innerText = '>';
+  const sceneSwitcherContainer = document.createElement('div');
+  sceneSwitcherContainer.id = 'switcher';
+  if (!(sceneNumber - 1 in num2Scene)) {
+    prevSceneElement.disabled = true;
+  }
+  if (!(sceneNumber + 1 in num2Scene)) {
+    nextSceneElement.disabled = true;
+  }
+  sceneSwitcherContainer.appendChild(prevSceneElement);
+  sceneSwitcherContainer.appendChild(nextSceneElement);
+  document.body.appendChild(sceneSwitcherContainer);
+
   const fpsElement = document.createElement('div');
   fpsElement.id = 'fps';
   document.body.appendChild(fpsElement);
@@ -22,11 +59,7 @@ const initApp = (): void => {
     throw new Error('Cannot get webgl context');
   }
 
-  // init001Point(gl);
-  // init002RenderLoop(gl);
-  // init003Vao(gl);
-  // init004Lines(gl);
-  init005Transformation(gl);
+  num2Scene[sceneNumber](gl);
 };
 
 window.addEventListener('load', initApp);
