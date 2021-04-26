@@ -17,7 +17,7 @@ export const randSign = (): number => (rand() >= 0.5 ? 1 : -1);
 
 export const randRange = (from: number, to: number): number => rand(to - from) + from;
 
-export const randDeviate = (n: number): number => rand(n * 2) - n;
+export const randDeviation = (n: number): number => rand(n * 2) - n;
 
 const deg2radPreCalc = PI / 180;
 export const deg2Rad = (d: number): number => d * deg2radPreCalc;
