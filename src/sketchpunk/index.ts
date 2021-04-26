@@ -20,7 +20,10 @@ const initApp = (): void => {
   const searchParams = new URLSearchParams(window.location.search);
   const sceneNumber = Number(searchParams.get('scene'));
   if (!(sceneNumber in num2Scene)) {
-    throw new Error('Unknown scene number');
+    const keys = Object.keys(num2Scene);
+    searchParams.set('scene', keys[keys.length - 1]);
+    window.location.search = searchParams.toString();
+    return;
   }
 
   const prevSceneElement = document.createElement('button');
@@ -28,11 +31,13 @@ const initApp = (): void => {
   prevSceneElement.onclick = (): void => {
     searchParams.set('scene', String(sceneNumber - 1));
     window.location.search = searchParams.toString();
+    return;
   };
   const nextSceneElement = document.createElement('button');
   nextSceneElement.onclick = (): void => {
     searchParams.set('scene', String(sceneNumber + 1));
     window.location.search = searchParams.toString();
+    return;
   };
   nextSceneElement.innerText = '>';
   const sceneSwitcherContainer = document.createElement('div');
