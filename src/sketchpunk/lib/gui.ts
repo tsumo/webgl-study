@@ -26,7 +26,12 @@ type ValueVec3 = {
   step?: number;
 };
 
-type Value = ValueFloat | ValueVec2 | ValueVec3;
+type ValueFunctions = {
+  type: 'functions';
+  functions: Record<string, VoidFunction>;
+};
+
+type Value = ValueFloat | ValueVec2 | ValueVec3 | ValueFunctions;
 
 type InToOut<T extends Value> = T['type'] extends 'float'
   ? number
@@ -34,6 +39,8 @@ type InToOut<T extends Value> = T['type'] extends 'float'
   ? vec2
   : T['type'] extends 'vec3'
   ? vec3
+  : T['type'] extends 'functions'
+  ? never
   : never;
 
 type OutValues<T extends Record<string, Value>> = {
@@ -52,7 +59,7 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
     };
 
     for (const name in values) {
-      const value = values[name];
+      const value: Value = values[name];
       switch (value.type) {
         case 'float':
           // @ts-expect-error cannot derive correct type
@@ -60,39 +67,40 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
           gui.add(this.values, name, value.min, value.max, value.step).onChange(onChangeWrapper);
           break;
         case 'vec2':
-          // @ts-expect-error cannot derive correct type
           const v2 = vec2.fromValues(value.default[0], value.default[1]);
           // @ts-expect-error cannot derive correct type
           this.values[name] = v2;
           gui
-            .add(v2, (0 as unknown) as string, value.min, value.max, value.step)
+            .add(v2, '0', value.min, value.max, value.step)
             .name(`${name}-x`)
             .onChange(onChangeWrapper);
           gui
-            .add(v2, (1 as unknown) as string, value.min, value.max, value.step)
+            .add(v2, '1', value.min, value.max, value.step)
             .name(`${name}-y`)
             .onChange(onChangeWrapper);
           break;
         case 'vec3':
-          // @ts-expect-error cannot derive correct type
           const v3 = vec3.fromValues(value.default[0], value.default[1], value.default[2]);
           // @ts-expect-error cannot derive correct type
           this.values[name] = v3;
           gui
-            .add(v3, (0 as unknown) as string, value.min, value.max, value.step)
+            .add(v3, '0', value.min, value.max, value.step)
             .name(`${name}-x`)
             .onChange(onChangeWrapper);
           gui
-            .add(v3, (1 as unknown) as string, value.min, value.max, value.step)
+            .add(v3, '1', value.min, value.max, value.step)
             .name(`${name}-y`)
             .onChange(onChangeWrapper);
           gui
-            .add(v3, (2 as unknown) as string, value.min, value.max, value.step)
+            .add(v3, '2', value.min, value.max, value.step)
             .name(`${name}-z`)
             .onChange(onChangeWrapper);
           break;
+        case 'functions':
+          Object.keys(value.functions).map((key) => gui.add(value.functions, key));
+          break;
         default:
-          assertUnreachable(value.type);
+          assertUnreachable(value);
       }
     }
   }
