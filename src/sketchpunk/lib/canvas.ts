@@ -2,6 +2,7 @@ export class Canvas {
   private readonly gl: WebGL2RenderingContext;
   private canvasObserver: ResizeObserver;
 
+  // TODO: use device pixel ratio flag
   constructor(gl: WebGL2RenderingContext) {
     this.gl = gl;
     this.canvasObserver = new ResizeObserver(this.updateCanvas.bind(this));
