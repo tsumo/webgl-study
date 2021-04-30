@@ -3,7 +3,7 @@ import { Canvas } from '../../lib/canvas';
 import { Buffer } from '../../lib/buffer';
 import { Gui } from '../../lib/gui';
 import { RenderLoop } from '../../lib/render-loop';
-import { rand } from '../../../utils';
+import { rand } from '../../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 

@@ -6,7 +6,7 @@ import { Program } from '../../lib/program';
 import { RenderLoop } from '../../lib/render-loop';
 import { Vao } from '../../lib/vao';
 import { Camera } from '../../lib/camera';
-import { deg2rad } from '../../../utils';
+import { deg2rad } from '../../utils';
 import { Transform3d } from '../../lib/transform';
 import gridVertexShader from './grid-vertex.glsl';
 import gridFragmentShader from './grid-fragment.glsl';

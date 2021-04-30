@@ -1,5 +1,5 @@
 import { mat3, mat4, quat, vec2, vec3, vec4 } from 'gl-matrix';
-import { deg2rad } from '../../utils';
+import { deg2rad } from '../utils';
 
 // TODO: addTranslation/Rotation/Scale methods
 // TODO: automatically calculate up/right vectors

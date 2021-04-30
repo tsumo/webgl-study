@@ -1,5 +1,5 @@
 import { mat3, mat4, vec2, vec3, vec4 } from 'gl-matrix';
-import { assertUnreachable } from '../../utils';
+import { assertUnreachable } from '../utils';
 
 type UniformF = { readonly type: 'f'; value: number };
 type Uniform2f = { readonly type: '2f'; value: vec2 };

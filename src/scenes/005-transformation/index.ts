@@ -6,7 +6,7 @@ import { Vao } from '../../lib/vao';
 import { Transform2d } from '../../lib/transform';
 import { RenderLoop } from '../../lib/render-loop';
 import { primitives } from '../../lib/primitives';
-import { deg2rad } from '../../../utils';
+import { deg2rad } from '../../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
