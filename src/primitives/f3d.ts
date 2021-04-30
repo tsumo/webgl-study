@@ -1,42 +1,6 @@
-import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from './types';
+import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from '../lib/types';
 
-const f2d = ((): BufferInitInfoFloat => {
-  const width = 0.1;
-  const height = 0.15;
-  const thickness = 0.03;
-  const x = 0;
-  const y = 0;
-  const data = new Float32Array(
-    [
-      // left column
-      [x, y],
-      [x + thickness, y],
-      [x, y + height],
-      [x, y + height],
-      [x + thickness, y],
-      [x + thickness, y + height],
-      // top rung
-      [x + thickness, y],
-      [x + width, y],
-      [x + thickness, y + thickness],
-      [x + thickness, y + thickness],
-      [x + width, y],
-      [x + width, y + thickness],
-      // middle rung
-      [x + thickness, y + thickness * 2],
-      [x + (width * 2) / 3, y + thickness * 2],
-      [x + thickness, y + thickness * 3],
-      [x + thickness, y + thickness * 3],
-      [x + (width * 2) / 3, y + thickness * 2],
-      [x + (width * 2) / 3, y + thickness * 3],
-    ]
-      .map(([x, y]) => [x, -y])
-      .flat(),
-  );
-  return { type: 'float', data, size: 2 };
-})();
-
-const f3d = ((): { position: BufferInitInfoFloat; color: BufferInitInfoUnsignedByte } => {
+export const f3d = ((): { position: BufferInitInfoFloat; color: BufferInitInfoUnsignedByte } => {
   const positionData = new Float32Array(
     [
       // left column front
@@ -150,41 +114,3 @@ const f3d = ((): { position: BufferInitInfoFloat; color: BufferInitInfoUnsignedB
   };
   return { position, color };
 })();
-
-const grid = ((): { position: BufferInitInfoFloat; color: BufferInitInfoUnsignedByte } => {
-  const positionData: number[] = [];
-  const size = 1;
-  const div = 10;
-  const step = size / div;
-  const half = size / 2;
-  for (let i = 0; i <= div; i++) {
-    const horizontal = -half + i * step;
-    positionData.push(horizontal, half, 0);
-    positionData.push(horizontal, -half, 0);
-    const vertical = half - i * step;
-    positionData.push(-half, vertical, 0);
-    positionData.push(half, vertical, 0);
-  }
-  const position: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(positionData),
-    size: 3,
-  };
-  const colorData = new Uint8Array(
-    [
-      ...Array(60).fill(255),
-      [255, 0, 0, 255, 0, 0],
-      [0, 255, 0, 0, 255, 0],
-      ...Array(60).fill(255),
-    ].flat(),
-  );
-  const color: BufferInitInfoUnsignedByte = {
-    type: 'unsigned-byte',
-    data: colorData,
-    size: 3,
-    normalized: true,
-  };
-  return { position, color };
-})();
-
-export const primitives = { f2d, f3d, grid };

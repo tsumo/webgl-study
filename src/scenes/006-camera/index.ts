@@ -1,13 +1,14 @@
 import { mat4 } from 'gl-matrix';
 import { Canvas } from '../../lib/canvas';
 import { Gui } from '../../lib/gui';
-import { primitives } from '../../lib/primitives';
 import { Program } from '../../lib/program';
 import { RenderLoop } from '../../lib/render-loop';
 import { Vao } from '../../lib/vao';
 import { Camera } from '../../lib/camera';
-import { deg2rad } from '../../utils';
 import { Transform3d } from '../../lib/transform';
+import { deg2rad } from '../../utils';
+import { grid } from '../../primitives/grid';
+import { f3d } from '../../primitives/f3d';
 import gridVertexShader from './grid-vertex.glsl';
 import gridFragmentShader from './grid-fragment.glsl';
 import fVertexShader from './f-vertex.glsl';
@@ -23,7 +24,7 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
     { matrix: { type: 'matrix4fv', value: mat4.create() } },
     ['a_position', 'a_color'],
   );
-  const gridVao = new Vao(gl, [primitives.grid.position, primitives.grid.color]);
+  const gridVao = new Vao(gl, [grid.position, grid.color]);
   const gridTransform = new Transform3d();
   gridTransform.rotation = [90, 0, 0];
   gridTransform.scale = [200, 200, 200];
@@ -35,7 +36,7 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
     { matrix: { type: 'matrix4fv', value: mat4.create() } },
     ['a_position', 'a_color'],
   );
-  const fVao = new Vao(gl, [primitives.f3d.position, primitives.f3d.color]);
+  const fVao = new Vao(gl, [f3d.position, f3d.color]);
   const fTransform = new Transform3d();
 
   const freeCamera = new Camera(gl, 'free');

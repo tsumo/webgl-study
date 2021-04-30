@@ -5,7 +5,7 @@ import { Gui } from '../../lib/gui';
 import { Vao } from '../../lib/vao';
 import { Transform2d } from '../../lib/transform';
 import { RenderLoop } from '../../lib/render-loop';
-import { primitives } from '../../lib/primitives';
+import { f2d } from '../../primitives/f2d';
 import { deg2rad } from '../../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
@@ -33,7 +33,7 @@ export const init005Transformation = (gl: WebGL2RenderingContext): void => {
     scale: { type: 'vec2', default: [0.8, 0.8], min: 0, max: 1.4, step: 0.01 },
   });
 
-  const vao = new Vao(gl, [primitives.f2d]);
+  const vao = new Vao(gl, [f2d]);
 
   const transform = new Transform2d();
 

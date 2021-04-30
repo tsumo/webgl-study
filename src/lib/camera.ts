@@ -248,7 +248,6 @@ class OrbitCameraController {
     this.canvas = gl.canvas;
     this.cameraTransform = cameraTransform;
     this.zTarget = cameraTransform.translation[2];
-    console.log(this.zTarget);
     this.rotationTarget = vec3.clone(cameraTransform.rotation);
     this.boundMouseDownListener = this.mouseDownListener.bind(this);
     this.canvas.addEventListener('mousedown', this.boundMouseDownListener);
