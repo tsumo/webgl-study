@@ -20,4 +20,4 @@ export const randRange = (from: number, to: number): number => rand(to - from) +
 export const randDeviation = (n: number): number => rand(n * 2) - n;
 
 const deg2radPreCalc = PI / 180;
-export const deg2Rad = (d: number): number => d * deg2radPreCalc;
+export const deg2rad = (d: number): number => d * deg2radPreCalc;

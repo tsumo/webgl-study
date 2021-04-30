@@ -1,5 +1,5 @@
 import { m4, M4 } from './m4';
-import { deg2Rad } from './../utils';
+import { deg2rad } from './../utils';
 import { V3 } from './v3';
 
 export class Camera {
@@ -19,7 +19,7 @@ export class Camera {
 
   updateMatrix(): void {
     const projectionMatrix = m4.perspective(
-      deg2Rad(this.fov),
+      deg2rad(this.fov),
       this.gl.canvas.width / this.gl.canvas.height,
       this.near,
       this.far,

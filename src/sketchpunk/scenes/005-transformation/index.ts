@@ -6,7 +6,7 @@ import { Vao } from '../../lib/vao';
 import { Transform2d } from '../../lib/transform';
 import { RenderLoop } from '../../lib/render-loop';
 import { primitives } from '../../lib/primitives';
-import { deg2Rad } from '../../../utils';
+import { deg2rad } from '../../../utils';
 import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
@@ -43,7 +43,7 @@ export const init005Transformation = (gl: WebGL2RenderingContext): void => {
     program.setStandardUniforms();
 
     transform.setTranslation(gui.values.translation);
-    transform.setRotation(deg2Rad(gui.values.rotation));
+    transform.setRotation(deg2rad(gui.values.rotation));
     transform.setScale(gui.values.scale);
 
     transform.reset();
