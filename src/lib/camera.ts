@@ -1,4 +1,5 @@
 import { mat4, vec3 } from 'gl-matrix';
+import { lerp } from '../utils';
 import { Transform3d } from './transform';
 
 type CameraMode = 'free' | 'orbit';
@@ -237,15 +238,17 @@ class OrbitCameraController {
   private boundMouseDownListener: VoidFunction;
   private boundMouseUpListener: VoidFunction;
   private boundMouseMoveListener: (e: MouseEvent) => void;
+  private boundWheelListener: (e: WheelEvent) => void;
 
   paused = false;
-  private speed = 10;
+  private zoomSpeed = 1;
   private mouseMoveCoef = 0.2;
 
   constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d) {
     this.canvas = gl.canvas;
     this.cameraTransform = cameraTransform;
     this.zTarget = cameraTransform.translation[2];
+    console.log(this.zTarget);
     this.rotationTarget = vec3.clone(cameraTransform.rotation);
     this.boundMouseDownListener = this.mouseDownListener.bind(this);
     this.canvas.addEventListener('mousedown', this.boundMouseDownListener);
@@ -253,6 +256,9 @@ class OrbitCameraController {
     document.addEventListener('mouseup', this.boundMouseUpListener);
     this.boundMouseMoveListener = this.mouseMoveListener.bind(this);
     document.addEventListener('mousemove', this.boundMouseMoveListener);
+    this.boundWheelListener = this.wheelListener.bind(this);
+    // @ts-expect-error cannot detect WheelEvent
+    this.canvas.addEventListener('wheel', this.boundWheelListener);
   }
 
   private mouseDownListener(): void {
@@ -271,8 +277,12 @@ class OrbitCameraController {
     this.rotationTarget[1] -= e.movementX * this.mouseMoveCoef;
   }
 
-  setTranslation(): void {
-    // noop
+  private wheelListener(e: WheelEvent): void {
+    this.zTarget += e.deltaX * this.zoomSpeed;
+  }
+
+  setTranslation(translation: vec3): void {
+    this.zTarget = translation[2];
   }
 
   setRotation(rotation: vec3): void {
@@ -280,9 +290,9 @@ class OrbitCameraController {
   }
 
   update(): void {
-    const { rotation } = this.cameraTransform;
-    const { rotationTarget } = this;
-    vec3.lerp(rotation, rotation, rotationTarget, 0.2);
+    const { translation, rotation } = this.cameraTransform;
+    translation[2] = lerp(translation[2], this.zTarget, 0.2);
+    vec3.lerp(rotation, rotation, this.rotationTarget, 0.2);
   }
 
   destroy(): void {
