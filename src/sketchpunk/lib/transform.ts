@@ -1,4 +1,5 @@
-import { mat3, mat4, quat, vec2, vec3 } from 'gl-matrix';
+import { mat3, mat4, quat, vec2, vec3, vec4 } from 'gl-matrix';
+import { deg2rad } from '../../utils';
 
 // TODO: addTranslation/Rotation/Scale methods
 // TODO: automatically calculate up/right vectors
@@ -6,7 +7,7 @@ export class Transform2d {
   private translationMatrix = mat3.create();
   private rotationMatrix = mat3.create();
   private scaleMatrix = mat3.create();
-  private matrix = mat3.create();
+  matrix = mat3.create();
 
   setTranslation(translation: vec2): void {
     mat3.fromTranslation(this.translationMatrix, translation);
@@ -33,36 +34,57 @@ export class Transform2d {
 }
 
 export class Transform3d {
-  private translationMatrix = mat4.create();
-  private rotationQuat = quat.create();
-  private rotationMatrix = mat4.create();
-  private scaleMatrix = mat4.create();
-  private matrix = mat4.create();
+  translation = vec3.create();
+  rotation = vec3.create();
+  scale = vec3.fromValues(1, 1, 1);
 
-  setTranslation(translation: vec3): void {
-    mat4.fromTranslation(this.translationMatrix, translation);
+  private rotationQuatTemp = quat.create();
+  private matrixTemp = mat4.create();
+
+  matrix = mat4.create();
+  direction = {
+    right: vec4.fromValues(1, 0, 0, 0),
+    up: vec4.fromValues(0, 1, 0, 0),
+    forward: vec4.fromValues(0, 0, 1, 0),
+  };
+
+  resetTransforms(): void {
+    vec3.zero(this.translation);
+    vec3.zero(this.rotation);
+    vec3.set(this.scale, 1, 1, 1);
   }
 
-  /**
-   * @param rotation in degrees
-   */
-  setRotation(rotation: vec3): void {
-    quat.fromEuler(this.rotationQuat, rotation[0], rotation[1], rotation[2]);
-    mat4.fromQuat(this.rotationMatrix, this.rotationQuat);
-  }
-
-  setScale(scale: vec3): void {
-    mat4.fromScaling(this.scaleMatrix, scale);
-  }
-
-  reset(): void {
+  resetMatrix(): void {
     mat4.identity(this.matrix);
+    vec4.set(this.direction.right, 1, 0, 0, 0);
+    vec4.set(this.direction.up, 0, 1, 0, 0);
+    vec4.set(this.direction.forward, 0, 0, 1, 0);
   }
 
-  update(): mat4 {
-    mat4.mul(this.matrix, this.matrix, this.translationMatrix);
-    mat4.mul(this.matrix, this.matrix, this.rotationMatrix);
-    mat4.mul(this.matrix, this.matrix, this.scaleMatrix);
+  applyTransforms(): mat4 {
+    quat.fromEuler(this.rotationQuatTemp, this.rotation[0], this.rotation[1], this.rotation[2]);
+    mat4.fromRotationTranslationScale(
+      this.matrixTemp,
+      this.rotationQuatTemp,
+      this.translation,
+      this.scale,
+    );
+    mat4.mul(this.matrix, this.matrix, this.matrixTemp);
+    vec4.transformMat4(this.direction.right, [1, 0, 0, 0], this.matrix);
+    vec4.transformMat4(this.direction.up, [0, 1, 0, 0], this.matrix);
+    vec4.transformMat4(this.direction.forward, [0, 0, 1, 0], this.matrix);
+    return this.matrix;
+  }
+
+  applyTransformsRotationFirst(): mat4 {
+    mat4.rotateX(this.matrix, this.matrix, deg2rad(this.rotation[0]));
+    mat4.rotateY(this.matrix, this.matrix, deg2rad(this.rotation[1]));
+    mat4.rotateZ(this.matrix, this.matrix, deg2rad(this.rotation[2]));
+    mat4.translate(this.matrix, this.matrix, this.translation);
+    mat4.scale(this.matrix, this.matrix, this.scale);
+    vec4.transformMat4(this.direction.right, [1, 0, 0, 0], this.matrix);
+    vec4.transformMat4(this.direction.up, [0, 1, 0, 0], this.matrix);
+    vec4.transformMat4(this.direction.forward, [0, 0, 1, 0], this.matrix);
     return this.matrix;
   }
 }
