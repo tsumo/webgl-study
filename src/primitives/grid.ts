@@ -8,11 +8,11 @@ export const grid = ((): { position: BufferInitInfoFloat; color: BufferInitInfoU
   const half = size / 2;
   for (let i = 0; i <= div; i++) {
     const horizontal = -half + i * step;
-    positionData.push(horizontal, half, 0);
-    positionData.push(horizontal, -half, 0);
+    positionData.push(horizontal, 0, half);
+    positionData.push(horizontal, 0, -half);
     const vertical = half - i * step;
-    positionData.push(-half, vertical, 0);
-    positionData.push(half, vertical, 0);
+    positionData.push(-half, 0, vertical);
+    positionData.push(half, 0, vertical);
   }
   const position: BufferInitInfoFloat = {
     type: 'float',

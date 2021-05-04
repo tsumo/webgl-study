@@ -26,7 +26,6 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
   );
   const gridVao = new Vao(gl, [grid.position, grid.color]);
   const gridTransform = new Transform3d();
-  gridTransform.rotation = [90, 0, 0];
   gridTransform.scale = [200, 200, 200];
 
   const fProgram = new Program(
