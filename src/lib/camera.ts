@@ -241,7 +241,7 @@ class OrbitCameraController {
   private boundWheelListener: (e: WheelEvent) => void;
 
   paused = false;
-  private zoomSpeed = 1;
+  private zoomSpeed = 10;
   private mouseMoveCoef = 0.2;
 
   constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d) {
@@ -277,7 +277,7 @@ class OrbitCameraController {
   }
 
   private wheelListener(e: WheelEvent): void {
-    this.zTarget += e.deltaX * this.zoomSpeed;
+    this.zTarget = this.cameraTransform.translation[2] + e.deltaX * this.zoomSpeed;
   }
 
   setTranslation(translation: vec3): void {
