@@ -33,6 +33,7 @@ export class Transform2d {
   }
 }
 
+// TODO: lookAt constraint
 export class Transform3d {
   translation = vec3.create();
   rotation = vec3.create();

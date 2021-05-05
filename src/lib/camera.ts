@@ -4,7 +4,6 @@ import { Transform3d } from './transform';
 
 type CameraMode = 'free' | 'orbit';
 
-// TODO: lookAt constraint
 export class Camera {
   private canvas: HTMLCanvasElement | OffscreenCanvas;
   private controller: FreeCameraController | OrbitCameraController;
