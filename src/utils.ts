@@ -22,4 +22,7 @@ export const randDeviation = (n = 1): number => rand(n * 2) - n;
 const deg2radPreCalc = PI / 180;
 export const deg2rad = (d: number): number => d * deg2radPreCalc;
 
+const rad2degPreCalc = 180 / PI;
+export const rad2deg = (r: number): number => r * rad2degPreCalc;
+
 export const lerp = (start: number, end: number, t: number): number => start * (1 - t) + end * t;
