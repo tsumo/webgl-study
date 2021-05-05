@@ -54,16 +54,18 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
   };
 
   const resetCameras = (instant = false): void => {
-    freeCamera.setTranslation([0, 80, -400], instant);
-    freeCamera.setRotation([-10, 180, 0], instant);
-    orbitCamera.setRotation([-15, 0, 0], instant);
+    freeCamera.setTranslation([0, -300, 200], instant);
+    freeCamera.setRotation([60, 0, 0], instant);
+    orbitCamera.setRotation([64, 0, 0], instant);
     orbitCamera.setTranslation([0, 0, 400], instant);
   };
 
   resetCameras(true);
 
   const gui = new Gui({
-    rotation: { type: 'vec3', default: [0, 0, 45], min: 0, max: 360, step: 0.01 },
+    rotation: { type: 'vec3', default: [90, 320, 0], min: 0, max: 360, step: 0.01 },
+    translation: { type: 'vec3', default: [0, 0, 0], min: -400, max: 400, step: 0.01 },
+    scale: { type: 'vec3', default: [1, 1, 1], min: -3, max: 3, step: 0.01 },
     fovy: { type: 'float', default: 45, min: 0, max: 180, step: 0.01 },
     near: { type: 'float', default: 0.1, min: 0.1, max: 1000, step: 0.01 },
     far: { type: 'float', default: 5000, min: 0, max: 5000, step: 0.01 },
@@ -88,7 +90,9 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
 
     fProgram.use();
     fTransform.matrix = mat4.clone(currentCamera.viewProjectionMatrix);
+    fTransform.translation = gui.values.translation;
     fTransform.rotation = gui.values.rotation;
+    fTransform.scale = gui.values.scale;
     fTransform.applyTransforms();
     fProgram.setUniform('matrix', fTransform.matrix);
     fVao.drawTriangles();

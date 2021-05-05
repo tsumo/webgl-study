@@ -172,7 +172,7 @@ class FreeCameraController {
       return;
     }
     this.rotationTarget[0] += e.movementY * this.mouseMoveCoef;
-    this.rotationTarget[1] += e.movementX * this.mouseMoveCoef;
+    this.rotationTarget[2] -= e.movementX * this.mouseMoveCoef;
   }
 
   setTranslation(translation: vec3): void {
