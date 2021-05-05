@@ -1,4 +1,4 @@
-import { BufferInitInfo } from './types';
+import { BufferInitInfo, NonEmptyArray } from './types';
 
 export class Vao {
   private readonly gl: WebGL2RenderingContext;

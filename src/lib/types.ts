@@ -1,3 +1,5 @@
+export type NonEmptyArray<T> = [T, ...T[]];
+
 export type BufferInitInfoFloat = {
   type: 'float';
   data: Float32Array;
