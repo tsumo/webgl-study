@@ -22,8 +22,8 @@ export const grid = ((): { position: BufferInitInfoFloat; color: BufferInitInfoU
   const colorData = new Uint8Array(
     [
       ...Array(60).fill(255),
-      [255, 0, 0, 255, 0, 0],
       [0, 255, 0, 0, 255, 0],
+      [255, 0, 0, 255, 0, 0],
       ...Array(60).fill(255),
     ].flat(),
   );
