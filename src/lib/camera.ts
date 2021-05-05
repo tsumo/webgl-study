@@ -1,5 +1,5 @@
 import { mat4, vec3 } from 'gl-matrix';
-import { lerp } from '../utils';
+import { deg2rad, lerp } from '../utils';
 import { Transform3d } from './transform';
 
 type CameraMode = 'free' | 'orbit';
@@ -26,6 +26,7 @@ export class Camera {
         ? new FreeCameraController(gl, this.transform)
         : new OrbitCameraController(gl, this.transform);
     this.mode = mode;
+    this.setProjection(deg2rad(45), 0.1, 1000);
   }
 
   pauseController(): void {
