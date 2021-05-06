@@ -33,11 +33,15 @@ export class Transform2d {
   }
 }
 
-// TODO: lookAt constraint
+const identityQuat = quat.create();
+const upVector: vec3 = [0, 1, 0];
+
 export class Transform3d {
   translation = vec3.create();
   rotation = vec3.create();
   scale = vec3.fromValues(1, 1, 1);
+
+  private lookAtMatrix: mat4 | undefined;
 
   private rotationQuatTemp = quat.create();
   private matrixTemp = mat4.create();
@@ -48,6 +52,16 @@ export class Transform3d {
     up: vec4.fromValues(0, 1, 0, 0),
     forward: vec4.fromValues(0, 0, 1, 0),
   };
+
+  /** When set transform will ignore its rotation */
+  setLookAt(value: vec3 | undefined): void {
+    if (value) {
+      this.lookAtMatrix = mat4.create();
+      mat4.targetTo(this.lookAtMatrix, this.translation, value, upVector);
+    } else {
+      this.lookAtMatrix = undefined;
+    }
+  }
 
   resetTransforms(): void {
     vec3.zero(this.translation);
@@ -63,13 +77,23 @@ export class Transform3d {
   }
 
   applyTransforms(): mat4 {
-    quat.fromEuler(this.rotationQuatTemp, this.rotation[0], this.rotation[1], this.rotation[2]);
-    mat4.fromRotationTranslationScale(
-      this.matrixTemp,
-      this.rotationQuatTemp,
-      this.translation,
-      this.scale,
-    );
+    if (this.lookAtMatrix) {
+      mat4.mul(this.matrix, this.matrix, this.lookAtMatrix);
+      mat4.fromRotationTranslationScale(
+        this.matrixTemp,
+        identityQuat,
+        this.translation,
+        this.scale,
+      );
+    } else {
+      quat.fromEuler(this.rotationQuatTemp, this.rotation[0], this.rotation[1], this.rotation[2]);
+      mat4.fromRotationTranslationScale(
+        this.matrixTemp,
+        this.rotationQuatTemp,
+        this.translation,
+        this.scale,
+      );
+    }
     mat4.mul(this.matrix, this.matrix, this.matrixTemp);
     vec4.transformMat4(this.direction.right, [1, 0, 0, 0], this.matrix);
     vec4.transformMat4(this.direction.up, [0, 1, 0, 0], this.matrix);
