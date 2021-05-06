@@ -1,4 +1,4 @@
-export type TickFunction = (delta: number) => void;
+export type TickFunction = (delta: number, time: number) => void;
 
 export class RenderLoop {
   private readonly fpsElement: HTMLElement | null;
@@ -21,7 +21,7 @@ export class RenderLoop {
         this.fpsElement.innerText = String(fps);
       }
 
-      tick(delta);
+      tick(delta, currentTime / 1000);
       this.raf = window.requestAnimationFrame(tickWrapper);
     };
     tickWrapper();
