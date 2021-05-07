@@ -1,42 +1,19 @@
 import { mat4 } from 'gl-matrix';
 import { Canvas } from '../../lib/canvas';
 import { Gui } from '../../lib/gui';
-import { Program } from '../../lib/program';
 import { RenderLoop } from '../../lib/render-loop';
-import { Vao } from '../../lib/vao';
 import { Camera } from '../../lib/camera';
-import { Transform3d } from '../../lib/transform';
 import { deg2rad } from '../../utils';
-import { grid } from '../../primitives/grid';
-import { f3d } from '../../primitives/f3d';
-import gridVertexShader from './grid-vertex.glsl';
-import gridFragmentShader from './grid-fragment.glsl';
-import fVertexShader from './f-vertex.glsl';
-import fFragmentShader from './f-fragment.glsl';
+import { createGrid } from '../../primitives/grid/grid';
+import { createF3d } from '../../primitives/f3d/f3d';
 
 export const init006Camera = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
-  const gridProgram = new Program(
-    gl,
-    gridVertexShader,
-    gridFragmentShader,
-    { matrix: { type: 'matrix4fv', value: mat4.create() } },
-    ['a_position', 'a_color'],
-  );
-  const gridVao = new Vao(gl, [grid.position, grid.color]);
-  const gridTransform = new Transform3d();
-  gridTransform.scale = [200, 200, 200];
+  const grid = createGrid(gl);
+  grid.transform.scale = [200, 200, 200];
 
-  const fProgram = new Program(
-    gl,
-    fVertexShader,
-    fFragmentShader,
-    { matrix: { type: 'matrix4fv', value: mat4.create() } },
-    ['a_position', 'a_color'],
-  );
-  const fVao = new Vao(gl, [f3d.position, f3d.color]);
-  const fTransform = new Transform3d();
+  const f3d = createF3d(gl);
 
   const freeCamera = new Camera(gl, 'free');
   const orbitCamera = new Camera(gl, 'orbit');
@@ -82,19 +59,19 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
     currentCamera.setProjection(deg2rad(gui.values.fovy), gui.values.near, gui.values.far);
     currentCamera.update();
 
-    gridProgram.use();
-    gridTransform.matrix = mat4.clone(currentCamera.viewProjectionMatrix);
-    gridTransform.applyTransforms();
-    gridProgram.setUniform('matrix', gridTransform.matrix);
-    gridVao.drawLines();
+    grid.program.use();
+    grid.transform.matrix = mat4.clone(currentCamera.viewProjectionMatrix);
+    grid.transform.applyTransforms();
+    grid.program.setUniform('matrix', grid.transform.matrix);
+    grid.vao.drawLines();
 
-    fProgram.use();
-    fTransform.matrix = mat4.clone(currentCamera.viewProjectionMatrix);
-    fTransform.translation = gui.values.translation;
-    fTransform.rotation = gui.values.rotation;
-    fTransform.scale = gui.values.scale;
-    fTransform.applyTransforms();
-    fProgram.setUniform('matrix', fTransform.matrix);
-    fVao.drawTriangles();
+    f3d.program.use();
+    f3d.transform.matrix = mat4.clone(currentCamera.viewProjectionMatrix);
+    f3d.transform.translation = gui.values.translation;
+    f3d.transform.rotation = gui.values.rotation;
+    f3d.transform.scale = gui.values.scale;
+    f3d.transform.applyTransforms();
+    f3d.program.setUniform('matrix', f3d.transform.matrix);
+    f3d.vao.drawTriangles();
   });
 };

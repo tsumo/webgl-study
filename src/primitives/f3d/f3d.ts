@@ -1,6 +1,15 @@
-import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from '../lib/types';
+import { mat4 } from 'gl-matrix';
+import { Program } from '../../lib/program';
+import { Vao } from '../../lib/vao';
+import { Transform3d } from '../../lib/transform';
+import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from '../../lib/types';
+import vertexShader from './f3d-vertex.glsl';
+import fragmentShader from './f3d-fragment.glsl';
 
-export const f3d = ((): { position: BufferInitInfoFloat; color: BufferInitInfoUnsignedByte } => {
+const generateF3dData = (): {
+  position: BufferInitInfoFloat;
+  color: BufferInitInfoUnsignedByte;
+} => {
   const positionData = new Float32Array(
     [
       // left column front
@@ -113,4 +122,18 @@ export const f3d = ((): { position: BufferInitInfoFloat; color: BufferInitInfoUn
     normalized: true,
   };
   return { position, color };
-})();
+};
+
+export const createF3d = (gl: WebGL2RenderingContext) => {
+  const program = new Program(
+    gl,
+    vertexShader,
+    fragmentShader,
+    { matrix: { type: 'matrix4fv', value: mat4.create() } },
+    ['a_position', 'a_color'],
+  );
+  const data = generateF3dData();
+  const vao = new Vao(gl, [data.position, data.color]);
+  const transform = new Transform3d();
+  return { program, vao, transform };
+};

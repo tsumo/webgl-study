@@ -1,6 +1,15 @@
-import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from '../lib/types';
+import { mat4 } from 'gl-matrix';
+import { Program } from '../../lib/program';
+import { Vao } from '../../lib/vao';
+import { Transform3d } from '../../lib/transform';
+import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from '../../lib/types';
+import vertexShader from './grid-vertex.glsl';
+import fragmentShader from './grid-fragment.glsl';
 
-export const grid = ((): { position: BufferInitInfoFloat; color: BufferInitInfoUnsignedByte } => {
+const generateGridData = (): {
+  position: BufferInitInfoFloat;
+  color: BufferInitInfoUnsignedByte;
+} => {
   const positionData: number[] = [];
   const size = 1;
   const div = 10;
@@ -34,4 +43,18 @@ export const grid = ((): { position: BufferInitInfoFloat; color: BufferInitInfoU
     normalized: true,
   };
   return { position, color };
-})();
+};
+
+export const createGrid = (gl: WebGL2RenderingContext) => {
+  const program = new Program(
+    gl,
+    vertexShader,
+    fragmentShader,
+    { matrix: { type: 'matrix4fv', value: mat4.create() } },
+    ['a_position', 'a_color'],
+  );
+  const data = generateGridData();
+  const vao = new Vao(gl, [data.position, data.color]);
+  const transform = new Transform3d();
+  return { program, vao, transform };
+};
