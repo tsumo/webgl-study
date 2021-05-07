@@ -50,13 +50,9 @@ type OutValues<T extends Record<string, Value>> = {
 export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
   values: OUT;
 
-  constructor(values: IN, onChange?: (values: OUT) => void) {
+  constructor(values: IN) {
     const gui = new dat.GUI();
     this.values = {} as OUT;
-
-    const onChangeWrapper = (): void => {
-      onChange && onChange(this.values);
-    };
 
     for (const name in values) {
       const value: Value = values[name];
@@ -64,7 +60,7 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
         case 'float':
           // @ts-expect-error cannot derive correct type
           this.values[name] = value.default;
-          gui.add(this.values, name, value.min, value.max, value.step).onChange(onChangeWrapper);
+          gui.add(this.values, name, value.min, value.max, value.step);
           break;
         case 'vec2':
           const v2 = vec2.fromValues(value.default[0], value.default[1]);
@@ -72,14 +68,8 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
           this.values[name] = v2;
           const v2folder = gui.addFolder(name);
           v2folder.open();
-          v2folder
-            .add(v2, '0', value.min, value.max, value.step)
-            .name('x')
-            .onChange(onChangeWrapper);
-          v2folder
-            .add(v2, '1', value.min, value.max, value.step)
-            .name('y')
-            .onChange(onChangeWrapper);
+          v2folder.add(v2, '0', value.min, value.max, value.step).name('x');
+          v2folder.add(v2, '1', value.min, value.max, value.step).name('y');
           break;
         case 'vec3':
           const v3 = vec3.fromValues(value.default[0], value.default[1], value.default[2]);
@@ -87,18 +77,9 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
           this.values[name] = v3;
           const v3folder = gui.addFolder(name);
           v3folder.open();
-          v3folder
-            .add(v3, '0', value.min, value.max, value.step)
-            .name('x')
-            .onChange(onChangeWrapper);
-          v3folder
-            .add(v3, '1', value.min, value.max, value.step)
-            .name('y')
-            .onChange(onChangeWrapper);
-          v3folder
-            .add(v3, '2', value.min, value.max, value.step)
-            .name('z')
-            .onChange(onChangeWrapper);
+          v3folder.add(v3, '0', value.min, value.max, value.step).name('x');
+          v3folder.add(v3, '1', value.min, value.max, value.step).name('y');
+          v3folder.add(v3, '2', value.min, value.max, value.step).name('z');
           break;
         case 'functions':
           Object.keys(value.functions).map((key) => gui.add(value.functions, key));
