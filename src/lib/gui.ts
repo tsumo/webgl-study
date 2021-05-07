@@ -70,30 +70,34 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
           const v2 = vec2.fromValues(value.default[0], value.default[1]);
           // @ts-expect-error cannot derive correct type
           this.values[name] = v2;
-          gui
+          const v2folder = gui.addFolder(name);
+          v2folder.open();
+          v2folder
             .add(v2, '0', value.min, value.max, value.step)
-            .name(`${name}-x`)
+            .name('x')
             .onChange(onChangeWrapper);
-          gui
+          v2folder
             .add(v2, '1', value.min, value.max, value.step)
-            .name(`${name}-y`)
+            .name('y')
             .onChange(onChangeWrapper);
           break;
         case 'vec3':
           const v3 = vec3.fromValues(value.default[0], value.default[1], value.default[2]);
           // @ts-expect-error cannot derive correct type
           this.values[name] = v3;
-          gui
+          const v3folder = gui.addFolder(name);
+          v3folder.open();
+          v3folder
             .add(v3, '0', value.min, value.max, value.step)
-            .name(`${name}-x`)
+            .name('x')
             .onChange(onChangeWrapper);
-          gui
+          v3folder
             .add(v3, '1', value.min, value.max, value.step)
-            .name(`${name}-y`)
+            .name('y')
             .onChange(onChangeWrapper);
-          gui
+          v3folder
             .add(v3, '2', value.min, value.max, value.step)
-            .name(`${name}-z`)
+            .name('z')
             .onChange(onChangeWrapper);
           break;
         case 'functions':
