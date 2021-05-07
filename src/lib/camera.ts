@@ -18,12 +18,12 @@ export class Camera {
   /** Moves projection space to view space (in front of camera) */
   viewProjectionMatrix = mat4.create();
 
-  constructor(gl: WebGL2RenderingContext, mode: CameraMode) {
+  constructor(gl: WebGL2RenderingContext, mode: CameraMode, moveCoef = 1) {
     this.canvas = gl.canvas;
     this.controller =
       mode === 'free'
-        ? new FreeCameraController(gl, this.transform)
-        : new OrbitCameraController(gl, this.transform);
+        ? new FreeCameraController(gl, this.transform, moveCoef)
+        : new OrbitCameraController(gl, this.transform, moveCoef);
     this.mode = mode;
     this.setProjection(deg2rad(45), 0.1, 1000);
   }
@@ -100,12 +100,13 @@ class FreeCameraController {
   private boundMouseMoveListener: (e: MouseEvent) => void;
 
   paused = false;
-  private speed = 10;
+  private moveCoef: number;
   private mouseMoveCoef = 0.2;
 
-  constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d) {
+  constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d, moveCoef: number) {
     this.canvas = gl.canvas;
     this.cameraTransform = cameraTransform;
+    this.moveCoef = moveCoef;
     this.translationTarget = vec3.clone(cameraTransform.translation);
     this.rotationTarget = vec3.clone(cameraTransform.rotation);
     this.boundKeyDownListener = this.keyDownListener.bind(this);
@@ -185,36 +186,36 @@ class FreeCameraController {
 
   update(): void {
     const { translation, rotation, direction } = this.cameraTransform;
-    const { speed, translationFlags, translationTarget, rotationTarget } = this;
+    const { moveCoef, translationFlags, translationTarget, rotationTarget } = this;
     if (translationFlags.forward) {
-      translationTarget[0] -= direction.forward[0] * speed;
-      translationTarget[1] -= direction.forward[1] * speed;
-      translationTarget[2] -= direction.forward[2] * speed;
+      translationTarget[0] -= direction.forward[0] * moveCoef;
+      translationTarget[1] -= direction.forward[1] * moveCoef;
+      translationTarget[2] -= direction.forward[2] * moveCoef;
     }
     if (translationFlags.back) {
-      translationTarget[0] += direction.forward[0] * speed;
-      translationTarget[1] += direction.forward[1] * speed;
-      translationTarget[2] += direction.forward[2] * speed;
+      translationTarget[0] += direction.forward[0] * moveCoef;
+      translationTarget[1] += direction.forward[1] * moveCoef;
+      translationTarget[2] += direction.forward[2] * moveCoef;
     }
     if (translationFlags.left) {
-      translationTarget[0] -= direction.right[0] * speed;
-      translationTarget[1] -= direction.right[1] * speed;
-      translationTarget[2] -= direction.right[2] * speed;
+      translationTarget[0] -= direction.right[0] * moveCoef;
+      translationTarget[1] -= direction.right[1] * moveCoef;
+      translationTarget[2] -= direction.right[2] * moveCoef;
     }
     if (translationFlags.right) {
-      translationTarget[0] += direction.right[0] * speed;
-      translationTarget[1] += direction.right[1] * speed;
-      translationTarget[2] += direction.right[2] * speed;
+      translationTarget[0] += direction.right[0] * moveCoef;
+      translationTarget[1] += direction.right[1] * moveCoef;
+      translationTarget[2] += direction.right[2] * moveCoef;
     }
     if (translationFlags.up) {
-      translationTarget[0] += direction.up[0] * speed;
-      translationTarget[1] += direction.up[1] * speed;
-      translationTarget[2] += direction.up[2] * speed;
+      translationTarget[0] += direction.up[0] * moveCoef;
+      translationTarget[1] += direction.up[1] * moveCoef;
+      translationTarget[2] += direction.up[2] * moveCoef;
     }
     if (translationFlags.down) {
-      translationTarget[0] -= direction.up[0] * speed;
-      translationTarget[1] -= direction.up[1] * speed;
-      translationTarget[2] -= direction.up[2] * speed;
+      translationTarget[0] -= direction.up[0] * moveCoef;
+      translationTarget[1] -= direction.up[1] * moveCoef;
+      translationTarget[2] -= direction.up[2] * moveCoef;
     }
     vec3.lerp(translation, translation, translationTarget, 0.2);
     vec3.lerp(rotation, rotation, rotationTarget, 0.2);
@@ -241,12 +242,13 @@ class OrbitCameraController {
   private boundWheelListener: (e: WheelEvent) => void;
 
   paused = false;
-  private zoomSpeed = 10;
+  private moveCoef;
   private mouseMoveCoef = 0.2;
 
-  constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d) {
+  constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d, moveCoef: number) {
     this.canvas = gl.canvas;
     this.cameraTransform = cameraTransform;
+    this.moveCoef = moveCoef;
     this.zTarget = cameraTransform.translation[2];
     this.rotationTarget = vec3.clone(cameraTransform.rotation);
     this.boundMouseDownListener = this.mouseDownListener.bind(this);
@@ -277,7 +279,7 @@ class OrbitCameraController {
   }
 
   private wheelListener(e: WheelEvent): void {
-    this.zTarget = this.cameraTransform.translation[2] - e.deltaY * this.zoomSpeed;
+    this.zTarget = this.cameraTransform.translation[2] - e.deltaY * this.moveCoef;
   }
 
   setTranslation(translation: vec3): void {

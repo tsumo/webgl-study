@@ -15,8 +15,8 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
 
   const f3d = createF3d(gl);
 
-  const freeCamera = new Camera(gl, 'free');
-  const orbitCamera = new Camera(gl, 'orbit');
+  const freeCamera = new Camera(gl, 'free', 10);
+  const orbitCamera = new Camera(gl, 'orbit', 10);
   let currentCamera = orbitCamera;
   freeCamera.pauseController();
 
