@@ -1,6 +1,7 @@
 import * as dat from 'dat.gui';
 import { vec2, vec3 } from 'gl-matrix';
 import { assertUnreachable } from '../utils';
+import { NonEmptyArray } from './types';
 
 type ValueFloat = {
   type: 'float';
@@ -26,12 +27,18 @@ type ValueVec3 = {
   step?: number;
 };
 
+type ValueSelect = {
+  type: 'select';
+  options: NonEmptyArray<string>;
+  onChange?: (option: string) => void;
+};
+
 type ValueFunctions = {
   type: 'functions';
   functions: Record<string, VoidFunction>;
 };
 
-type Value = ValueFloat | ValueVec2 | ValueVec3 | ValueFunctions;
+type Value = ValueFloat | ValueVec2 | ValueVec3 | ValueSelect | ValueFunctions;
 
 type InToOut<T extends Value> = T['type'] extends 'float'
   ? number
@@ -39,6 +46,8 @@ type InToOut<T extends Value> = T['type'] extends 'float'
   ? vec2
   : T['type'] extends 'vec3'
   ? vec3
+  : T['type'] extends 'select'
+  ? string
   : T['type'] extends 'functions'
   ? never
   : never;
@@ -80,6 +89,14 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
           v3folder.add(v3, '0', value.min, value.max, value.step).name('x');
           v3folder.add(v3, '1', value.min, value.max, value.step).name('y');
           v3folder.add(v3, '2', value.min, value.max, value.step).name('z');
+          break;
+        case 'select':
+          // @ts-expect-error cannot derive correct type
+          this.values[name] = value.options[0];
+          const controller = gui.add(this.values, name, value.options);
+          if (value.onChange) {
+            controller.onChange(value.onChange);
+          }
           break;
         case 'functions':
           Object.keys(value.functions).map((key) => gui.add(value.functions, key));

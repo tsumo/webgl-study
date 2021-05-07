@@ -20,16 +20,6 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
   let currentCamera = orbitCamera;
   freeCamera.pauseController();
 
-  const changeCamera = (): void => {
-    currentCamera.pauseController();
-    if (currentCamera === freeCamera) {
-      currentCamera = orbitCamera;
-    } else {
-      currentCamera = freeCamera;
-    }
-    currentCamera.startController();
-  };
-
   const resetCameras = (instant = false): void => {
     freeCamera.setTranslation([0, -300, 200], instant);
     freeCamera.setRotation([60, 0, 0], instant);
@@ -39,6 +29,16 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
 
   resetCameras(true);
 
+  const onCameraChange = (cameraType: string): void => {
+    currentCamera.pauseController();
+    if (cameraType === 'orbit') {
+      currentCamera = orbitCamera;
+    } else {
+      currentCamera = freeCamera;
+    }
+    currentCamera.startController();
+  };
+
   const gui = new Gui({
     rotation: { type: 'vec3', default: [90, 320, 0], min: 0, max: 360, step: 0.01 },
     translation: { type: 'vec3', default: [0, 0, 0], min: -400, max: 400, step: 0.01 },
@@ -46,7 +46,8 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
     fovy: { type: 'float', default: 45, min: 0, max: 180, step: 0.01 },
     near: { type: 'float', default: 0.1, min: 0.1, max: 1000, step: 0.01 },
     far: { type: 'float', default: 5000, min: 0, max: 5000, step: 0.01 },
-    buttons: { type: 'functions', functions: { changeCamera, resetCameras } },
+    camera: { type: 'select', options: ['orbit', 'free'], onChange: onCameraChange },
+    buttons: { type: 'functions', functions: { resetCameras } },
   });
 
   // TODO: move to canvas options?
