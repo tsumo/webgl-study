@@ -1,27 +1,28 @@
+import * as Stats from 'stats.js';
+
 export type TickFunction = (delta: number, time: number) => void;
 
 export class RenderLoop {
-  private readonly fpsElement: HTMLElement | null;
-
   private lastTime = performance.now();
   private raf = 0;
 
   constructor(tick: TickFunction) {
-    this.fpsElement = document.getElementById('fps');
+    const stats = new Stats();
+    stats.showPanel(0);
+    document.body.appendChild(stats.dom);
 
     const tickWrapper = (): void => {
+      stats.begin();
+
       const currentTime = performance.now();
       const delta = (currentTime - this.lastTime) / 1000;
-      const fps = Math.floor(1 / delta);
-      // TODO: calculate mean fps
 
       this.lastTime = currentTime;
 
-      if (this.fpsElement) {
-        this.fpsElement.innerText = String(fps);
-      }
-
       tick(delta, currentTime / 1000);
+
+      stats.end();
+
       this.raf = window.requestAnimationFrame(tickWrapper);
     };
     tickWrapper();
