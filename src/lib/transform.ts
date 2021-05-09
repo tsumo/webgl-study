@@ -34,6 +34,7 @@ export class Transform2d {
 }
 
 const identityQuat = quat.create();
+const zeroVector: vec3 = [0, 0, 0];
 const upVector: vec3 = [0, 1, 0];
 
 export class Transform3d {
@@ -79,12 +80,7 @@ export class Transform3d {
   applyTransforms(): mat4 {
     if (this.lookAtMatrix) {
       mat4.mul(this.matrix, this.matrix, this.lookAtMatrix);
-      mat4.fromRotationTranslationScale(
-        this.matrixTemp,
-        identityQuat,
-        this.translation,
-        this.scale,
-      );
+      mat4.fromRotationTranslationScale(this.matrixTemp, identityQuat, zeroVector, this.scale);
     } else {
       // TODO: use quat.fromEuler(order = xyz) when gl-matrix releases new version
       quat.rotateX(this.rotationQuatTemp, identityQuat, deg2rad(this.rotation[0]));
