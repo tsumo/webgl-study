@@ -1,5 +1,6 @@
 import { mat4, vec3 } from 'gl-matrix';
 import { deg2rad, lerp } from '../utils';
+import { InputController } from './input-controller';
 import { Transform3d } from './transform';
 
 type CameraMode = 'free' | 'orbit';
@@ -41,12 +42,12 @@ export class Camera {
     this.projectionParams.far = distance;
   }
 
-  pauseController(): void {
-    this.controller.paused = true;
+  pauseInputController(): void {
+    this.controller.inputController.paused = true;
   }
 
-  startController(): void {
-    this.controller.paused = false;
+  startInputController(): void {
+    this.controller.inputController.paused = false;
   }
 
   setTranslation(translation: vec3, instant = false): void {
@@ -100,16 +101,10 @@ class FreeCameraController {
     up: false,
     down: false,
   };
-  private mouseCapture = false;
   private translationTarget: vec3;
   private rotationTarget: vec3;
-  private boundKeyDownListener: (e: KeyboardEvent) => void;
-  private boundKeyUpListener: (e: KeyboardEvent) => void;
-  private boundMouseDownListener: VoidFunction;
-  private boundMouseUpListener: VoidFunction;
-  private boundMouseMoveListener: (e: MouseEvent) => void;
+  inputController: InputController;
 
-  paused = false;
   private moveCoef: number;
   private mouseMoveCoef = 0.2;
 
@@ -119,22 +114,14 @@ class FreeCameraController {
     this.moveCoef = moveCoef;
     this.translationTarget = vec3.clone(cameraTransform.translation);
     this.rotationTarget = vec3.clone(cameraTransform.rotation);
-    this.boundKeyDownListener = this.keyDownListener.bind(this);
-    document.addEventListener('keydown', this.boundKeyDownListener);
-    this.boundKeyUpListener = this.keyUpListener.bind(this);
-    document.addEventListener('keyup', this.boundKeyUpListener);
-    this.boundMouseDownListener = this.mouseDownListener.bind(this);
-    this.canvas.addEventListener('mousedown', this.boundMouseDownListener);
-    this.boundMouseUpListener = this.mouseUpListener.bind(this);
-    document.addEventListener('mouseup', this.boundMouseUpListener);
-    this.boundMouseMoveListener = this.mouseMoveListener.bind(this);
-    document.addEventListener('mousemove', this.boundMouseMoveListener);
+    this.inputController = new InputController(gl, {
+      keyDown: this.keyDownListener.bind(this),
+      keyUp: this.keyUpListener.bind(this),
+      mouseMove: this.mouseMoveListener.bind(this),
+    });
   }
 
   private keyDownListener(e: KeyboardEvent): void {
-    if (this.paused) {
-      return;
-    }
     // TODO: use map lookup
     if (e.code === 'KeyW') {
       this.translationFlags.forward = true;
@@ -152,9 +139,6 @@ class FreeCameraController {
   }
 
   private keyUpListener(e: KeyboardEvent): void {
-    if (this.paused) {
-      return;
-    }
     if (e.code === 'KeyW') {
       this.translationFlags.forward = false;
     } else if (e.code === 'KeyS') {
@@ -170,18 +154,7 @@ class FreeCameraController {
     }
   }
 
-  private mouseDownListener(): void {
-    this.mouseCapture = true;
-  }
-
-  private mouseUpListener(): void {
-    this.mouseCapture = false;
-  }
-
   private mouseMoveListener(e: MouseEvent): void {
-    if (!this.mouseCapture || this.paused) {
-      return;
-    }
     // TODO: maintain up vector
     this.rotationTarget[0] += e.movementY * this.mouseMoveCoef;
     this.rotationTarget[1] += e.movementX * this.mouseMoveCoef;
@@ -233,67 +206,38 @@ class FreeCameraController {
   }
 
   destroy(): void {
-    document.removeEventListener('keydown', this.boundKeyDownListener);
-    document.removeEventListener('keyup', this.boundKeyUpListener);
-    this.canvas.removeEventListener('mousedown', this.boundMouseDownListener);
-    document.removeEventListener('mouseup', this.boundMouseUpListener);
-    document.removeEventListener('mousemove', this.boundMouseMoveListener);
+    this.inputController.destroy();
   }
 }
 
 class OrbitCameraController {
-  private canvas: HTMLCanvasElement | OffscreenCanvas;
   private cameraTransform: Transform3d;
   private zTarget: number;
   private rotationTarget: vec3;
-  private mouseCapture = false;
-  private boundMouseDownListener: VoidFunction;
-  private boundMouseUpListener: VoidFunction;
-  private boundMouseMoveListener: (e: MouseEvent) => void;
-  private boundWheelListener: (e: WheelEvent) => void;
 
-  paused = false;
+  inputController: InputController;
+
   private moveCoef;
   private mouseMoveCoef = 0.2;
 
   constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d, moveCoef: number) {
-    this.canvas = gl.canvas;
     this.cameraTransform = cameraTransform;
     this.moveCoef = moveCoef;
     this.zTarget = cameraTransform.translation[2];
     this.rotationTarget = vec3.clone(cameraTransform.rotation);
-    this.boundMouseDownListener = this.mouseDownListener.bind(this);
-    this.canvas.addEventListener('mousedown', this.boundMouseDownListener);
-    this.boundMouseUpListener = this.mouseUpListener.bind(this);
-    document.addEventListener('mouseup', this.boundMouseUpListener);
-    this.boundMouseMoveListener = this.mouseMoveListener.bind(this);
-    document.addEventListener('mousemove', this.boundMouseMoveListener);
-    this.boundWheelListener = this.wheelListener.bind(this);
-    // @ts-expect-error cannot detect WheelEvent
-    this.canvas.addEventListener('wheel', this.boundWheelListener);
-  }
-
-  private mouseDownListener(): void {
-    this.mouseCapture = true;
-  }
-
-  private mouseUpListener(): void {
-    this.mouseCapture = false;
+    this.inputController = new InputController(gl, {
+      mouseMove: this.mouseMoveListener.bind(this),
+      wheel: this.wheelListener.bind(this),
+    });
   }
 
   private mouseMoveListener(e: MouseEvent): void {
-    if (!this.mouseCapture || this.paused) {
-      return;
-    }
     // TODO: maintain up vector
     this.rotationTarget[0] -= e.movementY * this.mouseMoveCoef;
     this.rotationTarget[1] -= e.movementX * this.mouseMoveCoef;
   }
 
   private wheelListener(e: WheelEvent): void {
-    if (this.paused) {
-      return;
-    }
     this.zTarget = this.cameraTransform.translation[2] - e.deltaY * this.moveCoef;
   }
 
@@ -312,8 +256,6 @@ class OrbitCameraController {
   }
 
   destroy(): void {
-    this.canvas.removeEventListener('mousedown', this.boundMouseDownListener);
-    document.removeEventListener('mouseup', this.boundMouseUpListener);
-    document.removeEventListener('mousemove', this.boundMouseMoveListener);
+    this.inputController.destroy();
   }
 }

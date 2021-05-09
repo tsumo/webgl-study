@@ -17,7 +17,7 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
   const freeCamera = new Camera(gl, 'free', 10);
   const orbitCamera = new Camera(gl, 'orbit', 10);
   let currentCamera = orbitCamera;
-  freeCamera.pauseController();
+  freeCamera.pauseInputController();
 
   const resetCameras = (instant = false): void => {
     freeCamera.setTranslation([0, -300, 200], instant);
@@ -29,13 +29,13 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
   resetCameras(true);
 
   const onCameraChange = (cameraType: string): void => {
-    currentCamera.pauseController();
+    currentCamera.pauseInputController();
     if (cameraType === 'orbit') {
       currentCamera = orbitCamera;
     } else {
       currentCamera = freeCamera;
     }
-    currentCamera.startController();
+    currentCamera.startInputController();
   };
 
   const gui = new Gui({
