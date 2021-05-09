@@ -50,7 +50,6 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
   });
 
   // TODO: move to canvas options?
-  gl.enable(gl.CULL_FACE);
   gl.enable(gl.DEPTH_TEST);
 
   new RenderLoop(() => {
