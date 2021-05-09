@@ -291,6 +291,9 @@ class OrbitCameraController {
   }
 
   private wheelListener(e: WheelEvent): void {
+    if (this.paused) {
+      return;
+    }
     this.zTarget = this.cameraTransform.translation[2] - e.deltaY * this.moveCoef;
   }
 
