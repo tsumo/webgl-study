@@ -86,7 +86,10 @@ export class Transform3d {
         this.scale,
       );
     } else {
-      quat.fromEuler(this.rotationQuatTemp, this.rotation[0], this.rotation[1], this.rotation[2]);
+      // TODO: use quat.fromEuler(order = xyz) when gl-matrix releases new version
+      quat.rotateX(this.rotationQuatTemp, identityQuat, deg2rad(this.rotation[0]));
+      quat.rotateY(this.rotationQuatTemp, this.rotationQuatTemp, deg2rad(this.rotation[1]));
+      quat.rotateZ(this.rotationQuatTemp, this.rotationQuatTemp, deg2rad(this.rotation[2]));
       mat4.fromRotationTranslationScale(
         this.matrixTemp,
         this.rotationQuatTemp,

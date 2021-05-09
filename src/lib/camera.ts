@@ -182,8 +182,9 @@ class FreeCameraController {
     if (!this.mouseCapture || this.paused) {
       return;
     }
+    // TODO: maintain up vector
     this.rotationTarget[0] += e.movementY * this.mouseMoveCoef;
-    this.rotationTarget[2] -= e.movementX * this.mouseMoveCoef;
+    this.rotationTarget[1] += e.movementX * this.mouseMoveCoef;
   }
 
   setTranslation(translation: vec3): void {
@@ -284,6 +285,7 @@ class OrbitCameraController {
     if (!this.mouseCapture || this.paused) {
       return;
     }
+    // TODO: maintain up vector
     this.rotationTarget[0] -= e.movementY * this.mouseMoveCoef;
     this.rotationTarget[1] -= e.movementX * this.mouseMoveCoef;
   }

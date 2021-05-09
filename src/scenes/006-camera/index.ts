@@ -3,7 +3,6 @@ import { Canvas } from '../../lib/canvas';
 import { Gui } from '../../lib/gui';
 import { RenderLoop } from '../../lib/render-loop';
 import { Camera } from '../../lib/camera';
-import { deg2rad } from '../../utils';
 import { createGrid } from '../../primitives/grid/grid';
 import { createF3d } from '../../primitives/f3d/f3d';
 
@@ -40,7 +39,7 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
   };
 
   const gui = new Gui({
-    rotation: { type: 'vec3', default: [90, 320, 0], min: 0, max: 360, step: 0.01 },
+    rotation: { type: 'vec3', default: [90, 0, 45], min: 0, max: 360, step: 0.01 },
     translation: { type: 'vec3', default: [0, 0, 0], min: -400, max: 400, step: 0.01 },
     scale: { type: 'vec3', default: [1, 1, 1], min: -3, max: 3, step: 0.01 },
     fovy: { type: 'float', default: 45, min: 0, max: 180, step: 0.01 },
