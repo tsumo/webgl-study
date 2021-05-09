@@ -9,6 +9,8 @@ export class Camera {
   private controller: FreeCameraController | OrbitCameraController;
   private mode: CameraMode;
 
+  private projectionParams = { fovy: deg2rad(45), near: 0.1, far: 4000 };
+
   /** Camera position in space */
   private transform = new Transform3d();
   /** Inverse of camera position */
@@ -25,7 +27,18 @@ export class Camera {
         ? new FreeCameraController(gl, this.transform, moveCoef)
         : new OrbitCameraController(gl, this.transform, moveCoef);
     this.mode = mode;
-    this.setProjection(deg2rad(45), 0.1, 1000);
+  }
+
+  set fovy(deg: number) {
+    this.projectionParams.fovy = deg2rad(deg);
+  }
+
+  set near(distance: number) {
+    this.projectionParams.near = distance;
+  }
+
+  set far(distance: number) {
+    this.projectionParams.far = distance;
   }
 
   pauseController(): void {
@@ -50,17 +63,14 @@ export class Camera {
     }
   }
 
-  setProjection(fovy: number, near: number, far: number): void {
+  update(): mat4 {
     mat4.perspective(
       this.projectionMatrix,
-      fovy,
+      this.projectionParams.fovy,
       this.canvas.width / this.canvas.height,
-      near,
-      far,
+      this.projectionParams.near,
+      this.projectionParams.far,
     );
-  }
-
-  update(): mat4 {
     this.transform.resetMatrix();
     if (this.mode === 'free') {
       this.transform.applyTransforms();

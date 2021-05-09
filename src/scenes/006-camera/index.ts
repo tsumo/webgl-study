@@ -57,7 +57,9 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
   new RenderLoop(() => {
     canvas.clear();
 
-    currentCamera.setProjection(deg2rad(gui.values.fovy), gui.values.near, gui.values.far);
+    currentCamera.fovy = gui.values.fovy;
+    currentCamera.near = gui.values.near;
+    currentCamera.far = gui.values.far;
     currentCamera.update();
 
     grid.program.use();
