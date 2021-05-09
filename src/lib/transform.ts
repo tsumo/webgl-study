@@ -42,8 +42,10 @@ export class Transform3d {
   rotation = vec3.create();
   scale = vec3.fromValues(1, 1, 1);
 
-  private lookAtMatrix: mat4 | undefined;
+  /** When set transform will ignore its rotation */
+  lookAt: vec3 | undefined;
 
+  private lookAtMatrixTemp = mat4.create();
   private rotationQuatTemp = quat.create();
   private matrixTemp = mat4.create();
 
@@ -53,16 +55,6 @@ export class Transform3d {
     up: vec4.fromValues(0, 1, 0, 0),
     forward: vec4.fromValues(0, 0, 1, 0),
   };
-
-  /** When set transform will ignore its rotation */
-  setLookAt(value: vec3 | undefined): void {
-    if (value) {
-      this.lookAtMatrix = mat4.create();
-      mat4.targetTo(this.lookAtMatrix, this.translation, value, upVector);
-    } else {
-      this.lookAtMatrix = undefined;
-    }
-  }
 
   resetTransforms(): void {
     vec3.zero(this.translation);
@@ -78,8 +70,9 @@ export class Transform3d {
   }
 
   applyTransforms(): mat4 {
-    if (this.lookAtMatrix) {
-      mat4.mul(this.matrix, this.matrix, this.lookAtMatrix);
+    if (this.lookAt) {
+      mat4.targetTo(this.lookAtMatrixTemp, this.translation, this.lookAt, upVector);
+      mat4.mul(this.matrix, this.matrix, this.lookAtMatrixTemp);
       mat4.fromRotationTranslationScale(this.matrixTemp, identityQuat, zeroVector, this.scale);
     } else {
       // TODO: use quat.fromEuler(order = xyz) when gl-matrix releases new version
