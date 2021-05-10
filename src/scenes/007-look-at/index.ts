@@ -2,16 +2,12 @@ import { mat4, vec3 } from 'gl-matrix';
 import { Camera } from '../../lib/camera';
 import { Canvas } from '../../lib/canvas';
 import { RenderLoop } from '../../lib/render-loop';
-import { createGrid } from '../../primitives/grid/grid';
 import { createAxes } from '../../primitives/axes/axes';
 import { createF3d } from '../../primitives/f3d/f3d';
 
 /** Look-at constraint for 3d transforms */
 export const init007LookAt = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
-
-  const grid = createGrid(gl);
-  grid.transform.scale = [10, 10, 10];
 
   const axes = createAxes(gl);
 
@@ -31,12 +27,6 @@ export const init007LookAt = (gl: WebGL2RenderingContext): void => {
     canvas.clear();
 
     camera.update();
-
-    grid.program.use();
-    grid.transform.matrix = mat4.clone(camera.viewProjectionMatrix);
-    grid.transform.applyTransforms();
-    grid.program.setUniform('matrix', grid.transform.matrix);
-    grid.vao.drawLines();
 
     f3d.program.use();
     f3d.transform.matrix = mat4.clone(camera.viewProjectionMatrix);
