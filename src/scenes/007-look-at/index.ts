@@ -6,6 +6,7 @@ import { createGrid } from '../../primitives/grid/grid';
 import { createAxes } from '../../primitives/axes/axes';
 import { createF3d } from '../../primitives/f3d/f3d';
 
+/** Look-at constraint for 3d transforms */
 export const init007LookAt = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 

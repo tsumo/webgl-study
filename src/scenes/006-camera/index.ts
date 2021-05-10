@@ -6,6 +6,10 @@ import { Camera } from '../../lib/camera';
 import { createGrid } from '../../primitives/grid/grid';
 import { createF3d } from '../../primitives/f3d/f3d';
 
+/**
+ * Configurable and controllable perspective camera.
+ * 3d transforms.
+ */
 export const init006Camera = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
