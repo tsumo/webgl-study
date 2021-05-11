@@ -60,7 +60,7 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
   values: OUT;
 
   constructor(values: IN) {
-    const pane = new Tweakpane();
+    const pane = new Tweakpane({ title: 'Parameters' });
     this.values = {} as OUT;
 
     for (const name in values) {
