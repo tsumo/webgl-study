@@ -106,6 +106,7 @@ class FreeCameraController {
 
   private moveCoef: number;
   private mouseMoveCoef = 0.2;
+  private lerpFactor = 0.2;
 
   constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d, moveCoef: number) {
     this.cameraTransform = cameraTransform;
@@ -199,8 +200,8 @@ class FreeCameraController {
       translationTarget[1] -= direction.up[1] * moveCoef;
       translationTarget[2] -= direction.up[2] * moveCoef;
     }
-    vec3.lerp(translation, translation, translationTarget, 0.2);
-    vec3.lerp(rotation, rotation, rotationTarget, 0.2);
+    vec3.lerp(translation, translation, translationTarget, this.lerpFactor);
+    vec3.lerp(rotation, rotation, rotationTarget, this.lerpFactor);
   }
 
   destroy(): void {
@@ -217,6 +218,7 @@ class OrbitCameraController {
 
   private moveCoef;
   private mouseMoveCoef = 0.2;
+  private lerpFactor = 0.2;
 
   constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d, moveCoef: number) {
     this.cameraTransform = cameraTransform;
@@ -249,8 +251,8 @@ class OrbitCameraController {
 
   update(): void {
     const { translation, rotation } = this.cameraTransform;
-    translation[2] = lerp(translation[2], this.zTarget, 0.2);
-    vec3.lerp(rotation, rotation, this.rotationTarget, 0.2);
+    translation[2] = lerp(translation[2], this.zTarget, this.lerpFactor);
+    vec3.lerp(rotation, rotation, this.rotationTarget, this.lerpFactor);
   }
 
   destroy(): void {
