@@ -39,11 +39,15 @@ export const init008Transparency = (gl: WebGL2RenderingContext): void => {
 
     camera.update();
 
+    gl.depthMask(true);
+
     grid.program.use();
     grid.transform.matrix = mat4.clone(camera.viewProjectionMatrix);
     grid.transform.applyTransforms();
     grid.program.setUniform('matrix', grid.transform.matrix);
     grid.vao.drawLines();
+
+    gl.depthMask(false);
 
     multiRingFrame.program.use();
     multiRingFrame.transform.matrix = mat4.clone(camera.viewProjectionMatrix);
