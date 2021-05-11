@@ -7,6 +7,7 @@ import { init004Lines } from './scenes/004-lines';
 import { init005Transformation } from './scenes/005-transformation';
 import { init006Camera } from './scenes/006-camera';
 import { init007LookAt } from './scenes/007-look-at';
+import { init008Transparency } from './scenes/008-transparency';
 
 glMatrix.setMatrixArrayType(Array);
 
@@ -18,6 +19,7 @@ const num2Scene: Record<number, (gl: WebGL2RenderingContext) => void> = {
   5: init005Transformation,
   6: init006Camera,
   7: init007LookAt,
+  8: init008Transparency,
 };
 
 const initApp = (): void => {
