@@ -7,6 +7,7 @@ export const assertUnreachable = (value: never): never => {
   throw new Error('This should be unreachable!');
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const objEntries = <T extends Record<string, any>, K extends keyof T>(
   obj: T,
 ): [keyof T, T[K]][] => Object.entries(obj);

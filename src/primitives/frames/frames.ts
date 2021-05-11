@@ -35,6 +35,7 @@ const generateFrameData = (): {
   return { position, uv, index };
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const createQuadFrame = (gl: WebGL2RenderingContext) => {
   const program = new Program(
     gl,
@@ -49,6 +50,7 @@ export const createQuadFrame = (gl: WebGL2RenderingContext) => {
   return { program, vao, transform };
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const createRingFrame = (gl: WebGL2RenderingContext) => {
   const program = new Program(
     gl,
@@ -105,6 +107,7 @@ const generateMultiFrameData = (
   return { position, uv, index };
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const createMultiRingFrame = (
   gl: WebGL2RenderingContext,
   n: number,

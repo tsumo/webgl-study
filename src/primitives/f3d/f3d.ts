@@ -124,6 +124,7 @@ const generateF3dData = (): {
   return { position, color };
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const createF3d = (gl: WebGL2RenderingContext) => {
   const program = new Program(
     gl,

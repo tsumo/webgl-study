@@ -21,7 +21,7 @@ export const init007LookAt = (gl: WebGL2RenderingContext): void => {
 
   gl.enable(gl.DEPTH_TEST);
 
-  new RenderLoop((delta, time) => {
+  new RenderLoop((_delta, time) => {
     const t = time * 0.5;
     const lookAt: vec3 = [Math.cos(t) * 2.5, Math.sin(t) * 2.5, Math.sin(t) * 2.5];
 

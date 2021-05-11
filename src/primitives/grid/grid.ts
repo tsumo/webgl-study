@@ -45,6 +45,7 @@ const generateGridData = (): {
   return { position, color };
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const createGrid = (gl: WebGL2RenderingContext) => {
   const program = new Program(
     gl,

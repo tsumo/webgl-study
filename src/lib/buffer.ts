@@ -1,5 +1,6 @@
 import { Program } from './program';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyProgram = Program<any, any>;
 
 // TODO: use BufferInitInfo type
