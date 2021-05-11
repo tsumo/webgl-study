@@ -25,7 +25,7 @@ export const init008Transparency = (gl: WebGL2RenderingContext): void => {
 
   const camera = new Camera(gl, 'orbit');
   camera.setTranslation([0, 0, 15]);
-  camera.setRotation([70, 12, 0]);
+  camera.setRotation([70, 0, 12]);
 
   gl.enable(gl.DEPTH_TEST);
   gl.enable(gl.BLEND);

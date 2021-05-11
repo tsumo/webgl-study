@@ -93,10 +93,11 @@ export class Transform3d {
     return this.matrix;
   }
 
-  applyTransformsRotationFirst(): mat4 {
-    mat4.rotateX(this.matrix, this.matrix, deg2rad(this.rotation[0]));
-    mat4.rotateY(this.matrix, this.matrix, deg2rad(this.rotation[1]));
+  /** Special version for orbit camera. Applies rotation in inverse order. */
+  applyTransformsOrbit(): mat4 {
     mat4.rotateZ(this.matrix, this.matrix, deg2rad(this.rotation[2]));
+    mat4.rotateY(this.matrix, this.matrix, deg2rad(this.rotation[1]));
+    mat4.rotateX(this.matrix, this.matrix, deg2rad(this.rotation[0]));
     mat4.translate(this.matrix, this.matrix, this.translation);
     mat4.scale(this.matrix, this.matrix, this.scale);
     vec4.transformMat4(this.direction.right, [1, 0, 0, 0], this.matrix);

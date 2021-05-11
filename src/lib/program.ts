@@ -24,7 +24,7 @@ type Uniform =
 
 export class Program<
   U extends Record<string, Uniform>,
-  L extends Record<keyof U, WebGLUniformLocation | null>
+  L extends Record<keyof U, WebGLUniformLocation | null>,
 > {
   private readonly gl: WebGL2RenderingContext;
   readonly program: WebGLProgram;

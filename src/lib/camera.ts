@@ -76,7 +76,7 @@ export class Camera {
     if (this.mode === 'free') {
       this.transform.applyTransforms();
     } else {
-      this.transform.applyTransformsRotationFirst();
+      this.transform.applyTransformsOrbit();
     }
     mat4.invert(this.viewMatrix, this.transform.matrix);
     mat4.mul(this.viewProjectionMatrix, this.projectionMatrix, this.viewMatrix);
@@ -91,7 +91,6 @@ export class Camera {
 
 // TODO: null-cancelling movement
 class FreeCameraController {
-  private canvas: HTMLCanvasElement | OffscreenCanvas;
   private cameraTransform: Transform3d;
   private translationFlags = {
     forward: false,
@@ -109,7 +108,6 @@ class FreeCameraController {
   private mouseMoveCoef = 0.2;
 
   constructor(gl: WebGL2RenderingContext, cameraTransform: Transform3d, moveCoef: number) {
-    this.canvas = gl.canvas;
     this.cameraTransform = cameraTransform;
     this.moveCoef = moveCoef;
     this.translationTarget = vec3.clone(cameraTransform.translation);
@@ -234,7 +232,7 @@ class OrbitCameraController {
   private mouseMoveListener(e: MouseEvent): void {
     // TODO: maintain up vector
     this.rotationTarget[0] -= e.movementY * this.mouseMoveCoef;
-    this.rotationTarget[1] -= e.movementX * this.mouseMoveCoef;
+    this.rotationTarget[2] -= e.movementX * this.mouseMoveCoef;
   }
 
   private wheelListener(e: WheelEvent): void {
