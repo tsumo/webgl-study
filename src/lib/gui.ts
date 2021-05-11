@@ -3,6 +3,8 @@ import { vec2, vec3 } from 'gl-matrix';
 import { assertUnreachable } from '../utils';
 import { NonEmptyArray } from './types';
 
+// TODO: switch to tweakpane
+
 type ValueFloat = {
   type: 'float';
   default: number;
