@@ -33,7 +33,7 @@ export const init008Transparency = (gl: WebGL2RenderingContext): void => {
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   new RenderLoop((delta, time) => {
-    const width = (Math.sin(time) + 1.1) * 0.2;
+    const width = Math.abs(Math.sin(time / 2)) * 0.5 + 0.2;
 
     canvas.clear();
 

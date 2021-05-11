@@ -9,8 +9,9 @@ uniform float u_width;
 out vec4 finalColor;
 
 void main(void) {
+  float width = u_width / 2.0;
   vec2 delta = v_uv - vec2(0.5, 0.5);
   float dist = 0.5 - sqrt(delta.x * delta.x + delta.y * delta.y);
-  float a = (dist > u_width || dist < 0.0) ? 0.0 : 1.0;
+  float a = (dist > width || dist < 0.0) ? 0.0 : 1.0;
   finalColor = vec4(0, 0, 0, a);
 }
