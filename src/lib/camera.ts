@@ -232,7 +232,6 @@ class OrbitCameraController {
   }
 
   private mouseMoveListener(e: MouseEvent): void {
-    // TODO: maintain up vector
     this.rotationTarget[0] -= e.movementY * this.mouseMoveCoef;
     this.rotationTarget[2] -= e.movementX * this.mouseMoveCoef;
   }
