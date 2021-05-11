@@ -236,7 +236,7 @@ class OrbitCameraController {
   }
 
   private wheelListener(e: WheelEvent): void {
-    this.zTarget = this.cameraTransform.translation[2] - e.deltaY * this.moveCoef;
+    this.zTarget = Math.max(0, this.cameraTransform.translation[2] - e.deltaY * this.moveCoef);
   }
 
   setTranslation(translation: vec3): void {
