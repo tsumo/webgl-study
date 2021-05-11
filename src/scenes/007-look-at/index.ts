@@ -10,6 +10,7 @@ export const init007LookAt = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
 
   const axes = createAxes(gl);
+  axes.transform.rotation = [0, 180, 0];
 
   const f3d = createF3d(gl);
   f3d.transform.scale = [0.01, 0.01, 0.01];
@@ -38,7 +39,6 @@ export const init007LookAt = (gl: WebGL2RenderingContext): void => {
     axes.program.use();
     for (let x = -5; x <= 5; x++) {
       for (let y = -5; y <= 5; y++) {
-        axes.transform.resetTransforms();
         axes.transform.translation = [x, y, 0];
         axes.transform.lookAt = lookAt;
         axes.transform.matrix = mat4.clone(camera.viewProjectionMatrix);

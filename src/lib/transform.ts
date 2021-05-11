@@ -42,7 +42,6 @@ export class Transform3d {
   rotation = vec3.create();
   scale = vec3.fromValues(1, 1, 1);
 
-  /** When set transform will ignore its rotation */
   lookAt: vec3 | undefined;
 
   private lookAtMatrixTemp = mat4.create();
@@ -73,7 +72,16 @@ export class Transform3d {
     if (this.lookAt) {
       mat4.targetTo(this.lookAtMatrixTemp, this.translation, this.lookAt, upVector);
       mat4.mul(this.matrix, this.matrix, this.lookAtMatrixTemp);
-      mat4.fromRotationTranslationScale(this.matrixTemp, identityQuat, zeroVector, this.scale);
+      // TODO: use quat.fromEuler(order = xyz) when gl-matrix releases new version
+      quat.rotateX(this.rotationQuatTemp, identityQuat, deg2rad(this.rotation[0]));
+      quat.rotateY(this.rotationQuatTemp, this.rotationQuatTemp, deg2rad(this.rotation[1]));
+      quat.rotateZ(this.rotationQuatTemp, this.rotationQuatTemp, deg2rad(this.rotation[2]));
+      mat4.fromRotationTranslationScale(
+        this.matrixTemp,
+        this.rotationQuatTemp,
+        zeroVector, // translation is already baked into lookAt matrix
+        this.scale,
+      );
     } else {
       // TODO: use quat.fromEuler(order = xyz) when gl-matrix releases new version
       quat.rotateX(this.rotationQuatTemp, identityQuat, deg2rad(this.rotation[0]));
