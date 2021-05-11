@@ -23,4 +23,3 @@ jobs:
           repository-name: tsumo/tsumo.github.io
           target-folder: webgl-study
           commit-message: 'webgl-study (${{ github.event.head_commit.message }})'
-          clean: true
