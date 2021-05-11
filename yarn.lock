@@ -64,11 +64,6 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
-"@types/dat.gui@^0.7.6":
-  version "0.7.6"
-  resolved "https://registry.yarnpkg.com/@types/dat.gui/-/dat.gui-0.7.6.tgz#61aaacdb01f70e1401e051dfcf4192a30acb2435"
-  integrity sha512-Dx9f9CkXJkDAxt9M05vc7DItSqsiEhWN7Rx3vgO/maltv/nX9TaMX2sd/iAMENnL1D5FivetktJEyCBLFu50CQ==
-
 "@types/eslint-scope@^3.7.0":
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.0.tgz#4792816e31119ebd506902a482caec4951fabd86"
@@ -976,11 +971,6 @@ cssesc@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/cssesc/-/cssesc-3.0.0.tgz#37741919903b868565e1c09ea747445cd18983ee"
   integrity sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==
-
-dat.gui@^0.7.7:
-  version "0.7.7"
-  resolved "https://registry.yarnpkg.com/dat.gui/-/dat.gui-0.7.7.tgz#7f96dbd21621a76385203659aebfa264ee6ae89b"
-  integrity sha512-sRl/28gF/XRC5ywC9I4zriATTsQcpSsRG7seXCPnTkK8/EQMIbCu5NPMpICLGxX9ZEUvcXR3ArLYCtgreFoMDw==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3:
   version "2.6.9"
@@ -3899,6 +3889,11 @@ tsutils@^3.17.1:
   integrity sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==
   dependencies:
     tslib "^1.8.1"
+
+tweakpane@^2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/tweakpane/-/tweakpane-2.4.3.tgz#4c618b616598ac0c853cd3809c6f85ee222c0046"
+  integrity sha512-qfe+8TwU30VX2yc+jHSBpKpLFIglSyZCT37P2R9j0ilxzCpyL64oEpy7ULH7ZkA/ahGSl7J5iYPWTmBw7w+dlg==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"

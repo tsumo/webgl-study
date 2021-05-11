@@ -12,7 +12,6 @@
     "lintfix": "eslint src --ext .ts,.tsx --fix"
   },
   "devDependencies": {
-    "@types/dat.gui": "^0.7.6",
     "@types/stats.js": "^0.17.0",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
@@ -31,8 +30,8 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "dat.gui": "^0.7.7",
     "gl-matrix": "^3.3.0",
-    "stats.js": "^0.17.0"
+    "stats.js": "^0.17.0",
+    "tweakpane": "^2.4.3"
   }
 }

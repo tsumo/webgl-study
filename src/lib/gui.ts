@@ -1,9 +1,7 @@
-import * as dat from 'dat.gui';
+import Tweakpane from 'tweakpane';
 import { vec2, vec3 } from 'gl-matrix';
 import { assertUnreachable } from '../utils';
 import { NonEmptyArray } from './types';
-
-// TODO: switch to tweakpane
 
 type ValueFloat = {
   type: 'float';
@@ -62,7 +60,7 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
   values: OUT;
 
   constructor(values: IN) {
-    const gui = new dat.GUI();
+    const pane = new Tweakpane();
     this.values = {} as OUT;
 
     for (const name in values) {
@@ -71,37 +69,55 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
         case 'float':
           // @ts-expect-error cannot derive correct type
           this.values[name] = value.default;
-          gui.add(this.values, name, value.min, value.max, value.step);
+          pane.addInput(this.values, name, { min: value.min, max: value.max, step: value.step });
           break;
         case 'vec2':
-          const v2 = vec2.fromValues(value.default[0], value.default[1]);
+          const v2: vec2 = [value.default[0], value.default[1]];
           // @ts-expect-error cannot derive correct type
           this.values[name] = v2;
-          const v2folder = gui.addFolder(name);
-          v2folder.open();
-          v2folder.add(v2, '0', value.min, value.max, value.step).name('x');
-          v2folder.add(v2, '1', value.min, value.max, value.step).name('y');
+          const v2Obj = { [name]: { x: value.default[0], y: value.default[1] } };
+          pane
+            .addInput(v2Obj, name, {
+              x: { min: value.min, max: value.max, step: value.step },
+              y: { min: value.min, max: value.max, step: value.step, inverted: true },
+            })
+            .on('change', (e) => {
+              v2[0] = e.value.x;
+              v2[1] = e.value.y;
+            });
           break;
         case 'vec3':
-          const v3 = vec3.fromValues(value.default[0], value.default[1], value.default[2]);
+          const v3: vec3 = [value.default[0], value.default[1], value.default[2]];
           // @ts-expect-error cannot derive correct type
           this.values[name] = v3;
-          const v3folder = gui.addFolder(name);
-          v3folder.open();
-          v3folder.add(v3, '0', value.min, value.max, value.step).name('x');
-          v3folder.add(v3, '1', value.min, value.max, value.step).name('y');
-          v3folder.add(v3, '2', value.min, value.max, value.step).name('z');
+          const v3Obj = {
+            [name]: { x: value.default[0], y: value.default[1], z: value.default[2] },
+          };
+          pane
+            .addInput(v3Obj, name, {
+              x: { min: value.min, max: value.max },
+              y: { min: value.min, max: value.max },
+              z: { min: value.min, max: value.max },
+            })
+            .on('change', (e) => {
+              v3[0] = e.value.x;
+              v3[1] = e.value.y;
+              v3[2] = e.value.z;
+            });
           break;
         case 'select':
           // @ts-expect-error cannot derive correct type
           this.values[name] = value.options[0];
-          const controller = gui.add(this.values, name, value.options);
-          if (value.onChange) {
-            controller.onChange(value.onChange);
-          }
+          const options: Record<string, string> = {};
+          value.options.forEach((option) => (options[option] = option));
+          pane
+            .addInput(this.values, name, { options })
+            .on('change', (e) => value.onChange && value.onChange(e.value as string));
           break;
         case 'functions':
-          Object.keys(value.functions).map((key) => gui.add(value.functions, key));
+          Object.keys(value.functions).forEach((key) =>
+            pane.addButton({ title: key }).on('click', () => value.functions[key]()),
+          );
           break;
         default:
           assertUnreachable(value);
