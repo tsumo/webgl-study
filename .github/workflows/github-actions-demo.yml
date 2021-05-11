@@ -8,11 +8,6 @@ jobs:
 
       - uses: actions/setup-node@v2
 
-      - name: Extract commit SHA
-        id: vars
-        shell: bash
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-
       - name: Install packages
         run: yarn install
 
@@ -27,5 +22,5 @@ jobs:
           branch: master
           folder: dist
           target-folder: webgl-study
-          commit-message: 'Update webgl-study (${{ steps.vars.outputs.sha_short }})'
+          commit-message: 'webgl-study (${{ github.event.head_commit.message }})'
           clean: true
