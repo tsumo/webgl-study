@@ -11,15 +11,15 @@ import { init008Transparency } from './scenes/008-transparency';
 
 glMatrix.setMatrixArrayType(Array);
 
-const num2Scene: Record<number, (gl: WebGL2RenderingContext) => void> = {
-  1: init001Point,
-  2: init002RenderLoop,
-  3: init003Vao,
-  4: init004Lines,
-  5: init005Transformation,
-  6: init006Camera,
-  7: init007LookAt,
-  8: init008Transparency,
+const num2Scene: Record<number, { name: string; init: (gl: WebGL2RenderingContext) => void }> = {
+  1: { name: 'point', init: init001Point },
+  2: { name: 'render loop', init: init002RenderLoop },
+  3: { name: 'vao', init: init003Vao },
+  4: { name: 'lines', init: init004Lines },
+  5: { name: 'transformation', init: init005Transformation },
+  6: { name: 'camera', init: init006Camera },
+  7: { name: 'look at', init: init007LookAt },
+  8: { name: 'transparency', init: init008Transparency },
 };
 
 const constructSceneSwitcher = (searchParams: URLSearchParams, sceneNumber: number): void => {
@@ -38,10 +38,10 @@ const constructSceneSwitcher = (searchParams: URLSearchParams, sceneNumber: numb
   };
   nextSceneElement.innerText = '>';
   const sceneSelectElement = document.createElement('select');
-  Object.entries(num2Scene).forEach(([num, func]) => {
+  Object.entries(num2Scene).forEach(([num, { name }]) => {
     const optionElement = document.createElement('option');
     optionElement.value = num;
-    optionElement.innerText = func.name.slice(4);
+    optionElement.innerText = `${num}-${name}`;
     if (Number(num) === sceneNumber) {
       optionElement.selected = true;
     }
@@ -89,7 +89,7 @@ const initApp = (): void => {
     throw new Error('Cannot get webgl context');
   }
 
-  num2Scene[sceneNumber](gl);
+  num2Scene[sceneNumber].init(gl);
 };
 
 window.addEventListener('load', initApp);
