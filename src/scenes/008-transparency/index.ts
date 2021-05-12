@@ -8,6 +8,7 @@ import {
   createQuadFrame,
   createRingFrame,
 } from '../../primitives/frames/frames';
+import { mapRange } from '../../utils';
 
 export const init008Transparency = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
@@ -33,7 +34,7 @@ export const init008Transparency = (gl: WebGL2RenderingContext): void => {
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   new RenderLoop((delta, time) => {
-    const width = Math.abs(Math.sin(time / 2)) * 0.5 + 0.2;
+    const width = mapRange(-1, 1, 0.2, 0.7, Math.sin(time));
 
     canvas.clear();
 

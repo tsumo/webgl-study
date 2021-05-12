@@ -22,6 +22,14 @@ export const randRange = (from: number, to: number): number => rand(to - from) +
 
 export const randDeviation = (n = 1): number => rand(n * 2) - n;
 
+export const mapRange = (
+  inStart: number,
+  inEnd: number,
+  outStart: number,
+  outEnd: number,
+  value: number,
+): number => ((value - inStart) * (outEnd - outStart)) / (inEnd - inStart) + outStart;
+
 const deg2radPreCalc = PI / 180;
 export const deg2rad = (d: number): number => d * deg2radPreCalc;
 
