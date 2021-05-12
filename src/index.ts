@@ -82,6 +82,7 @@ const initApp = (): void => {
   document.body.appendChild(fpsElement);
 
   const canvasElement = document.createElement('canvas');
+  canvasElement.id = 'canvas';
   document.body.appendChild(canvasElement);
 
   const gl = canvasElement.getContext('webgl2');
