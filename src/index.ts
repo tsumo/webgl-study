@@ -22,16 +22,7 @@ const num2Scene: Record<number, (gl: WebGL2RenderingContext) => void> = {
   8: init008Transparency,
 };
 
-const initApp = (): void => {
-  const searchParams = new URLSearchParams(window.location.search);
-  const sceneNumber = Number(searchParams.get('scene'));
-  if (!(sceneNumber in num2Scene)) {
-    const keys = Object.keys(num2Scene);
-    searchParams.set('scene', keys[keys.length - 1]);
-    window.location.search = searchParams.toString();
-    return;
-  }
-
+const constructSceneSwitcher = (searchParams: URLSearchParams, sceneNumber: number): void => {
   const prevSceneElement = document.createElement('button');
   prevSceneElement.innerText = '<';
   prevSceneElement.onclick = (): void => {
@@ -46,6 +37,20 @@ const initApp = (): void => {
     return;
   };
   nextSceneElement.innerText = '>';
+  const sceneSelectElement = document.createElement('select');
+  Object.entries(num2Scene).forEach(([num, func]) => {
+    const optionElement = document.createElement('option');
+    optionElement.value = num;
+    optionElement.innerText = func.name.slice(4);
+    if (Number(num) === sceneNumber) {
+      optionElement.selected = true;
+    }
+    sceneSelectElement.appendChild(optionElement);
+  });
+  sceneSelectElement.onchange = (e: Event) => {
+    searchParams.set('scene', (e.target as HTMLSelectElement).value);
+    window.location.search = searchParams.toString();
+  };
   const sceneSwitcherContainer = document.createElement('div');
   sceneSwitcherContainer.id = 'switcher';
   if (!(sceneNumber - 1 in num2Scene)) {
@@ -55,8 +60,22 @@ const initApp = (): void => {
     nextSceneElement.disabled = true;
   }
   sceneSwitcherContainer.appendChild(prevSceneElement);
+  sceneSwitcherContainer.appendChild(sceneSelectElement);
   sceneSwitcherContainer.appendChild(nextSceneElement);
   document.body.appendChild(sceneSwitcherContainer);
+};
+
+const initApp = (): void => {
+  const searchParams = new URLSearchParams(window.location.search);
+  const sceneNumber = Number(searchParams.get('scene'));
+  if (!(sceneNumber in num2Scene)) {
+    const keys = Object.keys(num2Scene);
+    searchParams.set('scene', keys[keys.length - 1]);
+    window.location.search = searchParams.toString();
+    return;
+  }
+
+  constructSceneSwitcher(searchParams, sceneNumber);
 
   const fpsElement = document.createElement('div');
   fpsElement.id = 'fps';
