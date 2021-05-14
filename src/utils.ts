@@ -30,13 +30,25 @@ export const mapRange = (
   value: number,
 ): number => ((value - inStart) * (outEnd - outStart)) / (inEnd - inStart) + outStart;
 
+export const norm = (from: number, to: number, value: number): number =>
+  (value - from) / (to - from);
+
+export const lerp = (from: number, to: number, t: number): number => from * (1 - t) + to * t;
+
+export const bilerp = (
+  tl: number,
+  tr: number,
+  br: number,
+  bl: number,
+  x: number,
+  y: number,
+): number => tl * (1 - x) * (1 - y) + tr * x * (1 - y) + bl * (1 - x) * y + br * x * y;
+
 const deg2radPreCalc = PI / 180;
 export const deg2rad = (d: number): number => d * deg2radPreCalc;
 
 const rad2degPreCalc = 180 / PI;
 export const rad2deg = (r: number): number => r * rad2degPreCalc;
-
-export const lerp = (start: number, end: number, t: number): number => start * (1 - t) + end * t;
 
 export const cart2polar = (c: vec2): vec2 => [sqrt(c[0] * c[0] + c[1] * c[1]), atan2(c[1], c[0])];
 export const polar2cart = (p: vec2): vec2 => [p[0] * cos(p[1]), p[0] * sin(p[1])];
