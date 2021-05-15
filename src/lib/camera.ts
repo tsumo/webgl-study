@@ -3,11 +3,11 @@ import { deg2rad, lerp } from '../utils';
 import { InputController } from './input-controller';
 import { Transform3d } from './transform';
 
-type CameraMode = 'free' | 'orbit';
+type CameraMode = 'fps' | 'orbit';
 
 export class Camera {
   private canvas: HTMLCanvasElement | OffscreenCanvas;
-  private controller: FreeCameraController | OrbitCameraController;
+  private controller: FpsCameraController | OrbitCameraController;
   private mode: CameraMode;
 
   private projectionParams = { fovy: deg2rad(45), near: 0.1, far: 4000 };
@@ -24,8 +24,8 @@ export class Camera {
   constructor(gl: WebGL2RenderingContext, mode: CameraMode, moveCoef = 1) {
     this.canvas = gl.canvas;
     this.controller =
-      mode === 'free'
-        ? new FreeCameraController(gl, this.transform, moveCoef)
+      mode === 'fps'
+        ? new FpsCameraController(gl, this.transform, moveCoef)
         : new OrbitCameraController(gl, this.transform, moveCoef);
     this.mode = mode;
   }
@@ -73,7 +73,7 @@ export class Camera {
       this.projectionParams.far,
     );
     this.transform.resetMatrix();
-    if (this.mode === 'free') {
+    if (this.mode === 'fps') {
       this.transform.applyTransforms();
     } else {
       this.transform.applyTransformsOrbit();
@@ -90,7 +90,7 @@ export class Camera {
 }
 
 // TODO: null-cancelling movement
-class FreeCameraController {
+class FpsCameraController {
   private cameraTransform: Transform3d;
   private translationFlags = {
     forward: false,

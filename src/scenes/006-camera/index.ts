@@ -18,14 +18,14 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
 
   const f3d = createF3d(gl);
 
-  const freeCamera = new Camera(gl, 'free', 10);
+  const fpsCamera = new Camera(gl, 'fps', 10);
   const orbitCamera = new Camera(gl, 'orbit', 10);
   let currentCamera = orbitCamera;
-  freeCamera.pauseInputController();
+  fpsCamera.pauseInputController();
 
   const resetCameras = (instant = false): void => {
-    freeCamera.setTranslation([0, -300, 200], instant);
-    freeCamera.setRotation([60, 0, 0], instant);
+    fpsCamera.setTranslation([0, -300, 200], instant);
+    fpsCamera.setRotation([60, 0, 0], instant);
     orbitCamera.setRotation([64, 0, 0], instant);
     orbitCamera.setTranslation([0, 0, 400], instant);
   };
@@ -37,7 +37,7 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
     if (cameraType === 'orbit') {
       currentCamera = orbitCamera;
     } else {
-      currentCamera = freeCamera;
+      currentCamera = fpsCamera;
     }
     currentCamera.startInputController();
   };
@@ -49,7 +49,7 @@ export const init006Camera = (gl: WebGL2RenderingContext): void => {
     fovy: { type: 'float', default: 45, min: 0, max: 180, step: 0.01 },
     near: { type: 'float', default: 0.1, min: 0.1, max: 1000, step: 0.01 },
     far: { type: 'float', default: 5000, min: 0, max: 5000, step: 0.01 },
-    camera: { type: 'select', options: ['orbit', 'free'], onChange: onCameraChange },
+    camera: { type: 'select', options: ['orbit', 'fps'], onChange: onCameraChange },
     buttons: { type: 'functions', functions: { resetCameras } },
   });
 
