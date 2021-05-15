@@ -95,6 +95,7 @@ export class Transform3d {
       );
     }
     mat4.mul(this.matrix, this.matrix, this.matrixTemp);
+    // TODO: use vec3.transformMat4
     vec4.transformMat4(this.direction.right, [1, 0, 0, 0], this.matrix);
     vec4.transformMat4(this.direction.up, [0, 1, 0, 0], this.matrix);
     vec4.transformMat4(this.direction.forward, [0, 0, 1, 0], this.matrix);
