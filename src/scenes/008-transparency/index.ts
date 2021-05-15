@@ -22,7 +22,14 @@ export const init008Transparency = (gl: WebGL2RenderingContext): void => {
   const ringFrame = createRingFrame(gl);
   ringFrame.transform.rotation = [90, 0, 0];
 
-  const multiRingFrame = createMultiRingFrame(gl, 10, 6, 0.8);
+  const multiRingFrame = createMultiRingFrame(gl, {
+    n: 10,
+    translationDeviation: [6, 6, 6],
+    rotationInitial: [0, 0, 0],
+    rotationDeviation: [360, 360, 360],
+    scaleInitial: [0.5, 0.5, 0.5],
+    scaleDeviation: [0.3, 0.3, 0.3],
+  });
 
   const camera = new Camera(gl, 'orbit');
   camera.setTranslation([0, 0, 15], true);
