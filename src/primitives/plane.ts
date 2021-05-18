@@ -37,6 +37,7 @@ export type MultiPlaneOptions = {
   rotationDeviation: vec3;
   scaleInitial: vec3;
   scaleDeviation: vec3;
+  positioning: 'flat' | 'standing';
 };
 
 export const generateMultiPlaneData = (
@@ -49,10 +50,12 @@ export const generateMultiPlaneData = (
     rotationDeviation,
     scaleInitial,
     scaleDeviation,
+    positioning,
   } = options;
   const positionData: number[] = [];
   const uvData: number[] = [];
   const index: number[] = [];
+  const transform = new Transform3d();
   for (let i = 0; i < n; i++) {
     const translation: vec3 = [
       randDeviation(translationDeviation[0]),
@@ -69,17 +72,25 @@ export const generateMultiPlaneData = (
       scaleInitial[1] + randDeviation(scaleDeviation[1]),
       scaleInitial[2] + randDeviation(scaleDeviation[2]),
     ];
-    const transform = new Transform3d();
     transform.translation = translation;
     transform.rotation = rotation;
     transform.scale = scale;
+    transform.resetMatrix();
     transform.applyTransforms();
-    const position: vec3[] = [
-      [-1, 1, 0],
-      [-1, -1, 0],
-      [1, -1, 0],
-      [1, 1, 0],
-    ];
+    const position: vec3[] =
+      positioning === 'flat'
+        ? [
+            [-1, 1, 0],
+            [-1, -1, 0],
+            [1, -1, 0],
+            [1, 1, 0],
+          ]
+        : [
+            [0, 0, 2],
+            [0, 0, 0],
+            [2, 0, 0],
+            [2, 0, 2],
+          ];
     position.forEach((pos) => {
       vec3.transformMat4(pos, pos, transform.matrix);
       positionData.push(pos[0], pos[1], pos[2]);

@@ -37,10 +37,10 @@ export const init005Transformation = (gl: WebGL2RenderingContext): void => {
 
   const transform = new Transform2d();
 
-  new RenderLoop(() => {
+  new RenderLoop((_delta, time) => {
     canvas.clear();
     program.use();
-    program.setStandardUniforms();
+    program.setStandardUniforms(time);
 
     transform.setTranslation(gui.values.translation);
     transform.setRotation(deg2rad(gui.values.rotation));

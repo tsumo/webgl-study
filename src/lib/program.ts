@@ -31,6 +31,7 @@ export class Program<
   private readonly uniforms: U;
   private readonly attributes: string[];
   private readonly resolutionLocation: WebGLUniformLocation | null;
+  private readonly timeLocation: WebGLUniformLocation | null;
   private readonly locations: L;
 
   constructor(
@@ -48,6 +49,7 @@ export class Program<
     this.program = program;
     this.uniforms = uniforms;
     this.resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+    this.timeLocation = gl.getUniformLocation(program, 'u_time');
     const locations: L = {} as L;
     for (const key in uniforms) {
       // @ts-expect-error cannot derive correct key type
@@ -91,8 +93,9 @@ export class Program<
     }
   }
 
-  setStandardUniforms(): void {
+  setStandardUniforms(time: number): void {
     this.gl.uniform2f(this.resolutionLocation, this.gl.canvas.width, this.gl.canvas.height);
+    this.gl.uniform1f(this.timeLocation, time);
   }
 
   private createShader(type: GLenum, source: string): WebGLShader {

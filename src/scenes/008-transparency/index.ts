@@ -29,6 +29,7 @@ export const init008Transparency = (gl: WebGL2RenderingContext): void => {
     rotationDeviation: [360, 360, 360],
     scaleInitial: [0.5, 0.5, 0.5],
     scaleDeviation: [0.3, 0.3, 0.3],
+    positioning: 'flat',
   });
 
   const camera = new Camera(gl, 'orbit');
