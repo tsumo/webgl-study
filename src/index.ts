@@ -81,10 +81,6 @@ const initApp = (): void => {
 
   constructSceneSwitcher(searchParams, sceneNumber);
 
-  const fpsElement = document.createElement('div');
-  fpsElement.id = 'fps';
-  document.body.appendChild(fpsElement);
-
   const canvasElement = document.createElement('canvas');
   canvasElement.id = 'canvas';
   document.body.appendChild(canvasElement);
