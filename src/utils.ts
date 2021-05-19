@@ -62,3 +62,9 @@ export const spher2cart = (s: vec3): vec3 => [
   s[0] * sin(s[1]) * sin(s[2]),
   s[0] * cos(s[1]),
 ];
+
+export const times = (n: number, func: (i: number) => void): void => {
+  for (let i = 0; i < n; i++) {
+    func(i);
+  }
+};
