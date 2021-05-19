@@ -1,5 +1,5 @@
 import { vec3 } from 'gl-matrix';
-import { bilerp, norm } from '../utils';
+import { bilerp, norm } from '../../utils';
 
 type Corners = 'topLeft' | 'topRight' | 'bottomRight' | 'bottomLeft';
 
