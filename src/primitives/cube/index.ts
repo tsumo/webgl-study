@@ -14,6 +14,16 @@ export const generateCubeData = (size: vec3 = [1, 1, 1], offset: vec3 = [0, 0, 0
   const zn = offset[2] - height;
   const zp = offset[2] + height;
   const positionData: number[] = [
+    // right (x positive)
+    [xp, yp, zp],
+    [xp, yn, zp],
+    [xp, yn, zn],
+    [xp, yp, zn],
+    // left (x negative)
+    [xn, yp, zn],
+    [xn, yn, zn],
+    [xn, yn, zp],
+    [xn, yp, zp],
     // top (z positive)
     [xn, yp, zp],
     [xn, yn, zp],
@@ -24,42 +34,32 @@ export const generateCubeData = (size: vec3 = [1, 1, 1], offset: vec3 = [0, 0, 0
     [xp, yn, zn],
     [xn, yn, zn],
     [xn, yp, zn],
-    // left (x negative)
-    [xn, yp, zn],
-    [xn, yn, zn],
-    [xn, yn, zp],
-    [xn, yp, zp],
-    // front (y negative)
-    [xn, yn, zp],
-    [xn, yn, zn],
-    [xp, yn, zn],
-    [xp, yn, zp],
-    // right (x positive)
-    [xp, yp, zp],
-    [xp, yn, zp],
-    [xp, yn, zn],
-    [xp, yp, zn],
     // back (y positive)
     [xn, yp, zn],
     [xn, yp, zp],
     [xp, yp, zp],
     [xp, yp, zn],
+    // front (y negative)
+    [xn, yn, zp],
+    [xn, yn, zn],
+    [xp, yn, zn],
+    [xp, yn, zp],
   ].flat();
   const colorData: number[] = positionData.map((v) => v + 0.5);
   const uvData: number[] = [];
   times(6, () => uvData.push(0, 0, 0, 1, 1, 1, 1, 0));
   const normalData: number[] = [
+    [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0], // right
+    [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0], // left
     [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1], // top
     [0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1], // bottom
-    [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0], // left
-    [0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0], // front
-    [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0], // right
     [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], // back
+    [0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0], // front
   ].flat();
   const index: number[] = [];
   times(6, (i) => {
     const ii = i * 4;
-    index.push(ii, ii + 1, ii + 2, ii + 2, ii + 3, ii);
+    index.push(ii + 3, ii + 2, ii, ii + 1, ii, ii + 2);
   });
   const position: BufferInitInfoFloat = {
     type: 'float',

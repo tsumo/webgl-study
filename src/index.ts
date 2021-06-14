@@ -10,6 +10,7 @@ import { init007LookAt } from './scenes/007-look-at';
 import { init008Transparency } from './scenes/008-transparency';
 import { init009Textures } from './scenes/009-textures';
 import { init010Cube } from './scenes/010-cube';
+import { init011Cubemap } from './scenes/011-cubemap';
 
 glMatrix.setMatrixArrayType(Array);
 
@@ -24,6 +25,7 @@ const num2Scene: Record<number, { name: string; init: (gl: WebGL2RenderingContex
   8: { name: 'transparency', init: init008Transparency },
   9: { name: 'textures', init: init009Textures },
   10: { name: 'cube', init: init010Cube },
+  11: { name: 'cubemap', init: init011Cubemap },
 };
 
 const constructSceneSwitcher = (searchParams: URLSearchParams, sceneNumber: number): void => {

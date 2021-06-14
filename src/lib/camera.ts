@@ -15,9 +15,9 @@ export class Camera {
   /** Camera position in space */
   private transform = new Transform3d();
   /** Inverse of camera position */
-  private viewMatrix = mat4.create();
+  viewMatrix = mat4.create();
   /** Remaps camera frustum to clip space */
-  private projectionMatrix = mat4.create();
+  projectionMatrix = mat4.create();
   /** Moves projection space to view space (in front of camera) */
   viewProjectionMatrix = mat4.create();
 
