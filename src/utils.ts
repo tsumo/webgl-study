@@ -68,3 +68,5 @@ export const times = (n: number, func: (i: number) => void): void => {
     func(i);
   }
 };
+
+export const fetchTextFile = async (src: string): Promise<string> => (await fetch(src)).text();
