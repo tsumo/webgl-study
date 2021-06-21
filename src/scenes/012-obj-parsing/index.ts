@@ -14,13 +14,18 @@ import { fetchTextFile } from '../../utils';
 import chairObj from './chair.obj';
 import pirateGirlObj from './pirate_girl.obj';
 import pirateGirlJpg from './pirate_girl.jpg';
-import vertexShader from './vertex.glsl';
-import fragmentShader from './fragment.glsl';
+import bookObj from './book.obj';
+import vertexTextureShader from './vertex-texture.glsl';
+import fragmentTextureShader from './fragment-texture.glsl';
+import vertexVColorShader from './vertex-v-color.glsl';
+import fragmentVColorShader from './fragment-v-color.glsl';
 
 export const init012ObjParsing = async (gl: WebGL2RenderingContext): Promise<void> => {
   const canvas = new Canvas(gl);
 
-  const gui = new Gui({ obj: { type: 'select', options: ['chair', 'pirate girl'] } });
+  const gui = new Gui({
+    obj: { type: 'select', options: ['chair', 'pirate girl', 'book'] },
+  });
 
   const camera = new Camera(gl, 'orbit');
   camera.setTranslation([0, 0, 13], true);
@@ -37,8 +42,8 @@ export const init012ObjParsing = async (gl: WebGL2RenderingContext): Promise<voi
   chairTransform.translation = [0, 0, -3];
   const chairProgram = new Program(
     gl,
-    vertexShader,
-    fragmentShader,
+    vertexTextureShader,
+    fragmentTextureShader,
     { matrix: { type: 'matrix4fv', value: mat4.create() } },
     ['a_position', 'a_uv'],
   );
@@ -53,13 +58,28 @@ export const init012ObjParsing = async (gl: WebGL2RenderingContext): Promise<voi
   pirateTransform.scale = [1.8, 1.8, 1.8];
   const pirateProgram = new Program(
     gl,
-    vertexShader,
-    fragmentShader,
+    vertexTextureShader,
+    fragmentTextureShader,
     { matrix: { type: 'matrix4fv', value: mat4.create() } },
     ['a_position', 'a_uv'],
   );
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
   const pirateTexture = await createTexture(gl, pirateGirlJpg, 0);
+
+  const book = await fetchTextFile(bookObj);
+  const bookData = parseObj(book);
+  const bookVao = new Vao(gl, [bookData.position, bookData.color]);
+  const bookTransform = new Transform3d();
+  bookTransform.translation = [0, 0, 0];
+  bookTransform.rotation = [0, 0, -90];
+  bookTransform.scale = [-18, 18, 18];
+  const bookProgram = new Program(
+    gl,
+    vertexVColorShader,
+    fragmentVColorShader,
+    { matrix: { type: 'matrix4fv', value: mat4.create() } },
+    ['a_position', 'a_color'],
+  );
 
   gl.enable(gl.DEPTH_TEST);
 
@@ -90,6 +110,14 @@ export const init012ObjParsing = async (gl: WebGL2RenderingContext): Promise<voi
       pirateProgram.setUniform('matrix', pirateTransform.matrix);
       pirateTexture.activate();
       pirateVao.drawTriangles();
+    }
+
+    if (gui.values.obj === 'book') {
+      bookProgram.use();
+      bookTransform.matrix = mat4.clone(camera.viewProjectionMatrix);
+      bookTransform.applyTransforms();
+      bookProgram.setUniform('matrix', bookTransform.matrix);
+      bookVao.drawTriangles();
     }
   });
 };

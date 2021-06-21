@@ -1,4 +1,4 @@
-import { BufferInitInfoFloat } from './types';
+import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from './types';
 
 // TODO: construct index for repeating vertexes
 export const parseObj = (
@@ -8,10 +8,12 @@ export const parseObj = (
   position: BufferInitInfoFloat;
   uv: BufferInitInfoFloat;
   normal: BufferInitInfoFloat;
+  color: BufferInitInfoUnsignedByte;
 } => {
   const v: number[] = [];
   const vt: number[] = [];
   const vn: number[] = [];
+  const c: number[] = [];
   // Split file into lines, drop empty lines, trim whitespace
   const lines = obj
     .trim()
@@ -20,6 +22,7 @@ export const parseObj = (
   const positionData: number[] = [];
   const uvData: number[] = [];
   const normalData: number[] = [];
+  const colorData: number[] = [];
   lines.forEach((line, lineI) => {
     // comment mark may not have a space after it
     if (line.startsWith('#')) {
@@ -29,7 +32,10 @@ export const parseObj = (
     const [keyword, ...data] = line.split(/\s+/);
     switch (keyword) {
       case 'v':
-        v.push(...data.map(Number));
+        v.push(...[data[0], data[1], data[2]].map(Number));
+        if (data.length === 6) {
+          c.push(...[data[3], data[4], data[5]].map((n) => Number(n) * 255));
+        }
         break;
       case 'vt':
         vt.push(...data.map(Number));
@@ -56,6 +62,9 @@ export const parseObj = (
             if (vnI) {
               vnI = (vnI - 1) * 3;
               normalData.push(vn[vnI], vn[vnI + 1], vn[vnI + 2]);
+            }
+            if (c.length > 0) {
+              colorData.push(c[vI], c[vI + 1], c[vI + 2]);
             }
           });
         }
@@ -86,5 +95,11 @@ export const parseObj = (
     data: new Float32Array(normalData),
     size: 3,
   };
-  return { position, uv, normal };
+  const color: BufferInitInfoUnsignedByte = {
+    type: 'unsigned-byte',
+    data: new Uint8Array(colorData),
+    size: 3,
+    normalized: true,
+  };
+  return { position, uv, normal, color };
 };
