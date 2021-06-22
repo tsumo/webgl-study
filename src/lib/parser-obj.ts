@@ -33,6 +33,7 @@ export const parseObj = (
     switch (keyword) {
       case 'v':
         v.push(...[data[0], data[1], data[2]].map(Number));
+        // Non-standard extension - vertex colors
         if (data.length === 6) {
           c.push(...[data[3], data[4], data[5]].map((n) => Number(n) * 255));
         }
