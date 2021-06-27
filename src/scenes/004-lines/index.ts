@@ -6,7 +6,7 @@ import vertexShaderSource from './vertex.glsl';
 import fragmentShaderSource from './fragment.glsl';
 
 // Two floats for position, one float to choose color
-const generateGrid = (): Float32Array => {
+const generateGrid = (): number[] => {
   const grid: number[] = [];
   const size = 1.8;
   const div = 10;
@@ -20,7 +20,7 @@ const generateGrid = (): Float32Array => {
     grid.push(-half, vertical, 0);
     grid.push(half, vertical, 1);
   }
-  return new Float32Array(grid);
+  return grid;
 };
 
 /**

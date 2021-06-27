@@ -23,7 +23,7 @@ class Cubemap {
   private texture: TextureCubemap;
 
   constructor(gl: WebGL2RenderingContext, texture: TextureCubemap) {
-    const planeData = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
+    const planeData = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
     this.vao = new Vao(gl, [{ type: 'float', data: planeData, size: 2 }]);
     const program = new Program(
       gl,

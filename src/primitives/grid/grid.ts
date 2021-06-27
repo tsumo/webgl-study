@@ -23,25 +23,14 @@ const generateGridData = (): {
     positionData.push(-half, vertical, 0);
     positionData.push(half, vertical, 0);
   }
-  const position: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(positionData),
-    size: 3,
-  };
-  const colorData = new Uint8Array(
-    [
-      ...Array(60).fill(255),
-      [0, 255, 0, 0, 255, 0],
-      [255, 0, 0, 255, 0, 0],
-      ...Array(60).fill(255),
-    ].flat(),
-  );
-  const color: BufferInitInfoUnsignedByte = {
-    type: 'unsigned-byte',
-    data: colorData,
-    size: 3,
-    normalized: true,
-  };
+  const position: BufferInitInfoFloat = { type: 'float', data: positionData, size: 3 };
+  const colorData = [
+    ...Array(60).fill(255),
+    [0, 255, 0, 0, 255, 0],
+    [255, 0, 0, 255, 0, 0],
+    ...Array(60).fill(255),
+  ].flat();
+  const color: BufferInitInfoUnsignedByte = { type: 'unsigned-byte', data: colorData, size: 3 };
   return { position, color };
 };
 

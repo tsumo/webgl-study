@@ -10,26 +10,21 @@ const generateAxesData = (): {
   position: BufferInitInfoFloat;
   color: BufferInitInfoUnsignedByte;
 } => {
-  const positionData = new Float32Array(
-    [
-      [0, 0, 0, 1, 0, 0],
-      [0, 0, 0, 0, 1, 0],
-      [0, 0, 0, 0, 0, 1],
-    ].flat(),
-  );
+  const positionData = [
+    [0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 1, 0],
+    [0, 0, 0, 0, 0, 1],
+  ].flat();
   const position: BufferInitInfoFloat = { type: 'float', data: positionData, size: 3 };
-  const colorData = new Uint8Array(
-    [
-      [255, 0, 0, 255, 0, 0],
-      [0, 255, 0, 0, 255, 0],
-      [0, 0, 255, 0, 0, 255],
-    ].flat(),
-  );
+  const colorData = [
+    [255, 0, 0, 255, 0, 0],
+    [0, 255, 0, 0, 255, 0],
+    [0, 0, 255, 0, 0, 255],
+  ].flat();
   const color: BufferInitInfoUnsignedByte = {
     type: 'unsigned-byte',
     data: colorData,
     size: 3,
-    normalized: true,
   };
   return { position, color };
 };

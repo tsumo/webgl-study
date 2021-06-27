@@ -45,7 +45,7 @@ export const generateCubeData = (size: vec3 = [1, 1, 1], offset: vec3 = [0, 0, 0
     [xp, yn, zn],
     [xp, yn, zp],
   ].flat();
-  const colorData: number[] = positionData.map((v) => v + 0.5);
+  const colorData: number[] = positionData.map((v) => (v + 0.5) * 255);
   const uvData: number[] = [];
   times(6, () => uvData.push(0, 0, 0, 1, 1, 1, 1, 0));
   const normalData: number[] = [
@@ -61,26 +61,9 @@ export const generateCubeData = (size: vec3 = [1, 1, 1], offset: vec3 = [0, 0, 0
     const ii = i * 4;
     index.push(ii + 3, ii + 2, ii, ii + 1, ii, ii + 2);
   });
-  const position: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(positionData),
-    size: 3,
-  };
-  const color: BufferInitInfoUnsignedByte = {
-    type: 'unsigned-byte',
-    data: new Uint8Array(colorData),
-    size: 3,
-    normalized: false,
-  };
-  const uv: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(uvData),
-    size: 2,
-  };
-  const normal: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(normalData),
-    size: 3,
-  };
+  const position: BufferInitInfoFloat = { type: 'float', data: positionData, size: 3 };
+  const color: BufferInitInfoUnsignedByte = { type: 'unsigned-byte', data: colorData, size: 3 };
+  const uv: BufferInitInfoFloat = { type: 'float', data: uvData, size: 2 };
+  const normal: BufferInitInfoFloat = { type: 'float', data: normalData, size: 3 };
   return { position, color, uv, normal, index };
 };

@@ -8,23 +8,19 @@ export const generatePlaneData = (): {
   uv: BufferInitInfoFloat;
   index: number[];
 } => {
-  const positionData = new Float32Array(
-    [
-      [-1, 1, 0],
-      [-1, -1, 0],
-      [1, -1, 0],
-      [1, 1, 0],
-    ].flat(),
-  );
+  const positionData = [
+    [-1, 1, 0],
+    [-1, -1, 0],
+    [1, -1, 0],
+    [1, 1, 0],
+  ].flat();
   const position: BufferInitInfoFloat = { type: 'float', data: positionData, size: 3 };
-  const uvData = new Float32Array(
-    [
-      [0, 0],
-      [0, 1],
-      [1, 1],
-      [1, 0],
-    ].flat(),
-  );
+  const uvData = [
+    [0, 0],
+    [0, 1],
+    [1, 1],
+    [1, 0],
+  ].flat();
   const uv: BufferInitInfoFloat = { type: 'float', data: uvData, size: 2 };
   const index = [0, 1, 2, 2, 3, 0];
   return { position, uv, index };
@@ -99,15 +95,7 @@ export const generateMultiPlaneData = (
     uvData.push(0, 0, 0, 1, 1, 1, 1, 0);
     index.push(p, p + 1, p + 2, p + 2, p + 3, p);
   }
-  const position: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(positionData),
-    size: 3,
-  };
-  const uv: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(uvData),
-    size: 2,
-  };
+  const position: BufferInitInfoFloat = { type: 'float', data: positionData, size: 3 };
+  const uv: BufferInitInfoFloat = { type: 'float', data: uvData, size: 2 };
   return { position, uv, index };
 };

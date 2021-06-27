@@ -81,26 +81,9 @@ export const parseObj = (
         break;
     }
   });
-  const position: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(positionData),
-    size: 3,
-  };
-  const uv: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(uvData),
-    size: 2,
-  };
-  const normal: BufferInitInfoFloat = {
-    type: 'float',
-    data: new Float32Array(normalData),
-    size: 3,
-  };
-  const color: BufferInitInfoUnsignedByte = {
-    type: 'unsigned-byte',
-    data: new Uint8Array(colorData),
-    size: 3,
-    normalized: true,
-  };
+  const position: BufferInitInfoFloat = { type: 'float', data: positionData, size: 3 };
+  const uv: BufferInitInfoFloat = { type: 'float', data: uvData, size: 2 };
+  const normal: BufferInitInfoFloat = { type: 'float', data: normalData, size: 3 };
+  const color: BufferInitInfoUnsignedByte = { type: 'unsigned-byte', data: colorData, size: 3 };
   return { position, uv, normal, color };
 };

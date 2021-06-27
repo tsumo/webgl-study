@@ -46,12 +46,18 @@ export class Vao {
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     // TODO: investigate whether it's ok to pass number[] to bufferData
-    gl.bufferData(gl.ARRAY_BUFFER, init.data as Float32Array, gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(location);
-    const type: GLenum =
-      init.type === 'float' ? gl.FLOAT : init.type === 'unsigned-byte' ? gl.UNSIGNED_BYTE : 0;
-    const normalized = init.type === 'unsigned-byte' ? init.normalized : false;
-    gl.vertexAttribPointer(location, init.size, type, normalized, 0, 0);
+    switch (init.type) {
+      case 'unsigned-byte':
+        gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array(init.data), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, init.size, gl.UNSIGNED_BYTE, true, 0, 0);
+        break;
+      case 'float':
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(init.data), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, init.size, gl.FLOAT, false, 0, 0);
+        break;
+    }
   }
 
   private draw(mode: GLenum): void {
