@@ -15,10 +15,10 @@ import chairObj from './chair.obj';
 import pirateGirlObj from './pirate_girl.obj';
 import pirateGirlJpg from './pirate_girl.jpg';
 import bookObj from './book.obj';
-import vertexTextureShader from './vertex-texture.glsl';
-import fragmentTextureShader from './fragment-texture.glsl';
-import vertexVColorShader from './vertex-v-color.glsl';
-import fragmentVColorShader from './fragment-v-color.glsl';
+import textureVertexShader from './texture-vertex.glsl';
+import textureFragmentShader from './texture-fragment.glsl';
+import vColorVertexShader from './v-color-vertex.glsl';
+import vColorFragmentShader from './v-color-fragment.glsl';
 
 export const init012ObjParsing = async (gl: WebGL2RenderingContext): Promise<void> => {
   const canvas = new Canvas(gl);
@@ -42,8 +42,8 @@ export const init012ObjParsing = async (gl: WebGL2RenderingContext): Promise<voi
   chairTransform.translation = [0, 0, -3];
   const chairProgram = new Program(
     gl,
-    vertexTextureShader,
-    fragmentTextureShader,
+    textureVertexShader,
+    textureFragmentShader,
     { matrix: { type: 'matrix4fv', value: mat4.create() } },
     ['a_position', 'a_uv'],
   );
@@ -58,8 +58,8 @@ export const init012ObjParsing = async (gl: WebGL2RenderingContext): Promise<voi
   pirateTransform.scale = [1.8, 1.8, 1.8];
   const pirateProgram = new Program(
     gl,
-    vertexTextureShader,
-    fragmentTextureShader,
+    textureVertexShader,
+    textureFragmentShader,
     { matrix: { type: 'matrix4fv', value: mat4.create() } },
     ['a_position', 'a_uv'],
   );
@@ -75,8 +75,8 @@ export const init012ObjParsing = async (gl: WebGL2RenderingContext): Promise<voi
   bookTransform.scale = [-18, 18, 18];
   const bookProgram = new Program(
     gl,
-    vertexVColorShader,
-    fragmentVColorShader,
+    vColorVertexShader,
+    vColorFragmentShader,
     { matrix: { type: 'matrix4fv', value: mat4.create() } },
     ['a_position', 'a_color'],
   );
