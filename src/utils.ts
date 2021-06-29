@@ -55,6 +55,9 @@ export const polar2cart = (p: vec2): vec2 => [p[0] * cos(p[1]), p[0] * sin(p[1])
 
 export const cart2spher = (c: vec3): vec3 => {
   const rho = sqrt(c[0] * c[0] + c[1] * c[1] + c[2] * c[2]);
+  // [rho, phi, theta]
+  // phi - up-down direction
+  // theta - ground plane direction
   return [rho, acos(c[2] / rho), atan2(c[1], c[0])];
 };
 export const spher2cart = (s: vec3): vec3 => [
