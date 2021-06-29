@@ -12,6 +12,7 @@ import { init009Textures } from './scenes/009-textures';
 import { init010Cube } from './scenes/010-cube';
 import { init011Cubemap } from './scenes/011-cubemap';
 import { init012ObjParsing } from './scenes/012-obj-parsing';
+import { init013UVSphere } from './scenes/013-uv-sphere';
 
 glMatrix.setMatrixArrayType(Array);
 
@@ -28,6 +29,7 @@ const num2Scene: Record<number, { name: string; init: (gl: WebGL2RenderingContex
   10: { name: 'cube', init: init010Cube },
   11: { name: 'cubemap', init: init011Cubemap },
   12: { name: 'obj parsing', init: init012ObjParsing },
+  13: { name: 'uv sphere', init: init013UVSphere },
 };
 
 const constructSceneSwitcher = (searchParams: URLSearchParams, sceneNumber: number): void => {
