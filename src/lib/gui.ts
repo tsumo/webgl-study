@@ -3,6 +3,7 @@ import { vec2, vec3 } from 'gl-matrix';
 import { assertUnreachable } from '../utils';
 import { NonEmptyArray } from './types';
 
+// TODO: rename to number
 type ValueFloat = {
   type: 'float';
   default: number;
@@ -59,7 +60,7 @@ type OutValues<T extends Record<string, Value>> = {
 export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
   values: OUT;
 
-  constructor(values: IN) {
+  constructor(values: IN, onChange?: (values: OUT) => void) {
     const pane = new Tweakpane({ title: 'Parameters' });
     this.values = {} as OUT;
 
@@ -121,6 +122,9 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
           break;
         default:
           assertUnreachable(value);
+      }
+      if (onChange) {
+        pane.on('change', () => onChange(this.values));
       }
     }
   }
