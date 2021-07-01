@@ -28,6 +28,11 @@ type ValueVec3 = {
   step?: number;
 };
 
+type ValueBoolean = {
+  type: 'boolean';
+  default: boolean;
+};
+
 type ValueSelect = {
   type: 'select';
   options: NonEmptyArray<string>;
@@ -39,7 +44,7 @@ type ValueFunctions = {
   functions: Record<string, VoidFunction>;
 };
 
-type Value = ValueFloat | ValueVec2 | ValueVec3 | ValueSelect | ValueFunctions;
+type Value = ValueFloat | ValueVec2 | ValueVec3 | ValueBoolean | ValueSelect | ValueFunctions;
 
 type InToOut<T extends Value> = T['type'] extends 'float'
   ? number
@@ -47,6 +52,8 @@ type InToOut<T extends Value> = T['type'] extends 'float'
   ? vec2
   : T['type'] extends 'vec3'
   ? vec3
+  : T['type'] extends 'boolean'
+  ? boolean
   : T['type'] extends 'select'
   ? string
   : T['type'] extends 'functions'
@@ -105,6 +112,11 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
               v3[1] = e.value.y;
               v3[2] = e.value.z;
             });
+          break;
+        case 'boolean':
+          // @ts-expect-error cannot derive correct type
+          this.values[name] = value.default;
+          pane.addInput(this.values, name);
           break;
         case 'select':
           // @ts-expect-error cannot derive correct type
