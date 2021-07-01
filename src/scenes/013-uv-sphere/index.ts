@@ -6,12 +6,12 @@ import { Transform3d } from '../../lib/transform';
 import { Program } from '../../lib/program';
 import { Gui } from '../../lib/gui';
 import { RenderLoop } from '../../lib/render-loop';
-import { createGrid } from '../../primitives/grid/grid';
 import { generateSphereData } from '../../primitives/sphere';
-import pointsVertexShader from './points-vertex.glsl';
-import pointFragmentShader from './points-fragment.glsl';
-import facesVertexShader from './faces-vertex.glsl';
-import facesFragmentShader from './faces-fragment.glsl';
+import { triangleDataToLineData } from '../../utils';
+import trianglesVertexShader from './triangles-vertex.glsl';
+import trianglesFragmentShader from './triangles-fragment.glsl';
+import linesVertexShader from './lines-vertex.glsl';
+import linesFragmentShader from './lines-fragment.glsl';
 
 export const init013UVSphere = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
@@ -20,41 +20,41 @@ export const init013UVSphere = (gl: WebGL2RenderingContext): void => {
   camera.setTranslation([0, 0, 2], true);
   camera.setRotation([60, 0, 35], true);
 
-  const grid = createGrid(gl);
-
   let sphere = generateSphereData(12, 12);
   const sphereTransform = new Transform3d();
   sphereTransform.scale = [0.5, 0.5, 0.5];
-  let spherePointsVao = new Vao(gl, [sphere.position, sphere.color]);
-  const spherePointsProgram = new Program(
+  let sphereTrianglesVao = new Vao(gl, [sphere.position]);
+  let sphereLinesVao = new Vao(gl, [
+    { ...sphere.position, data: triangleDataToLineData(sphere.position.data) },
+  ]);
+  const sphereTrianglesProgram = new Program(
     gl,
-    pointsVertexShader,
-    pointFragmentShader,
-    {
-      matrix: { type: 'matrix4fv', value: mat4.create() },
-      pointSize: { type: 'f', value: 30 },
-    },
-    ['a_position', 'a_color'],
+    trianglesVertexShader,
+    trianglesFragmentShader,
+    { matrix: { type: 'matrix4fv', value: mat4.create() } },
+    ['a_position'],
   );
-  let sphereFacesVao = new Vao(gl, [sphere.faces]);
-  const sphereFacesProgram = new Program(
+  const sphereLinesProgram = new Program(
     gl,
-    facesVertexShader,
-    facesFragmentShader,
+    linesVertexShader,
+    linesFragmentShader,
     { matrix: { type: 'matrix4fv', value: mat4.create() } },
     ['a_position'],
   );
 
   const gui = new Gui(
     {
-      slices: { type: 'float', default: 12, min: 3, max: 64, step: 1 },
-      stacks: { type: 'float', default: 12, min: 3, max: 64, step: 1 },
-      pointSize: { type: 'float', default: 15, min: 0, max: 50 },
+      slices: { type: 'float', default: 12, min: 3, max: 32, step: 1 },
+      stacks: { type: 'float', default: 12, min: 3, max: 32, step: 1 },
+      triangles: { type: 'boolean', default: true },
+      lines: { type: 'boolean', default: true },
     },
     (values) => {
       sphere = generateSphereData(values.slices, values.stacks);
-      spherePointsVao = new Vao(gl, [sphere.position, sphere.color]);
-      sphereFacesVao = new Vao(gl, [sphere.faces]);
+      sphereTrianglesVao = new Vao(gl, [sphere.position]);
+      sphereLinesVao = new Vao(gl, [
+        { type: 'float', data: triangleDataToLineData(sphere.position.data), size: 3 },
+      ]);
     },
   );
 
@@ -67,22 +67,15 @@ export const init013UVSphere = (gl: WebGL2RenderingContext): void => {
 
     camera.update();
 
-    grid.program.use();
-    grid.transform.matrix = mat4.clone(camera.viewProjectionMatrix);
-    grid.transform.applyTransforms();
-    grid.program.setUniform('matrix', grid.transform.matrix);
-    grid.vao.drawLines();
-
     sphereTransform.matrix = mat4.clone(camera.viewProjectionMatrix);
     sphereTransform.applyTransforms();
 
-    spherePointsProgram.use();
-    spherePointsProgram.setUniform('matrix', sphereTransform.matrix);
-    spherePointsProgram.setUniform('pointSize', gui.values.pointSize);
-    spherePointsVao.drawPoints();
+    sphereTrianglesProgram.use();
+    sphereTrianglesProgram.setUniform('matrix', sphereTransform.matrix);
+    gui.values.triangles && sphereTrianglesVao.drawTriangles();
 
-    sphereFacesProgram.use();
-    sphereFacesProgram.setUniform('matrix', sphereTransform.matrix);
-    sphereFacesVao.drawTriangles();
+    sphereLinesProgram.use();
+    sphereLinesProgram.setUniform('matrix', sphereTransform.matrix);
+    gui.values.lines && sphereLinesVao.drawLines();
   });
 };

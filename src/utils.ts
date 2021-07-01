@@ -72,4 +72,22 @@ export const times = (n: number, func: (i: number) => void): void => {
   }
 };
 
+export const triangleDataToLineData = (t: number[]): number[] => {
+  const l: number[] = [];
+  for (let i = 0; i < t.length; i += 9) {
+    // prettier-ignore
+    l.push(
+      t[i], t[i + 1], t[i + 2],
+      t[i + 3], t[i + 4], t[i + 5],
+
+      t[i + 3], t[i + 4], t[i + 5],
+      t[i + 6], t[i + 7], t[i + 8],
+
+      t[i + 6], t[i + 7], t[i + 8],
+      t[i], t[i + 1], t[i + 2],
+    );
+  }
+  return l;
+};
+
 export const fetchTextFile = async (src: string): Promise<string> => (await fetch(src)).text();

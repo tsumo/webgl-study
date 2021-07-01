@@ -1,70 +1,46 @@
 import { vec3 } from 'gl-matrix';
-import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from '../../lib/types';
+import { BufferInitInfoFloat } from '../../lib/types';
 import { mapRange, spher2cart } from '../../utils';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const generateSphereData = (slices: number, stacks: number) => {
-  const positionData: vec3[] = [];
-  const facesData: vec3[] = [];
-  const colorData: vec3[] = [];
-
-  const top = spher2cart([1, 0, 0]);
-  positionData.push([top[0], top[1], top[2]]);
-  colorData.push([1, 1, 1]);
-
+  const top: vec3 = [0, 0, 1];
+  const bottom: vec3 = [0, 0, -1];
+  const vertexStacks: vec3[][] = [];
   for (let stack = 1; stack < stacks - 1; stack++) {
+    const vertexStack: vec3[] = [];
     for (let slice = 0; slice < slices; slice++) {
       const phi = mapRange(0, stacks - 1, 0, Math.PI, stack);
       const theta = mapRange(0, slices, 0, Math.PI * 2, slice);
       const cart = spher2cart([1, phi, theta]);
-      positionData.push(cart);
-      const c = mapRange(0, stacks - 1, 0, 255, stack);
-      colorData.push([c, c, c]);
+      vertexStack.push(cart);
     }
+    vertexStacks.push(vertexStack);
   }
-
-  const bottom = spher2cart([1, Math.PI, 0]);
-  positionData.push(bottom);
-  colorData.push([255, 255, 255]);
-
-  for (let slice = 1; slice < slices + 1; slice++) {
-    facesData.push(top, positionData[slice], positionData[slice + 1]);
+  const positionData: number[] = [];
+  // top cap
+  for (let slice = 0; slice < slices; slice++) {
+    const v1 = vertexStacks[0][slice];
+    const v2 = vertexStacks[0][(slice + 1) % slices];
+    positionData.push(...top, v1[0], v1[1], v1[2], v2[0], v2[1], v2[2]);
   }
-  facesData[facesData.length - 1] = positionData[1];
-
-  for (let stack = 0; stack < stacks - 3; stack++) {
+  // sides
+  for (let i = 0; i < vertexStacks.length - 1; i++) {
     for (let slice = 0; slice < slices; slice++) {
-      const lastSlice = slice === slices - 1;
-      const tl = stack * slices + slice + 1;
-      const tr = tl + 1 - (lastSlice ? slices : 0);
-      const bl = tl + slices;
-      const br = tr + slices;
-      facesData.push(positionData[tl], positionData[bl], positionData[tr]);
-      facesData.push(positionData[bl], positionData[br], positionData[tr]);
+      const tl = vertexStacks[i][slice];
+      const tr = vertexStacks[i][(slice + 1) % slices];
+      const bl = vertexStacks[i + 1][slice];
+      const br = vertexStacks[i + 1][(slice + 1) % slices];
+      positionData.push(tl[0], tl[1], tl[2], bl[0], bl[1], bl[2], tr[0], tr[1], tr[2]);
+      positionData.push(bl[0], bl[1], bl[2], br[0], br[1], br[2], tr[0], tr[1], tr[2]);
     }
   }
-
-  for (let slice = 2; slice < slices + 2; slice++) {
-    const s = positionData.length - slice;
-    facesData.push(bottom, positionData[s], positionData[s - 1]);
+  // bottom cap
+  for (let slice = 0; slice < slices; slice++) {
+    const v1 = vertexStacks[stacks - 3][slice];
+    const v2 = vertexStacks[stacks - 3][(slice + 1) % slices];
+    positionData.push(...bottom, v2[0], v2[1], v2[2], v1[0], v1[1], v1[2]);
   }
-  facesData[facesData.length - 1] = positionData[positionData.length - 2];
-
-  const position: BufferInitInfoFloat = {
-    type: 'float',
-    data: positionData.flat() as number[],
-    size: 3,
-  };
-  const faces: BufferInitInfoFloat = {
-    type: 'float',
-    data: facesData.flat() as number[],
-    size: 3,
-  };
-  const color: BufferInitInfoUnsignedByte = {
-    type: 'unsigned-byte',
-    data: colorData.flat() as number[],
-    size: 3,
-  };
-
-  return { position, faces, color };
+  const position: BufferInitInfoFloat = { type: 'float', data: positionData, size: 3 };
+  return { position };
 };
