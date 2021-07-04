@@ -23,6 +23,7 @@ body {
   bottom: 1rem;
   left: 1rem;
   opacity: 0.3;
+  display: flex;
 }
 
 #switcher:hover {
