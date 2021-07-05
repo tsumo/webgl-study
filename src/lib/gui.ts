@@ -39,12 +39,24 @@ type ValueSelect = {
   onChange?: (option: string) => void;
 };
 
+type ValueColor = {
+  type: 'color';
+  default: vec3;
+};
+
 type ValueFunctions = {
   type: 'functions';
   functions: Record<string, VoidFunction>;
 };
 
-type Value = ValueFloat | ValueVec2 | ValueVec3 | ValueBoolean | ValueSelect | ValueFunctions;
+type Value =
+  | ValueFloat
+  | ValueVec2
+  | ValueVec3
+  | ValueBoolean
+  | ValueSelect
+  | ValueColor
+  | ValueFunctions;
 
 type InToOut<T extends Value> = T['type'] extends 'float'
   ? number
@@ -56,6 +68,8 @@ type InToOut<T extends Value> = T['type'] extends 'float'
   ? boolean
   : T['type'] extends 'select'
   ? string
+  : T['type'] extends 'color'
+  ? vec3
   : T['type'] extends 'functions'
   ? never
   : never;
@@ -126,6 +140,19 @@ export class Gui<IN extends Record<string, Value>, OUT extends OutValues<IN>> {
           pane
             .addInput(this.values, name, { options })
             .on('change', (e) => value.onChange && value.onChange(e.value as string));
+          break;
+        case 'color':
+          const colorV3: vec3 = [value.default[0], value.default[1], value.default[2]];
+          const colorObj = {
+            [name]: { r: value.default[0], g: value.default[1], b: value.default[2] },
+          };
+          // @ts-expect-error cannot derive correct type
+          this.values[name] = colorV3;
+          pane.addInput(colorObj, name).on('change', (e) => {
+            colorV3[0] = e.value.r;
+            colorV3[1] = e.value.g;
+            colorV3[2] = e.value.b;
+          });
           break;
         case 'functions':
           Object.keys(value.functions).forEach((key) =>
