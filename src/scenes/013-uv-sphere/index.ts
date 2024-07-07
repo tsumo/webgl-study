@@ -8,10 +8,10 @@ import { Gui } from '../../lib/gui';
 import { RenderLoop } from '../../lib/render-loop';
 import { generateSphereData } from '../../primitives/sphere';
 import { triangleDataToLineData } from '../../utils';
-import trianglesVertexShader from './triangles-vertex.glsl';
-import trianglesFragmentShader from './triangles-fragment.glsl';
-import linesVertexShader from './lines-vertex.glsl';
-import linesFragmentShader from './lines-fragment.glsl';
+import trianglesVertexShader from './triangles-vertex.glsl?raw';
+import trianglesFragmentShader from './triangles-fragment.glsl?raw';
+import linesVertexShader from './lines-vertex.glsl?raw';
+import linesFragmentShader from './lines-fragment.glsl?raw';
 
 export const init013UVSphere = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);

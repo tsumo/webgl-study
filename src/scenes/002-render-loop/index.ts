@@ -4,8 +4,8 @@ import { Buffer } from '../../lib/buffer';
 import { Gui } from '../../lib/gui';
 import { RenderLoop } from '../../lib/render-loop';
 import { rand } from '../../utils';
-import vertexShaderSource from './vertex.glsl';
-import fragmentShaderSource from './fragment.glsl';
+import vertexShaderSource from './vertex.glsl?raw';
+import fragmentShaderSource from './fragment.glsl?raw';
 
 /**
  * Draws three points stored in a buffer.

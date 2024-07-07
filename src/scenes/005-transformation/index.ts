@@ -7,8 +7,8 @@ import { Transform2d } from '../../lib/transform';
 import { RenderLoop } from '../../lib/render-loop';
 import { f2d } from '../../primitives/f2d';
 import { deg2rad } from '../../utils';
-import vertexShaderSource from './vertex.glsl';
-import fragmentShaderSource from './fragment.glsl';
+import vertexShaderSource from './vertex.glsl?raw';
+import fragmentShaderSource from './fragment.glsl?raw';
 
 /**
  * Draws same data multiple times using matrices to set transform.

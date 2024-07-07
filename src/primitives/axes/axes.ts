@@ -3,8 +3,8 @@ import { Program } from '../../lib/program';
 import { Vao } from '../../lib/vao';
 import { Transform3d } from '../../lib/transform';
 import { BufferInitInfoFloat, BufferInitInfoUnsignedByte } from '../../lib/types';
-import vertexShader from './vertex.glsl';
-import fragmentShader from './fragment.glsl';
+import vertexShader from './vertex.glsl?raw';
+import fragmentShader from './fragment.glsl?raw';
 
 const generateAxesData = (): {
   position: BufferInitInfoFloat;

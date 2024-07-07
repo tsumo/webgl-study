@@ -2,8 +2,8 @@ import { Canvas } from '../../lib/canvas';
 import { Program } from '../../lib/program';
 import { Vao } from '../../lib/vao';
 import { RenderLoop } from '../../lib/render-loop';
-import vertexShaderSource from './vertex.glsl';
-import fragmentShaderSource from './fragment.glsl';
+import vertexShaderSource from './vertex.glsl?raw';
+import fragmentShaderSource from './fragment.glsl?raw';
 
 // Two floats for position, one float to choose color
 const generateGrid = (): number[] => {

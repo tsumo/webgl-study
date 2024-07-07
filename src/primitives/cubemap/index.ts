@@ -10,8 +10,8 @@ import imgTop from '../../assets/interstellar-cubemap/top.jpg';
 import imgBottom from '../../assets/interstellar-cubemap/bottom.jpg';
 import imgBack from '../../assets/interstellar-cubemap/back.jpg';
 import imgFront from '../../assets/interstellar-cubemap/front.jpg';
-import vertexShader from './vertex.glsl';
-import fragmentShader from './fragment.glsl';
+import vertexShader from './vertex.glsl?raw';
+import fragmentShader from './fragment.glsl?raw';
 
 class Cubemap {
   private viewMatrixTransitionless = mat4.create();

@@ -7,7 +7,7 @@ export class RenderLoop {
   private raf = 0;
 
   constructor(tick: TickFunction) {
-    const stats = new Stats();
+    const stats = new (Stats as any).default();
     stats.showPanel(0);
     document.body.appendChild(stats.dom);
 

@@ -3,9 +3,9 @@ import { Program } from '../../lib/program';
 import { Vao } from '../../lib/vao';
 import { Transform3d } from '../../lib/transform';
 import { generateMultiPlaneData, generatePlaneData, MultiPlaneOptions } from '../plane';
-import vertexShader from './vertex.glsl';
-import quadFragmentShader from './quad-fragment.glsl';
-import ringFragmentShader from './ring-fragment.glsl';
+import vertexShader from './vertex.glsl?raw';
+import quadFragmentShader from './quad-fragment.glsl?raw';
+import ringFragmentShader from './ring-fragment.glsl?raw';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const createQuadFrame = (gl: WebGL2RenderingContext) => {

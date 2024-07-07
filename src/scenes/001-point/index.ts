@@ -1,8 +1,8 @@
 import { Program } from '../../lib/program';
 import { Canvas } from '../../lib/canvas';
 import { Buffer } from '../../lib/buffer';
-import vertexShaderSource from './vertex.glsl';
-import fragmentShaderSource from './fragment.glsl';
+import vertexShaderSource from './vertex.glsl?raw';
+import fragmentShaderSource from './fragment.glsl?raw';
 
 /**
  * Draw single point of fixed size using buffer data.

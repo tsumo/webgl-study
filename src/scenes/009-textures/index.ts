@@ -8,9 +8,9 @@ import { Vao } from '../../lib/vao';
 import { Transform3d } from '../../lib/transform';
 import { generateMultiPlaneData, generatePlaneData } from '../../primitives/plane';
 import { generateTestTexture } from '../../primitives/textures/test-texture';
-import grassVertexShader from './grass-vertex.glsl';
-import planeVertexShader from './plane-vertex.glsl';
-import fragmentShader from './fragment.glsl';
+import grassVertexShader from './grass-vertex.glsl?raw';
+import planeVertexShader from './plane-vertex.glsl?raw';
+import fragmentShader from './fragment.glsl?raw';
 
 const generateGrassTexture = (): HTMLCanvasElement => {
   const canvas = document.createElement('canvas');

@@ -11,14 +11,14 @@ import { createGrid } from '../../primitives/grid/grid';
 import { parseObj } from '../../lib/parser-obj';
 import { generateTestTexture } from '../../primitives/textures/test-texture';
 import { fetchTextFile } from '../../utils';
-import chairObj from './chair.obj';
-import pirateGirlObj from './pirate_girl.obj';
+import chairObj from './chair.obj?url';
+import pirateGirlObj from './pirate_girl.obj?url';
 import pirateGirlJpg from './pirate_girl.jpg';
-import bookObj from './book.obj';
-import textureVertexShader from './texture-vertex.glsl';
-import textureFragmentShader from './texture-fragment.glsl';
-import vColorVertexShader from './v-color-vertex.glsl';
-import vColorFragmentShader from './v-color-fragment.glsl';
+import bookObj from './book.obj?url';
+import textureVertexShader from './texture-vertex.glsl?raw';
+import textureFragmentShader from './texture-fragment.glsl?raw';
+import vColorVertexShader from './v-color-vertex.glsl?raw';
+import vColorFragmentShader from './v-color-fragment.glsl?raw';
 
 export const init012ObjParsing = async (gl: WebGL2RenderingContext): Promise<void> => {
   const canvas = new Canvas(gl);

@@ -10,8 +10,8 @@ import { RenderLoop } from '../../lib/render-loop';
 import { createGrid } from '../../primitives/grid/grid';
 import { generateCubeData } from '../../primitives/cube';
 import { generateCheckerboardTexture } from '../../primitives/textures/checkerboard-texture';
-import vertexShader from './vertex.glsl';
-import fragmentShader from './fragment.glsl';
+import vertexShader from './vertex.glsl?raw';
+import fragmentShader from './fragment.glsl?raw';
 
 export const init010Cube = (gl: WebGL2RenderingContext): void => {
   const canvas = new Canvas(gl);
